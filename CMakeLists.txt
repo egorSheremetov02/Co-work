@@ -23,8 +23,10 @@ include_directories(${asio_SOURCE_DIR}/asio/include/)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq")
 
 if (LINUX)
+    message(STATUS ">>> Linux")
     set(PQXX /usr/local/include/pqxx)
 else ()
+    message(STATUS ">>> Unix")
     set(PQXX /usr/local/Cellar/libpqxx/7.3.1/include/pqxx)
 endif ()
 
