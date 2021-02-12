@@ -5,7 +5,7 @@ int main()
 {
     try
     {
-        pqxx::connection C("dbname=test_db user=egor");
+        pqxx::connection C("dbname=test_db user=test");
         std::cout << "Connected to " << C.dbname() << std::endl;
         pqxx::work W{C};
 
