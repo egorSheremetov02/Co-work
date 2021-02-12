@@ -17,3 +17,7 @@ FetchContent_Populate(asio)
 include_directories(${asio_SOURCE_DIR}/asio/include/)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread")
+
+add_executable(server src/server/main_server.cpp)
+
+add_executable(client src/client/test_client.cpp)
