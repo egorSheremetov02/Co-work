@@ -1,36 +1,31 @@
 #include <iostream>
 #include <pqxx/pqxx>
 
-int main(int, char *argv[])
+int main()
 {
-    pqxx::connection c{"postgresql://test@localhost/test"};
-    pqxx::work txn{c};
+    try
+    {
+        pqxx::connection C("dbname=test_db user=egor");
+        std::cout << "Connected to " << C.dbname() << std::endl;
+        pqxx::work W{C};
 
-    // Normally we'd query the DB using txn.exec().  But for querying just one
-    // single value, we can use txn.query_value() as a shorthand.
-    //
-    // Use txn.quote() to escape and quote a C++ string for use as an SQL string
-    // in a query's text.
-    int employee_id = txn.query_value<int>(
-            "SELECT id "
-            "FROM Employee "
-           /* "WHERE name ="
-            " \"Egor Suvorov\""*/);
+        pqxx::result R{W.exec("SELECT name FROM Employee")};
 
-    std::cout << "Updating employee #" << employee_id << '\n';
+        std::cout << "Found " << R.size() << "employees:\n";
+        for (auto row: R)
+            std::cout << row[0].c_str() << '\n';
 
-    // Update the employee's salary.  Use exec0() to perform a query and check
-    // that it produces an empty result.  If the result does contain data, it
-    // will throw an exception.
-    //
-    // The ID is an integer, so we don't need to escape and quote it when using
-    // it in our query text.  Just convert it to its PostgreSQL string
-    // representation using to_string().
-    txn.exec0(
-            "UPDATE EMPLOYEE "
-            "SET salary = salary + 1 "
-            "WHERE id = " + pqxx::to_string(employee_id));
+        std::cout << "Doubling all employees' salaries...\n";
+        W.exec0("UPDATE employee SET salary = salary*2");
 
-    // Make our change definite.
-    txn.commit();
+        std::cout << "Making changes definite: ";
+        W.commit();
+        std::cout << "OK.\n";
+    }
+    catch (std::exception const &e)
+    {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
+    return 0;
 }

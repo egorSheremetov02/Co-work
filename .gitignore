@@ -4,3 +4,9 @@
 
 cmake-build-debug
 .idea
+_deps
+*.cbp
+*.cmake
+Testing
+CMakeFiles
+CMakeCache.txt
