@@ -11,7 +11,7 @@ int main()
 
         pqxx::result R{W.exec("SELECT name FROM Employee")};
 
-        std::cout << "Found " << R.size() << "employees:\n";
+        std::cout << "Found " << R.size() << " employee(s):\n";
         for (auto row: R)
             std::cout << row[0].c_str() << '\n';
 
