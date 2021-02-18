@@ -26,7 +26,7 @@ if (LINUX)
     message(STATUS ">>> Linux")
     set(PQXX /usr/local/include/pqxx)
 else ()
-    message(STATUS ">>> Unix")
+    message(STATUS ">>> MacOs")
     set(PQXX /usr/local/Cellar/libpqxx/7.3.1/include/pqxx)
 endif ()
 
@@ -38,5 +38,7 @@ add_executable(server src/server/main_server.cpp)
 add_executable(client src/client/test_client.cpp)
 
 add_executable(db-test DB_test/a.cpp)
+
+add_executable(broadcast-server src/server/broadcast_server.cpp src/server/server.cpp)
 
 TARGET_LINK_LIBRARIES(db-test ${PQXX_LIB} ${PQ_LIB})

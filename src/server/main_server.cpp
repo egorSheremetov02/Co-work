@@ -17,12 +17,12 @@ std::string make_daytime_string() {
 }
 
 
-class tcp_connection : public std::enable_shared_from_this<tcp_connection> {
+class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 public:
-    typedef std::shared_ptr<tcp_connection> pointer;
+    typedef std::shared_ptr<TcpConnection> pointer;
 
     static pointer create(asio::io_context &io_context) {
-        return pointer(new tcp_connection(io_context));
+        return pointer(new TcpConnection(io_context));
     }
 
     tcp::socket &socket() {
@@ -34,11 +34,11 @@ public:
 
         asio::async_write(socket_, asio::buffer(message_),
                 /*[](const asio::error_code & ec, std::size_t len) {} */
-                          std::bind(&tcp_connection::handle_write, shared_from_this()));
+                          std::bind(&TcpConnection::handle_write, shared_from_this()));
     }
 
 private:
-    explicit tcp_connection(asio::io_context &io_context)
+    explicit TcpConnection(asio::io_context &io_context)
             : socket_(io_context) {
     }
 
@@ -60,14 +60,14 @@ public:
 
 private:
     void start_accept() {
-        tcp_connection::pointer new_connection = tcp_connection::create(io_context_);
+        TcpConnection::pointer new_connection = TcpConnection::create(io_context_);
 
         acceptor_.async_accept(new_connection->socket(),
                                std::bind(&tcp_server::handle_accept, this, new_connection,
                                          std::placeholders::_1));
     }
 
-    void handle_accept(const tcp_connection::pointer &new_connection,
+    void handle_accept(const TcpConnection::pointer &new_connection,
                        const asio::error_code &error) {
 
         ++counter_;
@@ -77,7 +77,7 @@ private:
         timer_.async_wait(std::bind(&tcp_server::handle_wait, this, error, new_connection));
     }
 
-    void handle_wait(asio::error_code &ec, const tcp_connection::pointer &new_connection) {
+    void handle_wait(asio::error_code &ec, const TcpConnection::pointer &new_connection) {
         if (!ec) {
             new_connection->start();
         }
