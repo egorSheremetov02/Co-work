@@ -5,6 +5,7 @@
 #include "server.hpp"
 #include <memory>
 #include <utility>
+#include "../shared/request_format.h"
 
 using asio::ip::tcp;
 
