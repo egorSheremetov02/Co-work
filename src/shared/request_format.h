@@ -15,7 +15,7 @@ struct RequestFormat {
 
 template <typename T>
 struct AuthorizedFormat : RequestFormat<T> {
-    User user;
+    UserDTO user;
     std::string token;
 };
 #endif //CO_WORK_MESSAGE_FORMAT_H

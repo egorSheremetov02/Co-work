@@ -20,6 +20,17 @@ FetchContent_Declare(
 FetchContent_Populate(asio)
 include_directories(${asio_SOURCE_DIR}/asio/include/)
 
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.7.3
+        UPDATE_DISCONNECTED 1)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq")
 
 if (LINUX)
@@ -41,4 +52,5 @@ add_executable(db-test DB_test/a.cpp)
 
 add_executable(broadcast-server src/server/broadcast_server.cpp src/server/server.cpp)
 
-TARGET_LINK_LIBRARIES(db-test ${PQXX_LIB} ${PQ_LIB})
+target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
+target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json)

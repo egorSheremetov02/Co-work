@@ -9,7 +9,7 @@ enum UserRole {
     ADMIN, USER
 };
 
-struct User {
+struct UserDTO {
     int id;
     std::string account_name;
     std::string full_name;

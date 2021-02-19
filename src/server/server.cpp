@@ -5,7 +5,9 @@
 #include "server.hpp"
 #include <memory>
 #include <utility>
+#include <nlohmann/json.hpp>
 #include "../shared/request_format.h"
+#include "../shared/response_format.h"
 
 using asio::ip::tcp;
 
@@ -52,6 +54,7 @@ void TcpConnection::do_read() {
                 std::string resource;
                 std::string data;
                 ss >> resource >> data;
+                // Dispatch to correct resource for correct further handling
                 std::cout << "Resource: " << resource << ", Data: " << data << std::endl;
                 std::cout << std::endl;
                 do_read();
@@ -81,6 +84,8 @@ void authenticate(TcpConnection::pointer &connection) {
 }
 
 void authentication_handler(std::size_t len, TcpConnection::pointer &connection) {
+
+
 
     std::string auth_res;
 
