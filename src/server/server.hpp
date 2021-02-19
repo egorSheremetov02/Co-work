@@ -67,7 +67,7 @@ void authentication_handler(std::size_t len, TcpConnection::pointer &connection)
 
 void write_auth_response(AuthResponse const &auth_res, TcpConnection::pointer &connection);
 
-namespace ApplicationContext {
+namespace application_context {
 
     using ClientsList = std::set<TcpConnection::pointer>;
     using MulticastClients = std::unordered_map<std::string, ClientsList>;
@@ -83,6 +83,12 @@ namespace ApplicationContext {
     void add_connection(std::string const &resource_id, const TcpConnection::pointer &connection);
 
     void remove_connection(std::string const &resource_id, TcpConnection::pointer &connection);
+
+
+    template <typename T>
+    void multicast(std::string const &resource_id, T const & data) {
+
+    }
 }
 
 #endif //CO_WORK_SERVER_HPP
