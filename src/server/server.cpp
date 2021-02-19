@@ -121,7 +121,7 @@ ConnectionAcceptor::ConnectionAcceptor(asio::io_service &service) : service_(ser
     do_accept();
 }
 
-namespace ApplicationContext {
+namespace application_context {
 
     MulticastClients &get_multicast_clients() {
         static auto *multicast_clients = new MulticastClients();
