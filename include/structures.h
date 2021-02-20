@@ -35,15 +35,35 @@ struct User {
 roles get_role_from_string(std::string const &str_role) {
     std::unordered_map<std::string, roles> string_to_role = {
             {"ADMIN", roles::ADMIN},
-            {"USER", roles::USER}
+            {"USER",  roles::USER}
     };
+    return string_to_role[str_role];
+}
+
+std::string get_string_from_role(roles const &role) {
+    std::unordered_map<roles, std::string> role_to_string = {
+            {roles::ADMIN, "ADMIN"},
+            {roles::USER,  "USER"}
+    };
+    return role_to_string[role];
+}
+
+void to_json(nlohmann::json &j, roles const &role) {
+    j = get_string_from_role(role);
 }
 
 void to_json(nlohmann::json &j, const User &user) {
-    j = nlohmann::json{{"id", user.id},
-                       {"account_name",  user.account_name},
-                       {"full_name", user.full_name},
-                       {"role_in_system", user.role_in_system}};
+    j = nlohmann::json{{"id",             user.id},
+                       {"account_name",   user.account_name},
+                       {"full_name",      user.full_name},
+                       {"role_in_system", get_string_from_role(user.role_in_system)}};
+}
+
+void from_json(nlohmann::json const &j, User &user) {
+    j.at("id").get_to(user.id);
+    j.at("account_name").get_to(user.account_name);
+    j.at("full_name").get_to(user.full_name);
+    j.at("role_in_system").get_to(user.role_in_system);
 }
 
 struct action {

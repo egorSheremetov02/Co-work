@@ -13,15 +13,10 @@
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <asio.hpp>
+#include "../shared/response_format.h"
 #include "../../include/structures.h"
 
 using asio::ip::tcp;
-
-template <typename T>
-void to_json(nlohmann::json &j, const AuthDTO &auth_dto) {
-    j = nlohmann::json{{"resource", auth_dto.resource},
-                       {"message",  auth_dto.message}};
-}
 
 
 struct AuthService {
@@ -71,7 +66,7 @@ void authenticate(TcpConnection::pointer &connection);
 
 void authentication_handler(std::size_t len, TcpConnection::pointer &connection);
 
-void write_auth_response(AuthResponse const &auth_res, TcpConnection::pointer &connection);
+void write_auth_response(ResponseFormat<User> const &auth_res, TcpConnection::pointer &connection);
 
 namespace application_context {
 
@@ -91,8 +86,8 @@ namespace application_context {
     void remove_connection(std::string const &resource_id, TcpConnection::pointer &connection);
 
 
-    template <typename T>
-    void multicast(std::string const &resource_id, T const & data) {
+    template<typename T>
+    void multicast(std::string const &resource_id, T const &data) {
 
     }
 }

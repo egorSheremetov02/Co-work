@@ -3,6 +3,9 @@
 //
 #include <iostream>
 #include <asio.hpp>
+#include "../shared/response_format.h"
+#include "../shared/request_format.h"
+#include "../../include/structures.h"
 
 using asio::ip::tcp;
 
@@ -18,6 +21,10 @@ int main() {
         std::cout << "Successfully connected" << std::endl;
         std::string passcode;
         std::cin >> passcode;
+        RequestFormat<User> request;
+        request.resource = "authentication";
+        User u{1, "admin", "Egor Suvorov", roles::ADMIN};
+        request.data = u;
         socket1.async_write_some(asio::buffer(passcode.data(), passcode.size()),
                                  [&](asio::error_code const &ec, std::size_t) {
                                      if (ec) return;
