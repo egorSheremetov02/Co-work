@@ -48,9 +48,9 @@ add_executable(server src/server/main_server.cpp)
 
 add_executable(client src/client/test_client.cpp)
 
-add_executable(db-test DB_test/a.cpp)
+#add_executable(db-test DB_test/a.cpp)
 
-add_executable(broadcast-server src/server/broadcast_server.cpp src/server/server.cpp)
+add_executable(broadcast-server src/server/broadcast_server.cpp src/server/server.cpp DB_test/a.cpp)
 
-target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
-target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json)
+#target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
+target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})

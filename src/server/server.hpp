@@ -10,12 +10,18 @@
 #include <unordered_map>
 #include <set>
 #include <exception>
+#include <nlohmann/json.hpp>
 #include <memory>
 #include <asio.hpp>
+#include "../../include/structures.h"
 
 using asio::ip::tcp;
 
-using AuthResponse = std::string;
+template <typename T>
+void to_json(nlohmann::json &j, const AuthDTO &auth_dto) {
+    j = nlohmann::json{{"resource", auth_dto.resource},
+                       {"message",  auth_dto.message}};
+}
 
 
 struct AuthService {

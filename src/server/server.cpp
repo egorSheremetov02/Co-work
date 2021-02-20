@@ -5,12 +5,13 @@
 #include "server.hpp"
 #include <memory>
 #include <utility>
+#include <iomanip>
 #include <nlohmann/json.hpp>
+#include "db.h"
 #include "../shared/request_format.h"
 #include "../shared/response_format.h"
 
 using asio::ip::tcp;
-
 
 TcpConnection::pointer TcpConnection::create(asio::io_context &io_context, std::size_t max_message_size) {
     return TcpConnection::pointer(new TcpConnection(io_context, max_message_size));
@@ -42,6 +43,7 @@ void ConnectionAcceptor::handle_accept(TcpConnection::pointer connection) {
 
 void TcpConnection::do_read() {
     socket_.async_read_some(
+            // TODO -- middleware layer
             asio::buffer(message_.data(), message_.size()),
             [&, this, connection = shared_from_this()](asio::error_code const &ec, std::size_t len) mutable {
                 if (ec) {
@@ -54,19 +56,18 @@ void TcpConnection::do_read() {
                 std::string resource;
                 std::string data;
                 ss >> resource >> data;
+                AuthDTO authDto = {resource, data};
+                nlohmann::json auth_json = authDto;
+
                 // Dispatch to correct resource for correct further handling
-                std::cout << "Resource: " << resource << ", Data: " << data << std::endl;
+                std::cout << std::setw(4) << auth_json << std::endl;
                 std::cout << std::endl;
                 do_read();
             });
 }
 
 bool AuthService::validate(const std::string &payload) const {
-    std::string auth_token = "password";
-    if (payload.size() != auth_token.size()) {
-        return false;
-    }
-    return payload == auth_token;
+    return auth("admin", payload);
 }
 
 void authenticate(TcpConnection::pointer &connection) {
@@ -84,8 +85,6 @@ void authenticate(TcpConnection::pointer &connection) {
 }
 
 void authentication_handler(std::size_t len, TcpConnection::pointer &connection) {
-
-
 
     std::string auth_res;
 
