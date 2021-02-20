@@ -62,6 +62,25 @@ ToDoList::ToDoList(QWidget *parent) :
         list_in_progress->setModel(new QStringListModel());
         list_completed->setModel(new QStringListModel());
 
+        list_to_do->setStyleSheet
+        ("QListView { font-size: 20pt; font-weight: bold; }"
+         "QListView::item { background-color: #E74C3C; padding: 10%;"
+                 "border: 1px solid #C0392B; }"
+                 "QListView::item::hover { background-color: #C0392B }");
+
+
+                list_in_progress->setStyleSheet
+                ("QListView { font-size: 20pt; font-weight: bold; }"
+                 "QListView::item { background-color: #E74C3C; padding: 10%;"
+                 "border: 1px solid #C0392B; }"
+                 "QListView::item::hover { background-color: #FFC618 }");
+
+                list_completed->setStyleSheet
+                ("QListView { font-size: 20pt; font-weight: bold; }"
+                 "QListView::item { background-color: #2ECC71; padding: 10%;"
+                 "border: 1px solid #27AE60; }"
+                 "QListView::item::hover { background-color: #27AE60 }");
+
         //создаем события в тулбаре(добавление и удаление)
 
         QToolBar* tool_bar = new QToolBar(this);
