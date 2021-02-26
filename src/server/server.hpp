@@ -14,10 +14,12 @@
 #include <memory>
 #include <asio.hpp>
 #include "../shared/response_format.h"
+#include "../shared/request_format.h"
 #include "../../include/structures.h"
 
 using asio::ip::tcp;
 
+using AuthRequest = RequestFormat<User>;
 
 struct AuthService {
     [[nodiscard]] bool validate(const std::string &payload) const;

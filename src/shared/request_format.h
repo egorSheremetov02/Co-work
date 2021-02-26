@@ -27,9 +27,12 @@ void to_json(nlohmann::json &j, const RequestFormat<T> &request) {
                        {"data",     request.data}};
 }
 
-template <typename T>
+template<typename T>
 void to_json(nlohmann::json &j, const AuthorizedRequestFormat<T> &request) {
-    to_json(j, static_cast<RequestFormat<T> &>)
+    j = nlohmann::json{{"resource", request.resource},
+                       {"data",     request.data},
+                       {"user",     request.user},
+                       {"token",    request.token}};
 }
 
 template<typename T>
