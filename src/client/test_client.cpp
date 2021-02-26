@@ -3,11 +3,14 @@
 //
 #include <iostream>
 #include <asio.hpp>
+#include <nlohmann/json.hpp>
 #include "../shared/response_format.h"
 #include "../shared/request_format.h"
 #include "../../include/structures.h"
+#include "../shared/request.h"
 
 using asio::ip::tcp;
+using nlohmann::json;
 
 asio::io_service service;
 tcp::socket socket1(service);
@@ -21,14 +24,15 @@ int main() {
         std::cout << "Successfully connected" << std::endl;
         std::string passcode;
         std::cin >> passcode;
-        RequestFormat<User> request;
-        request.resource = "authentication";
-        User u{1, "admin", "Egor Suvorov", roles::ADMIN};
-        request.data = u;
-        socket1.async_write_some(asio::buffer(passcode.data(), passcode.size()),
+        RequestFormat<AuthDTO> auth_request;
+        auth_request.resource = "authentication";
+        auth_request.data = {"egor.suvorov", passcode};
+        json j = auth_request;
+        std::string str_auth_request = j.dump();
+        socket1.async_write_some(asio::buffer(str_auth_request.data(), str_auth_request.size()),
                                  [&](asio::error_code const &ec, std::size_t) {
                                      if (ec) return;
-                                     auth_response.resize(20);
+                                     auth_response.resize(1024);
                                      socket1.async_read_some(asio::buffer(auth_response.data(), auth_response.size()),
                                                              [&](asio::error_code const &ec, std::size_t len) {
                                                                  std::cout << "Successfully read data from server: "
@@ -51,7 +55,7 @@ int main() {
                                                                              });
                                                                  } else {
                                                                      std::cout
-                                                                             << "Unauthorized request to authorized resource"
+                                                                             << "Unauthorized auth_request to authorized resource"
                                                                              << std::endl;
                                                                  }
                                                              });

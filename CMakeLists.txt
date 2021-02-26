@@ -58,3 +58,5 @@ add_executable(broadcast-server src/server/broadcast_server.cpp src/server/serve
 target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
 
 target_link_libraries(tests PRIVATE nlohmann_json::nlohmann_json)
+
+target_link_libraries(client PRIVATE nlohmann_json::nlohmann_json)
