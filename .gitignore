@@ -6,6 +6,7 @@ cmake-build-debug
 .idea
 _deps
 *.cbp
+*.out
 *.cmake
 Testing
 CMakeFiles

@@ -6,7 +6,12 @@
 bool auth(std::string const &account_name, std::string const &password) {
 
     try {
+#ifdef EGOR
+        pqxx::connection C("dbname=co-work_db user=egor");
+#endif
+#ifdef KRESTINA
         pqxx::connection C("dbname=co-work_db user=co-work");
+#endif
         std::cout << "Connected to " << C.dbname() << std::endl;
         pqxx::work W{C};
 
@@ -24,9 +29,9 @@ bool auth(std::string const &account_name, std::string const &password) {
     return false;
 }
 
-int main() {
-
-    auth("admin", "qwerty");
-
-    return 0;
-}
+//int main() {
+//
+//    auth("admin", "qwerty");
+//
+//    return 0;
+//}

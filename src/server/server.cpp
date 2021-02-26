@@ -8,10 +8,11 @@
 #include <iomanip>
 #include <nlohmann/json.hpp>
 #include "db.h"
-#include "../shared/request_format.h"
-#include "../shared/response_format.h"
-#include "../shared/request.h"
-#include "../shared/response.h"
+#include "src/shared/request_format.h"
+#include "src/shared/response_format.h"
+#include "src/shared/request.h"
+#include "src/shared/response.h"
+#include "src/shared/serialization.h"
 
 using nlohmann::json;
 using asio::ip::tcp;
@@ -27,6 +28,10 @@ tcp::socket &TcpConnection::socket() {
 
 std::string &TcpConnection::in_message() {
     return in_message_;
+}
+
+std::string &TcpConnection::out_message() {
+    return out_message_;
 }
 
 
@@ -58,7 +63,7 @@ void TcpConnection::do_read() {
             });
 }
 
-std::optional<User> AuthService::validate(const AuthDTO &payload) const {
+std::optional<User> AuthService::validate(const AuthReqDTO &payload) const {
     if (auth(payload.login, payload.password)) {
         User u;
         u.account_name = "egor.suvorov";
@@ -90,7 +95,7 @@ void authentication_handler(std::size_t len, TcpConnection::pointer &connection)
 
     AuthService auth;
     std::string auth_request_str = connection->in_message().substr(0, len);
-    auto auth_request = json::parse(auth_request_str).get<RequestFormat<AuthDTO>>();
+    auto auth_request = json::parse(auth_request_str).get<RequestFormat<AuthReqDTO>>();
 
     ResponseFormat<User> auth_response;
 

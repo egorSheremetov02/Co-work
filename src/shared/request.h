@@ -7,7 +7,7 @@
 
 #include <nlohmann/json.hpp>
 
-struct AuthDTO {
+struct AuthReqDTO {
     std::string login;
     std::string password;
 };

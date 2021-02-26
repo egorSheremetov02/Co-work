@@ -24,10 +24,14 @@ int main() {
     socket1.async_connect(endpoint, [&](asio::error_code const &ec) {
         std::cout << "Successfully connected" << std::endl;
         std::string passcode;
+        std::string login;
+        std::cout << "Enter login: ";
+        std::cin >> login;
+        std::cout << "Enter password: ";
         std::cin >> passcode;
-        RequestFormat<AuthDTO> auth_request;
+        RequestFormat<AuthReqDTO> auth_request;
         auth_request.resource = "authentication";
-        auth_request.data = {"egor.suvorov", passcode};
+        auth_request.data = {login, passcode};
         json j = auth_request;
         std::string str_auth_request = j.dump();
         socket1.async_write_some(asio::buffer(str_auth_request.data(), str_auth_request.size()),

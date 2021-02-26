@@ -4,9 +4,10 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "src/shared/structures.h"
-#include "../shared/response_format.h"
-#include "../shared/request_format.h"
-#include "../shared/request.h"
+#include "src/shared/response_format.h"
+#include "src/shared/request_format.h"
+#include "src/shared/request.h"
+#include "src/shared/serialization.h"
 
 using nlohmann::json;
 
@@ -45,15 +46,15 @@ int main() {
         }
         // TEST 3 (Auth Request is serialized and deserialized as expected)
         {
-            AuthDTO dto = {
+            AuthReqDTO dto = {
                     "ideal.idealov",
                     "qwerty"
             };
-            RequestFormat<AuthDTO> auth_request;
+            RequestFormat<AuthReqDTO> auth_request;
             auth_request.resource = "auth get";
             auth_request.data = dto;
             json j = auth_request;
-            auto auth_request1 = j.get<RequestFormat<AuthDTO>>();
+            auto auth_request1 = j.get<RequestFormat<AuthReqDTO>>();
             assert(auth_request1.resource == auth_request.resource);
             assert(auth_request1.data.login == auth_request.data.login);
             assert(auth_request1.data.password == auth_request.data.password);

@@ -24,7 +24,7 @@ using asio::ip::tcp;
 using AuthRequest = RequestFormat<User>;
 
 struct AuthService {
-    [[nodiscard]] std::optional<User> validate(const AuthDTO &payload) const;
+    [[nodiscard]] std::optional<User> validate(const AuthReqDTO &payload) const;
 };
 
 
