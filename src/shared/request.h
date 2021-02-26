@@ -12,16 +12,6 @@ struct AuthDTO {
     std::string password;
 };
 
-void from_json(nlohmann::json const &j, AuthDTO &authDTO) {
-    j.at("password").get_to(authDTO.password);
-    j.at("login").get_to(authDTO.login);
-}
-
-void to_json(nlohmann::json &j, AuthDTO const &authDTO) {
-    j = nlohmann::json{{"password", authDTO.password},
-                       {"login",    authDTO.login}};
-}
-
 
 //namespace ns {
 //    class address {

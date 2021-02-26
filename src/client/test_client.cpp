@@ -4,10 +4,11 @@
 #include <iostream>
 #include <asio.hpp>
 #include <nlohmann/json.hpp>
-#include "../shared/response_format.h"
-#include "../shared/request_format.h"
-#include "../../include/structures.h"
-#include "../shared/request.h"
+#include "src/shared/serialization.h"
+#include "src/shared/response_format.h"
+#include "src/shared/request_format.h"
+#include "src/shared/structures.h"
+#include "src/shared/request.h"
 
 using asio::ip::tcp;
 using nlohmann::json;
@@ -38,7 +39,10 @@ int main() {
                                                                  std::cout << "Successfully read data from server: "
                                                                            << auth_response << " of size " << len
                                                                            << std::endl;
-                                                                 if (auth_response.substr(0, len) == "S") {
+                                                                 json json_auth_response = json::parse(
+                                                                         auth_response.substr(0, len));
+                                                                 auto response = json_auth_response.get<ResponseFormat<User>>();
+                                                                 if (response.error.empty()) {
                                                                      std::cout << "Successfully authenticated to server"
                                                                                << std::endl;
                                                                      std::string resource, data;

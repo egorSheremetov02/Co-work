@@ -10,19 +10,23 @@
 #include "db.h"
 #include "../shared/request_format.h"
 #include "../shared/response_format.h"
+#include "../shared/request.h"
+#include "../shared/response.h"
 
+using nlohmann::json;
 using asio::ip::tcp;
 
-TcpConnection::pointer TcpConnection::create(asio::io_context &io_context, std::size_t max_message_size) {
-    return TcpConnection::pointer(new TcpConnection(io_context, max_message_size));
+TcpConnection::pointer
+TcpConnection::create(asio::io_context &io_context, std::size_t max_in_message_size, std::size_t max_out_message_size) {
+    return TcpConnection::pointer(new TcpConnection(io_context, max_in_message_size, max_out_message_size));
 }
 
 tcp::socket &TcpConnection::socket() {
     return socket_;
 }
 
-std::string &TcpConnection::message() {
-    return message_;
+std::string &TcpConnection::in_message() {
+    return in_message_;
 }
 
 
@@ -44,35 +48,31 @@ void ConnectionAcceptor::handle_accept(TcpConnection::pointer connection) {
 void TcpConnection::do_read() {
     socket_.async_read_some(
             // TODO -- middleware layer
-            asio::buffer(message_.data(), message_.size()),
+            asio::buffer(in_message_.data(), in_message_.size()),
             [&, this, connection = shared_from_this()](asio::error_code const &ec, std::size_t len) mutable {
                 if (ec) {
                     connection->socket().close();
                     std::cout << "Async read error: " << ec.message() << std::endl;
                     return;
                 }
-
-                std::stringstream ss(message().substr(0, len));
-                std::string resource;
-                std::string data;
-                ss >> resource >> data;
-                AuthDTO authDto = {resource, data};
-                nlohmann::json auth_json = authDto;
-
-                // Dispatch to correct resource for correct further handling
-                std::cout << std::setw(4) << auth_json << std::endl;
-                std::cout << std::endl;
-                do_read();
             });
 }
 
-bool AuthService::validate(const std::string &payload) const {
-    return auth("admin", payload);
+std::optional<User> AuthService::validate(const AuthDTO &payload) const {
+    if (auth(payload.login, payload.password)) {
+        User u;
+        u.account_name = "egor.suvorov";
+        u.role_in_system = ADMIN;
+        u.full_name = "Egor Suvorov";
+        u.id = 1;
+        return std::optional<User>{u};
+    }
+    return std::optional<User>{};
 }
 
 void authenticate(TcpConnection::pointer &connection) {
     connection->socket().async_read_some(
-            asio::buffer(connection->message().data(), connection->message().size()),
+            asio::buffer(connection->in_message().data(), connection->in_message().size()),
             [&, connection](asio::error_code const &ec, std::size_t len) mutable {
                 if (ec) {
                     std::cout << "Error while reading client" << std::endl;
@@ -89,30 +89,35 @@ void authentication_handler(std::size_t len, TcpConnection::pointer &connection)
     std::string auth_res;
 
     AuthService auth;
-    std::string substr = connection->message().substr(0, len);
+    std::string auth_request_str = connection->in_message().substr(0, len);
+    auto auth_request = json::parse(auth_request_str).get<RequestFormat<AuthDTO>>();
 
-    if (!auth.validate(substr)) {
-        std::cout << "Invalid auth token: " << substr << std::endl;
-        auth_res = "F";
+    ResponseFormat<User> auth_response;
+
+    std::optional<User> opt_user = auth.validate(auth_request.data);
+    if (!opt_user.has_value()) {
+        std::cout << "Invalid auth token: " << auth_request_str << std::endl;
+        auth_response.error = "No user with such credentials was found";
     } else {
         std::cout << "Successfully authenticated" << std::endl;
-        auth_res = "S";
+        auth_response.data = opt_user.value();
     }
-
-    write_auth_response(auth_res, connection);
+    write_auth_response(auth_response, connection);
 }
 
-void write_auth_response(AuthResponse const &auth_res, TcpConnection::pointer &connection) {
+void write_auth_response(ResponseFormat<User> const &auth_response, TcpConnection::pointer &connection) {
+    json j = auth_response;
+    connection->out_message() = j.dump();
     connection->socket().async_write_some(
-            asio::buffer(auth_res.data(), auth_res.size()),
-            [&, connection, auth_res](asio::error_code const &ec,
-                                      std::size_t len) mutable {
+            asio::buffer(connection->out_message().data(), connection->out_message().size()),
+            [&, connection, auth_response](asio::error_code const &ec,
+                                           std::size_t len) mutable {
                 if (ec) {
                     std::cout << "Error while writing to client" << std::endl;
                     return;
                 }
-                std::cout << "Wrote data to client: " << auth_res << std::endl;
-                if (auth_res == "S") {
+                std::cout << "Wrote data to client: " << auth_response.data.account_name << std::endl;
+                if (auth_response.error.empty()) {
                     connection->do_read();
                 } else {
                     connection->socket().close();

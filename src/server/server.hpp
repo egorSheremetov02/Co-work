@@ -15,14 +15,16 @@
 #include <asio.hpp>
 #include "../shared/response_format.h"
 #include "../shared/request_format.h"
-#include "../../include/structures.h"
+#include "../shared/request.h"
+#include "../shared/response.h"
+#include "src/shared/structures.h"
 
 using asio::ip::tcp;
 
 using AuthRequest = RequestFormat<User>;
 
 struct AuthService {
-    [[nodiscard]] bool validate(const std::string &payload) const;
+    [[nodiscard]] std::optional<User> validate(const AuthDTO &payload) const;
 };
 
 
@@ -30,24 +32,28 @@ struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 public:
     using pointer = std::shared_ptr<TcpConnection>;
 
-    static pointer create(asio::io_context &io_context, std::size_t max_message_size = 1024);
+    static pointer create(asio::io_context &io_context, std::size_t max_in_message_size = 1024, std::size_t max_out_message_size = 1024);
 
     void do_read();
 
     tcp::socket &socket();
 
-    std::string &message();
+    std::string &in_message();
+
+    std::string &out_message();
 
 private:
-    explicit TcpConnection(asio::io_context &io_context, std::size_t max_message_size)
+    explicit TcpConnection(asio::io_context &io_context, std::size_t max_in_message_size, std::size_t max_out_message_size)
             : socket_(io_context) {
-        message_.resize(max_message_size);
+        in_message_.resize(max_in_message_size);
+        out_message_.resize(max_out_message_size);
     }
 
     void handle_write() {}
 
     tcp::socket socket_;
-    std::string message_;
+    std::string in_message_;
+    std::string out_message_;
 };
 
 
@@ -68,7 +74,7 @@ void authenticate(TcpConnection::pointer &connection);
 
 void authentication_handler(std::size_t len, TcpConnection::pointer &connection);
 
-void write_auth_response(ResponseFormat<User> const &auth_res, TcpConnection::pointer &connection);
+void write_auth_response(ResponseFormat<User> const &auth_response, TcpConnection::pointer &connection);
 
 namespace application_context {
 

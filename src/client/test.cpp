@@ -3,7 +3,7 @@
 //
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "../../include/structures.h"
+#include "src/shared/structures.h"
 #include "../shared/response_format.h"
 #include "../shared/request_format.h"
 #include "../shared/request.h"

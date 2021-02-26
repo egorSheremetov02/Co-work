@@ -30,9 +30,9 @@ public:
     }
 
     void start() {
-        message_ = make_daytime_string();
+        in_message_ = make_daytime_string();
 
-        asio::async_write(socket_, asio::buffer(message_),
+        asio::async_write(socket_, asio::buffer(in_message_),
                 /*[](const asio::error_code & ec, std::size_t len) {} */
                           std::bind(&TcpConnection::handle_write, shared_from_this()));
     }
@@ -45,7 +45,7 @@ private:
     void handle_write() {}
 
     tcp::socket socket_;
-    std::string message_;
+    std::string in_message_;
 };
 
 
