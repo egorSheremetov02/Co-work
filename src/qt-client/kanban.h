@@ -1,28 +1,27 @@
-#ifndef TODOLIST_H
-#define TODOLIST_H
+#ifndef KANBAN_H
+#define KANBAN_H
 
 #include <QMainWindow>
 #include <QListView>
 #include <QStringListModel>
 
-namespace Ui {
-class ToDoList;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class kanban; }
+QT_END_NAMESPACE
 
-class ToDoList : public QMainWindow
+class kanban : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit ToDoList(QWidget *parent = nullptr);
-    ~ToDoList();
+    kanban(QWidget *parent = nullptr);
+    ~kanban();
 
-protected slots:
-    void onAdd();
+private slots:
+    void on_add();
     //void onRemove();
-
 private:
-    Ui::ToDoList *ui;
+    Ui::kanban *ui;
 
     QListView* list_to_do = nullptr;
     QListView* list_in_progress = nullptr;
@@ -31,5 +30,4 @@ private:
     QAction* action_add = nullptr;
     //QAction* action_remove = nullptr;
 };
-
-#endif // TODOLIST_H
+#endif // KANBAN_H

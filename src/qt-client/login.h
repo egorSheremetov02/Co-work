@@ -2,25 +2,27 @@
 #define LOGIN_H
 
 #include <QMainWindow>
-#include "todolist.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+#include "kanban.h"
 
-class MainWindow : public QMainWindow
+namespace Ui {
+class login;
+}
+
+class login : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit login(QWidget *parent = nullptr);
+    ~login();
 
 private slots:
     void on_pushButton_logIn_clicked();
 
 private:
-    Ui::MainWindow *ui;
-    ToDoList *todoList;
+    Ui::login *ui;
+    kanban *_kanban;
 };
+
 #endif // LOGIN_H
