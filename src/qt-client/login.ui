@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>login</class>
+ <widget class="QMainWindow" name="login">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,17 +14,17 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGroupBox" name="groupBox_signIn">
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>90</y>
-      <width>581</width>
-      <height>301</height>
+      <x>140</x>
+      <y>150</y>
+      <width>511</width>
+      <height>211</height>
      </rect>
     </property>
     <property name="title">
-     <string>Siqn in</string>
+     <string/>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -52,22 +52,12 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineEdit_password">
-         <property name="text">
-          <string/>
-         </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_HelloUser">
-       <property name="text">
-        <string>Привет! Это Co-Work</string>
-       </property>
-      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_logIn">
