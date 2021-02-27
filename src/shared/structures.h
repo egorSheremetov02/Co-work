@@ -2,15 +2,15 @@
 #define CO_WORK_STRUCTURES_H
 #include <string>
 
-enum roles {
+enum Roles {
     ADMIN, USER
 };
 
-enum actions {
+enum Actions {
     ADD_COMMENT, CREATE_TASK
 };
 
-struct task {
+struct Task {
     int id;
     std::string name;
     std::string description;
@@ -20,7 +20,7 @@ struct task {
     std::string status;
 };
 
-struct project {
+struct Project {
     int id;
     std::string name;
     std::string date;
@@ -30,20 +30,20 @@ struct User {
     int id;
     std::string account_name;
     std::string full_name;
-    roles role_in_system;
+    Roles role_in_system;
 };
 
-struct action {
+struct Action {
     int task_id;
     int user_id;
     std::string data;
 };
 
-struct create : action {
+struct CreateAction : Action {
     std::string text;
 };
 
-struct comment : action {
+struct CommentAction : Action {
     std::string text_of_comment;
 };
 #endif //CO_WORK_STRUCTURES_H

@@ -12,7 +12,7 @@
 #include "structures.h"
 
 
-NLOHMANN_JSON_SERIALIZE_ENUM( roles, {
+NLOHMANN_JSON_SERIALIZE_ENUM(Roles, {
     {ADMIN, "admin"},
     {USER, "user"},
 })
