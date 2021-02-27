@@ -11,31 +11,31 @@ enum Actions {
 };
 
 struct Task {
-    int id;
+    unsigned int id;
     std::string name;
     std::string description;
     std::string date;
-    int project_id;
-    int urgency;
+    unsigned int project_id;
+    unsigned int urgency;
     std::string status;
 };
 
 struct Project {
-    int id;
+    unsigned int id;
     std::string name;
     std::string date;
 };
 
 struct User {
-    int id;
+    unsigned int id;
     std::string account_name;
     std::string full_name;
     Roles role_in_system;
 };
 
 struct Action {
-    int task_id;
-    int user_id;
+    unsigned int task_id;
+    unsigned int user_id;
     std::string data;
 };
 

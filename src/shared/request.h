@@ -13,17 +13,4 @@ struct AuthReqDTO {
 };
 
 
-//namespace ns {
-//    class address {
-//    private:
-//        std::string street;
-//        int housenumber;
-//        int postcode;
-//
-//    public:
-//        NLOHMANN_DEFINE_TYPE_INTRUSIVE(address, street, housenumber, postcode)
-//    };
-//}
-
-
 #endif //CO_WORK_REQUEST_H

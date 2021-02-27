@@ -20,7 +20,7 @@ int main() {
         u.full_name = "Ideal Idealov";
         return u;
     };
-        // serialization tests
+    // serialization tests
     {
         // TEST 1 (User is serialized and deserialized in JSON as expected)
         {

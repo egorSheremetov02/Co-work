@@ -13,9 +13,31 @@
 
 
 NLOHMANN_JSON_SERIALIZE_ENUM(Roles, {
-    {ADMIN, "admin"},
-    {USER, "user"},
+    { ADMIN, "admin" },
+    { USER, "user" },
 })
+
+inline void from_json(nlohmann::json const &j, Project &project) {
+    j.at("id").get_to(project.id);
+    j.at("name").get_to(project.name);
+    j.at("data").get_to(project.date);
+}
+
+inline void to_json(nlohmann::json &j, Project const &project) {
+    j = nlohmann::json{{"id",   project.id},
+                       {"name", project.name},
+                       {"date", project.date}};
+}
+
+inline void from_json(nlohmann::json const &j, Task &task) {
+    j.at("id").get_to(task.id);
+    j.at("name").get_to(task.name);
+    j.at("description").get_to(task.description);
+    j.at("date").get_to(task.date);
+    j.at("project_id").get_to(task.project_id);
+    j.at("urgency").get_to(task.urgency);
+    j.at("status").get_to(task.urgency);
+}
 
 inline void from_json(nlohmann::json const &j, AuthReqDTO &authDTO) {
     j.at("password").get_to(authDTO.password);

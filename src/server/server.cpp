@@ -52,7 +52,6 @@ void ConnectionAcceptor::handle_accept(TcpConnection::pointer connection) {
 
 void TcpConnection::do_read() {
     socket_.async_read_some(
-            // TODO -- middleware layer
             asio::buffer(in_message_.data(), in_message_.size()),
             [&, this, connection = shared_from_this()](asio::error_code const &ec, std::size_t len) mutable {
                 if (ec) {
@@ -60,6 +59,13 @@ void TcpConnection::do_read() {
                     std::cout << "Async read error: " << ec.message() << std::endl;
                     return;
                 }
+                const std::string &str_request = in_message().substr(0, len);
+                json json_request = json::parse(str_request);
+                std::string resource = json_request.at("resource");
+                std::cout << "Resource: " << resource << std::endl;
+                Handler handler = ApplicationController::get_handler(resource);
+                handler(json_request);
+                do_read();
             });
 }
 
@@ -171,5 +177,21 @@ namespace application_context {
         if (subscribers.empty()) {
             get_multicast_clients().erase(resource_id);
         }
+    }
+}
+
+Handler ApplicationController::get_handler(std::string const & resource) {
+    if (resource.find("projects get")) {
+        return [&](json & j) {
+
+        };
+    } else if (resource.find("tasks get")) {
+        return [&](json & j) {
+
+        };
+    } else if (resource.find("projects get_all")) {
+        [&](json & j) {
+
+        };
     }
 }

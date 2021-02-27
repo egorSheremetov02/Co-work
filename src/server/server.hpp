@@ -20,8 +20,11 @@
 #include "src/shared/structures.h"
 
 using asio::ip::tcp;
+using nlohmann::json;
 
-using AuthRequest = RequestFormat<User>;
+using AuthRequest = RequestFormat<AuthReqDTO>;
+
+using Handler = std::function<void(json &)>;
 
 struct AuthService {
     [[nodiscard]] std::optional<User> validate(const AuthReqDTO &payload) const;
@@ -99,5 +102,9 @@ namespace application_context {
 
     }
 }
+
+struct ApplicationController {
+    static Handler get_handler(std::string const & resource);
+};
 
 #endif //CO_WORK_SERVER_HPP
