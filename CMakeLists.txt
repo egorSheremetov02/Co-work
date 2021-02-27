@@ -26,10 +26,10 @@ FetchContent_Declare(json
         UPDATE_DISCONNECTED 1)
 
 FetchContent_GetProperties(json)
-if(NOT json_POPULATED)
+if (NOT json_POPULATED)
     FetchContent_Populate(json)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+endif ()
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DKRESTINA")
@@ -53,7 +53,14 @@ add_executable(tests src/client/test.cpp)
 
 #add_executable(db-test DB_test/a.cpp)
 
-add_executable(broadcast-server src/server/broadcast_server.cpp src/server/server.cpp DB_test/a.cpp)
+add_executable(broadcast-server
+        src/server/application_context.cpp
+        src/server/auth_service.cpp
+        src/server/tcp_connection.cpp
+        src/server/controller.cpp
+        src/server/broadcast_server.cpp
+        src/server/server.cpp
+        DB_test/a.cpp)
 
 #target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
 target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
