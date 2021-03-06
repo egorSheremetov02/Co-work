@@ -1,24 +1,11 @@
 //
 // Created by egor on 27.02.2021.
 //
+#include <nlohmann/json.hpp>
 #include "controller.h"
+#include "handler_registration.h"
 
-Handler ApplicationController::get_handler(std::string const & resource) {
-    if (resource.find("projects get")) {
-        return [&](json & j) {
-
-        };
-    } else if (resource.find("tasks get")) {
-        return [&](json & j) {
-
-        };
-    } else if (resource.find("projects get_all")) {
-        return [&](json & j) {
-
-        };
-    }
-    return [&](json & j) {
-
-    };
+Handler & ApplicationController::get_handler(std::string const & resource) {
+    return get_handler_storage()[resource];
 }
 
