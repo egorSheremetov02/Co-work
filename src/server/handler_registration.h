@@ -23,7 +23,7 @@ HandlerStorage & get_handler_storage() {
         InitHandler##line() {                                                   \
         get_handler_storage()[resource] = handler;                              \
         }                                                                       \
-    } init_handler_##line;
+    } init_handler_##line
 
 // NOLINTNEXTLINE: cppcoreguidelines-macro-usage
 #define REGISTER_HANDLER_INTERNAL1(line, resource, handler)                     \

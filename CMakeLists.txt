@@ -60,6 +60,7 @@ add_executable(broadcast-server
         src/server/controller.cpp
         src/server/broadcast_server.cpp
         src/server/server.cpp
+        src/server/task_handler.cpp
         DB_test/a.cpp)
 
 #target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
