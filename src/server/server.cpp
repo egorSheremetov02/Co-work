@@ -18,7 +18,9 @@ void ConnectionAcceptor::do_accept() {
 }
 
 void ConnectionAcceptor::handle_accept(TcpConnection::pointer connection) {
+#ifdef LOGGING
     std::cout << "Accepted connection" << std::endl;
+#endif
     do_accept();
     // Here we gonna authenticate our user...
     authenticate(connection);

@@ -12,10 +12,7 @@
 
 using HandlerStorage = std::unordered_map<std::string, Handler>;
 
-HandlerStorage & get_handler_storage() {
-    static auto *storage = new HandlerStorage();
-    return *storage;
-}
+HandlerStorage & get_handler_storage();
 
 #define REGISTER_HANDLER_INTERNAL(resource, handler, line)                      \
                                                                                 \

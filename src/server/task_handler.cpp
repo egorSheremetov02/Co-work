@@ -9,7 +9,16 @@
 using nlohmann::json;
 
 void get_all_tasks_handler(json & j) {
+#ifdef LOGGING
     std::cout << "Get all tasks handler" << std::endl;
+#endif
 }
 
-REGISTER_HANDLER("task get all", get_all_tasks_handler);
+void create_task_handler(json & j) {
+#ifdef LOGGING
+    std::cout << "Create new task" << std::endl;
+#endif
+}
+
+REGISTER_HANDLER("task get_all", get_all_tasks_handler);
+REGISTER_HANDLER("task create", create_task_handler);

@@ -7,6 +7,9 @@
 
 int main() {
     asio::io_context service;
+#ifdef LOGGING
+    std::cout << "Starting server..." << std::endl;
+#endif
     ConnectionAcceptor server(service);
     service.run();
 }

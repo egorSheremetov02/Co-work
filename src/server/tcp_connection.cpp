@@ -28,15 +28,18 @@ void TcpConnection::do_read() {
             [&, this, connection = shared_from_this()](asio::error_code const &ec, std::size_t len) mutable {
                 if (ec) {
                     connection->socket().close();
+#ifdef LOGGING
                     std::cout << "Async read error: " << ec.message() << std::endl;
+#endif
                     return;
                 }
                 const std::string &str_request = in_message().substr(0, len);
                 json json_request = json::parse(str_request);
                 std::string resource = json_request.at("resource");
+#ifdef LOGGING
                 std::cout << "Resource: " << resource << std::endl;
-                Handler handler = ApplicationController::get_handler(resource);
-                handler(json_request);
+#endif
+                ApplicationController::get_handler(resource)(json_request);
                 do_read();
             });
 }
@@ -72,10 +75,14 @@ void authentication_handler(std::size_t len, TcpConnection::pointer &connection)
 
     std::optional<User> opt_user = auth.validate(auth_request.data);
     if (!opt_user.has_value()) {
+#ifdef LOGGING
         std::cout << "Invalid auth token: " << auth_request_str << std::endl;
+#endif
         auth_response.error = "No user with such credentials was found";
     } else {
+#ifdef LOGGING
         std::cout << "Successfully authenticated" << std::endl;
+#endif
         auth_response.data = opt_user.value();
     }
     write_auth_response(auth_response, connection);
@@ -86,8 +93,10 @@ void authenticate(TcpConnection::pointer &connection) {
             asio::buffer(connection->in_message().data(), connection->in_message().size()),
             [&, connection](asio::error_code const &ec, std::size_t len) mutable {
                 if (ec) {
+#ifdef LOGGING
                     std::cout << "Error while reading client" << std::endl;
                     std::cout << ec.message() << std::endl;
+#endif
                     connection->socket().close();
                     return;
                 }
@@ -103,11 +112,18 @@ void write_auth_response(ResponseFormat<User> const &auth_response, TcpConnectio
             [&, connection, auth_response](asio::error_code const &ec,
                                            std::size_t len) mutable {
                 if (ec) {
+#ifdef LOGGING
                     std::cout << "Error while writing to client" << std::endl;
+#endif
                     return;
                 }
+#ifdef LOGGING
                 std::cout << "Wrote data to client: " << auth_response.data.account_name << std::endl;
+#endif
                 if (auth_response.error.empty()) {
+#ifdef LOGGING
+                    std::cout << "Attempt to read client" << std::endl;
+#endif
                     connection->do_read();
                 } else {
                     connection->socket().close();
