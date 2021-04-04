@@ -11,3 +11,11 @@ _deps
 Testing
 CMakeFiles
 CMakeCache.txt
+date/ci/
+date/compile_fail.sh
+date/.gitignore
+date/.travis.yml
+date/CMakeLists.txt
+date/LICENSE.txt
+date/README.md
+date/test/

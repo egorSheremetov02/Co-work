@@ -39,6 +39,23 @@ inline void from_json(nlohmann::json const &j, Task &task) {
     j.at("status").get_to(task.urgency);
 }
 
+inline void to_json(nlohmann::json &j, Task const &task) {
+    j = nlohmann::json{{"id",          task.id},
+                       {"name",        task.name},
+                       {"date",        task.date},
+                       {"description", task.description},
+                       {"project_id",  task.project_id},
+                       {"urgency",     task.urgency},
+                       {"status",      task.status}};
+//    j.at("id").get_to(task.id);
+//    j.at("name").get_to(task.name);
+//    j.at("description").get_to(task.description);
+//    j.at("date").get_to(task.date);
+//    j.at("project_id").get_to(task.project_id);
+//    j.at("urgency").get_to(task.urgency);
+//    j.at("status").get_to(task.urgency);
+}
+
 inline void from_json(nlohmann::json const &j, AuthReqDTO &authDTO) {
     j.at("password").get_to(authDTO.password);
     j.at("login").get_to(authDTO.login);

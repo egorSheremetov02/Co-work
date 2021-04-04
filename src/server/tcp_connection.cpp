@@ -39,7 +39,7 @@ void TcpConnection::do_read() {
 #ifdef LOGGING
                 std::cout << "Resource: " << resource << std::endl;
 #endif
-                ApplicationController::get_handler(resource)(json_request);
+                ApplicationController::get_handler(resource)(json_request, connection);
                 do_read();
             });
 }

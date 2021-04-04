@@ -16,22 +16,34 @@ using nlohmann::json;
 std::vector<std::string> resources;
 asio::io_service service;
 tcp::socket socket1(service);
-std::string auth_response;
+std::string response;
 
 struct InitMap {
     InitMap() {
-        resources.emplace_back("task get_all");
+        if (resources.empty()) {
+            resources.emplace_back("task get_all");
+            resources.emplace_back("task create");
+        }
     }
 };
 
+void do_write();
+
 void do_read() {
+    response.resize(1024);
+    socket1.async_read_some(asio::buffer(response.data(), response.size()), [&](asio::error_code const & ec, std::size_t len) {
+        std::cout << response.substr(0, len) << std::endl;
+        do_write();
+    });
+}
+
+void do_write() {
     std::cout << "Choose resource you want to connect to:" << std::endl;
     for (int i = 0; i < resources.size(); ++i) {
         std::cout << '\t' << i << ' ' << resources[i] << std::endl;
     }
     int i;
     std::cin >> i;
-    --i;
     RequestFormat<User> test_request = {
             resources[i],
             {}
@@ -42,10 +54,14 @@ void do_read() {
         asio::buffer(res.data(), res.size()),
         [&](asio::error_code const &ec,
             std::size_t) {
-            if (ec) return;
-            std::cout
-                    << "Successfully wrote data to stream"
-                    << std::endl;
+            if (ec)  {
+                std::cout << ec.message() << std::endl;
+            } else {
+                std::cout
+                        << "Successfully wrote data to stream"
+                        << std::endl;
+                do_read();
+            }
         });
 }
 void authenticate() {
@@ -68,20 +84,20 @@ void authenticate() {
         socket1.async_write_some(asio::buffer(str_auth_request.data(), str_auth_request.size()),
          [&](asio::error_code const &ec, std::size_t) {
              if (ec) return;
-             auth_response.resize(1024);
+             response.resize(1024);
              socket1.async_read_some(
-             asio::buffer(auth_response.data(), auth_response.size()),
+             asio::buffer(response.data(), response.size()),
              [&](asio::error_code const &ec, std::size_t len) {
                  std::cout << "Successfully read data from server: "
-                           << auth_response << " of size " << len
+                           << response << " of size " << len
                            << std::endl;
                  json json_auth_response = json::parse(
-                         auth_response.substr(0, len));
+                         response.substr(0, len));
                  auto response = json_auth_response.get<ResponseFormat<User>>();
                  if (response.error.empty()) {
                      std::cout << "Successfully authenticated to server"
                                << std::endl;
-                     do_read();
+                     do_write();
                  } else {
                      socket1.close();
                      std::cout
@@ -95,10 +111,10 @@ void authenticate() {
 }
 
 int main() {
-
     const asio::ip::basic_endpoint<tcp> &endpoint = tcp::endpoint(asio::ip::address::from_string("127.0.0.1"),
                                                                   3030);
 
+    [[maybe_unused]] InitMap init;
     authenticate();
 
     service.run();

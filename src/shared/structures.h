@@ -1,5 +1,6 @@
 #ifndef CO_WORK_STRUCTURES_H
 #define CO_WORK_STRUCTURES_H
+
 #include <string>
 
 enum Roles {
@@ -45,5 +46,16 @@ struct CreateAction : Action {
 
 struct CommentAction : Action {
     std::string text_of_comment;
+};
+
+struct TaskCreateDTO {
+    std::string name;
+    std::string description;
+    uint year;
+    uint month;
+    uint day;
+    uint hour;
+    uint second;
+    std::string timezone;
 };
 #endif //CO_WORK_STRUCTURES_H

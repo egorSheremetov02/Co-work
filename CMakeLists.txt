@@ -8,6 +8,12 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(.)
 
+include_directories(date/include)
+
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
+link_libraries(${CURL_LIBRARIES})
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -45,11 +51,12 @@ endif ()
 find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
 
-add_executable(server src/server/main_server.cpp)
+#add_executable(server src/server/main_server.cpp)
 
+# firstly put date (clone from github) in adjacent folder to project's one
 add_executable(client src/client/test_client.cpp)
 
-add_executable(tests src/client/test.cpp)
+add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
 #add_executable(db-test DB_test/a.cpp)
 
@@ -77,10 +84,14 @@ add_executable(log-broadcast-server
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
 target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
+#target_link_libraries(log-broadcast-server PUBLIC date/include)
 
 #target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
 target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
+#target_link_libraries(broadcast-server PUBLIC date/include)
 
 target_link_libraries(tests PRIVATE nlohmann_json::nlohmann_json)
+#target_link_libraries(tests PUBLIC date/include)
 
 target_link_libraries(client PRIVATE nlohmann_json::nlohmann_json)
+#target_link_libraries(client PUBLIC date/include)
