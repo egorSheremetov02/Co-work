@@ -51,11 +51,11 @@ struct CommentAction : Action {
 struct TaskCreateDTO {
     std::string name;
     std::string description;
-    uint year;
-    uint month;
-    uint day;
-    uint hour;
-    uint second;
+    uint32_t year;
+    uint32_t month;
+    uint32_t day;
+    uint32_t hour;
+    uint32_t second;
     std::string timezone;
 };
 #endif //CO_WORK_STRUCTURES_H
