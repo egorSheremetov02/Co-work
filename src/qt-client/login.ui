@@ -60,6 +60,13 @@
       </layout>
      </item>
      <item>
+      <widget class="QLabel" name="label_errors">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButton_logIn">
        <property name="text">
         <string>Log in</string>
