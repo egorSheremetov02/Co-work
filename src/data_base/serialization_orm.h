@@ -1,0 +1,112 @@
+#ifndef CO_WORK_SERIALIZATION_ORM_H
+#define CO_WORK_SERIALIZATION_ORM_H
+
+#include "../shared/structures.h"
+#include <pqxx/pqxx>
+
+inline void from_orm(pqxx::row const &row, User &user) {
+  user.id=row["id"].as<int>();
+  user.account_name=row["account_name"].c_str();
+  user.full_name=row["full_name"].c_str();
+  //user.role_in_system=row["role_in_system"].c_str();
+
+}
+/*
+inline void to_json(nlohmann::json &j, Project const &project) {
+    j = nlohmann::json{{"id",   project.id},
+                       {"name", project.name},
+                       {"date", project.date}};
+}
+
+inline void from_json(nlohmann::json const &j, Task &task) {
+    j.at("id").get_to(task.id);
+    j.at("name").get_to(task.name);
+    j.at("description").get_to(task.description);
+    j.at("date").get_to(task.date);
+    j.at("project_id").get_to(task.project_id);
+    j.at("urgency").get_to(task.urgency);
+    j.at("status").get_to(task.urgency);
+}
+
+inline void to_json(nlohmann::json &j, Task const &task) {
+    j = nlohmann::json{{"id",          task.id},
+                       {"name",        task.name},
+                       {"date",        task.date},
+                       {"description", task.description},
+                       {"project_id",  task.project_id},
+                       {"urgency",     task.urgency},
+                       {"status",      task.status}};
+//    j.at("id").get_to(task.id);
+//    j.at("name").get_to(task.name);
+//    j.at("description").get_to(task.description);
+//    j.at("date").get_to(task.date);
+//    j.at("project_id").get_to(task.project_id);
+//    j.at("urgency").get_to(task.urgency);
+//    j.at("status").get_to(task.urgency);
+}
+
+inline void from_json(nlohmann::json const &j, AuthReqDTO &authDTO) {
+    j.at("password").get_to(authDTO.password);
+    j.at("login").get_to(authDTO.login);
+}
+
+inline void to_json(nlohmann::json &j, AuthReqDTO const &authDTO) {
+    j = nlohmann::json{{"password", authDTO.password},
+                       {"login",    authDTO.login}};
+}
+
+
+template<typename T>
+inline void to_json(nlohmann::json &j, const RequestFormat<T> &request) {
+    j = nlohmann::json{{"resource", request.resource},
+                       {"data",     request.data}};
+}
+
+template<typename T>
+inline void to_json(nlohmann::json &j, const AuthorizedRequestFormat<T> &request) {
+    j = nlohmann::json{{"resource", request.resource},
+                       {"data",     request.data},
+                       {"user",     request.user},
+                       {"token",    request.token}};
+}
+
+template<typename T>
+inline void from_json(nlohmann::json const &j, RequestFormat<T> &request) {
+    j.at("data").get_to(request.data);
+    j.at("resource").get_to(request.resource);
+}
+
+template<typename T>
+inline void from_json(nlohmann::json const &j, AuthorizedRequestFormat<T> &request) {
+    from_json<T>(j, static_cast<RequestFormat<T> &>(request));
+    j.at("user").get_to(request.user);
+    j.at("token").get_to(request.token);
+}
+
+inline void to_json(nlohmann::json &j, const User &user) {
+    j = nlohmann::json{{"id",             user.id},
+                       {"account_name",   user.account_name},
+                       {"full_name",      user.full_name},
+                       {"role_in_system", user.role_in_system}};
+}
+
+inline void from_json(nlohmann::json const &j, User &user) {
+    j.at("id").get_to(user.id);
+    j.at("account_name").get_to(user.account_name);
+    j.at("full_name").get_to(user.full_name);
+    j.at("role_in_system").get_to(user.role_in_system);
+}
+
+template<typename T>
+inline void to_json(nlohmann::json &j, const ResponseFormat<T> &request) {
+    j = nlohmann::json{{"error", request.error},
+                       {"data",  request.data}};
+}
+
+template<typename T>
+inline void from_json(nlohmann::json const &j, ResponseFormat<T> &request) {
+    j.at("data").get_to(request.data);
+    j.at("error").get_to(request.error);
+}*/
+
+#endif //CO_WORK_SERIALIZATION_ORM_H
