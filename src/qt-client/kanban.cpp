@@ -63,23 +63,19 @@ kanban::kanban(QWidget *parent)
     list_completed->setModel(new QStringListModel());
 
     list_to_do->setStyleSheet
-    ("QListView { font-size: 20pt; font-weight: bold; }"
-     "QListView::item { background-color: #E74C3C; padding: 10%;"
-             "border: 1px solid #C0392B; }"
-             "QListView::item::hover { background-color: #C0392B }");
+    ("QListView { font-size: 20pt; background-color: #F3E3FC; border: none;  border-radius: 12px;}"
+     "QListView::item { background-color: #d4bee1; padding: 10%; border-radius: 12px;}"
+     "QListView::item::hover { background-color: #ddc7ea }");
 
+    list_in_progress->setStyleSheet
+    ("QListView { font-size: 20pt; background-color: #F5EDBA; border:none;  border-radius: 12px;}"
+     "QListView::item { background-color: #e4dba3; padding: 10%; border-radius: 12px;}"
+     "QListView::item::hover { background-color: #e6deab }");
 
-            list_in_progress->setStyleSheet
-            ("QListView { font-size: 20pt; font-weight: bold; }"
-             "QListView::item { background-color: #E74C3C; padding: 10%;"
-             "border: 1px solid #C0392B; }"
-             "QListView::item::hover { background-color: #FFC618 }");
-
-            list_completed->setStyleSheet
-            ("QListView { font-size: 20pt; font-weight: bold; }"
-             "QListView::item { background-color: #2ECC71; padding: 10%;"
-             "border: 1px solid #27AE60; }"
-             "QListView::item::hover { background-color: #27AE60 }");
+     list_completed->setStyleSheet
+     ("QListView { font-size: 20pt; background-color: #C8F6D8; border: none;  border-radius: 12px;}"
+      "QListView::item { background-color: #A4C7AF; padding: 10%; border-radius: 12px;}"
+      "QListView::item::hover { background-color: #b3dac0 }");
 
     //создаем события в тулбаре(добавление и удаление)
 
@@ -90,7 +86,52 @@ kanban::kanban(QWidget *parent)
     //ActAdd->setIcon(QIcon(":/resources/add.png"));
     connect(action_add, &QAction::triggered, this, &kanban::on_add);
 
+    //сигналы для отправки сообщений на сервер о перемещении объектов в канбане
+    connect(list_completed -> model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(task_completed()));
+    connect(list_in_progress -> model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(task_in_progress()));
+    connect(list_to_do -> model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(task_in_to_do()));
+
+    connect(list_completed -> model(), SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removed_from_completed()));
+    connect(list_in_progress -> model(), SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removed_from_in_progress()));
+    connect(list_to_do -> model(), SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removed_from_to_do()));
+
     tool_bar->addAction(action_add);
+}
+
+void kanban::task_completed()
+{
+//    QLabel *l = new QLabel("task completed");
+//    l -> show();
+}
+
+void kanban::task_in_progress()
+{
+//    QLabel *l = new QLabel("task is in progress");
+//    l -> show();
+}
+
+void kanban::task_in_to_do()
+{
+//    QLabel *l = new QLabel("task is in to-do");
+//    l -> show();
+}
+
+void kanban::removed_from_completed()
+{
+//    QLabel *l = new QLabel("task removed from completed");
+//    l -> show();
+}
+
+void kanban::removed_from_in_progress()
+{
+//    QLabel *l = new QLabel("task removed from in progress");
+//    l -> show();
+}
+
+void kanban::removed_from_to_do()
+{
+//    QLabel *l = new QLabel("task removed from to-do");
+//    l -> show();
 }
 
 void kanban::on_add()
