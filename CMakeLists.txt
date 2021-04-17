@@ -37,8 +37,10 @@ if (NOT json_POPULATED)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif ()
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DKRESTINA")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DIRINA")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -L/usr/local/opt/libpq/lib -I/usr/local/opt/libpq/include -L/usr/local/opt/libpqxx/lib -I/usr/local/opt/libpqxx/include -lpq -DIRINA")
 
 if (LINUX)
     message(STATUS ">>> Linux")
@@ -59,6 +61,8 @@ add_executable(client src/client/test_client.cpp)
 add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
 #add_executable(db-test DB_test/a.cpp)
+
+add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp)
 
 add_executable(broadcast-server
         src/server/application_context.cpp
@@ -87,6 +91,7 @@ target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json 
 #target_link_libraries(log-broadcast-server PUBLIC date/include)
 
 #target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
+target_link_libraries(orm-test ${PQXX_LIB} ${PQ_LIB})
 target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
 #target_link_libraries(broadcast-server PUBLIC date/include)
 
