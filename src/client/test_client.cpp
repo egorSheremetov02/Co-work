@@ -23,6 +23,7 @@ struct InitMap {
         if (resources.empty()) {
             resources.emplace_back("task get_all");
             resources.emplace_back("task create");
+            resources.emplace_back("task edit");
         }
     }
 };
@@ -31,10 +32,11 @@ void do_write();
 
 void do_read() {
     response.resize(1024);
-    socket1.async_read_some(asio::buffer(response.data(), response.size()), [&](asio::error_code const & ec, std::size_t len) {
-        std::cout << response.substr(0, len) << std::endl;
-        do_write();
-    });
+    socket1.async_read_some(asio::buffer(response.data(), response.size()),
+                            [&](asio::error_code const &ec, std::size_t len) {
+                                std::cout << response.substr(0, len) << std::endl;
+                                do_write();
+                            });
 }
 
 void do_write() {
@@ -42,28 +44,76 @@ void do_write() {
     for (int i = 0; i < resources.size(); ++i) {
         std::cout << '\t' << i << ' ' << resources[i] << std::endl;
     }
-    int i;
+    int i = 0;
     std::cin >> i;
-    RequestFormat<User> test_request = {
-            resources[i],
-            {}
-    };
-    json json_project_request = test_request;
-    std::string res = json_project_request.dump();
-    socket1.async_write_some(
-        asio::buffer(res.data(), res.size()),
-        [&](asio::error_code const &ec,
-            std::size_t) {
-            if (ec)  {
-                std::cout << ec.message() << std::endl;
-            } else {
-                std::cout
-                        << "Successfully wrote data to stream"
-                        << std::endl;
-                do_read();
-            }
-        });
+
+    if (resources[i] == "task create") {
+        RequestFormat<TaskCreateDTO> task_create_request = {
+                resources[i],
+                {"test task " + std::to_string(rand()),
+                 "task description " + std::to_string(rand()),
+                 9,
+                 "in progress"}
+        };
+        json json_project_request = task_create_request;
+        std::cout << json_project_request.dump(4) << std::endl;
+        std::string res = json_project_request.dump();
+        socket1.async_write_some(
+                asio::buffer(res.data(), res.size()),
+                [&](asio::error_code const &ec,
+                    std::size_t) {
+                    if (ec) {
+                        std::cout << ec.message() << std::endl;
+                    } else {
+                        std::cout
+                                << "Successfully wrote data to stream"
+                                << std::endl;
+                        do_read();
+                    }
+                });
+    } else if (resources[i] == "task get_all") {
+        RequestFormat<int> task_get_all_request = {
+                resources[i]
+        };
+        json json_project_request = task_get_all_request;
+        std::cout << json_project_request.dump(4) << std::endl;
+        std::string res = json_project_request.dump();
+        socket1.async_write_some(
+                asio::buffer(res.data(), res.size()),
+                [&](asio::error_code const &ec,
+                    std::size_t) {
+                    if (ec) {
+                        std::cout << ec.message() << std::endl;
+                    } else {
+                        std::cout
+                                << "Successfully wrote data to stream"
+                                << std::endl;
+                        do_read();
+                    }
+                });
+    } else if (resources[i] == "task edit") {
+        json json_project_request;
+        json_project_request["resource"] = "task edit";
+        json_project_request["task_id"] = 1;
+        std::string res = json_project_request.dump();
+        socket1.async_write_some(
+                asio::buffer(res.data(), res.size()),
+                [&](asio::error_code const &ec,
+                    std::size_t) {
+                    if (ec) {
+                        std::cout << ec.message() << std::endl;
+                    } else {
+                        std::cout
+                                << "Successfully wrote data to stream"
+                                << std::endl;
+                        do_read();
+                    }
+                });
+    } else {
+        assert(false);
+    }
 }
+
 void authenticate() {
     const asio::ip::basic_endpoint<tcp> &endpoint = tcp::endpoint(asio::ip::address::from_string("127.0.0.1"),
                                                                   3030);
@@ -82,38 +132,35 @@ void authenticate() {
         json j = auth_request;
         std::string str_auth_request = j.dump();
         socket1.async_write_some(asio::buffer(str_auth_request.data(), str_auth_request.size()),
-         [&](asio::error_code const &ec, std::size_t) {
-             if (ec) return;
-             response.resize(1024);
-             socket1.async_read_some(
-             asio::buffer(response.data(), response.size()),
-             [&](asio::error_code const &ec, std::size_t len) {
-                 std::cout << "Successfully read data from server: "
-                           << response << " of size " << len
-                           << std::endl;
-                 json json_auth_response = json::parse(
-                         response.substr(0, len));
-                 auto response = json_auth_response.get<ResponseFormat<User>>();
-                 if (response.error.empty()) {
-                     std::cout << "Successfully authenticated to server"
-                               << std::endl;
-                     do_write();
-                 } else {
-                     socket1.close();
-                     std::cout
-                             << "Unauthorized auth_request to authorized resource"
-                             << std::endl;
-                     authenticate();
-                 }
-             });
-         });
+                                 [&](asio::error_code const &ec, std::size_t) {
+                                     if (ec) return;
+                                     response.resize(1024);
+                                     socket1.async_read_some(
+                                             asio::buffer(response.data(), response.size()),
+                                             [&](asio::error_code const &ec, std::size_t len) {
+                                                 std::cout << "Successfully read data from server: "
+                                                           << response << " of size " << len
+                                                           << std::endl;
+                                                 json json_auth_response = json::parse(
+                                                         response.substr(0, len));
+                                                 auto response = json_auth_response.get<ResponseFormat<User>>();
+                                                 if (response.error.empty()) {
+                                                     std::cout << "Successfully authenticated to server"
+                                                               << std::endl;
+                                                     do_write();
+                                                 } else {
+                                                     socket1.close();
+                                                     std::cout
+                                                             << "Unauthorized auth_request to authorized resource"
+                                                             << std::endl;
+                                                     authenticate();
+                                                 }
+                                             });
+                                 });
     });
 }
 
 int main() {
-    const asio::ip::basic_endpoint<tcp> &endpoint = tcp::endpoint(asio::ip::address::from_string("127.0.0.1"),
-                                                                  3030);
-
     [[maybe_unused]] InitMap init;
     authenticate();
 

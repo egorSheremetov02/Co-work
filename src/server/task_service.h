@@ -6,22 +6,16 @@
 #define CO_WORK_TASK_SERVICE_H
 
 #include "../shared/structures.h"
+#include <vector>
 #include <nlohmann/json.hpp>
 
 struct TaskService {
-    Task create_task() {
-        return {
-                rand() % 1e9,
-                "test task",
-                "test description",
-                "01.09.2021",
-                rand() % 1e9,
-                9,
-                "in progress"
-        };
-    }
+    static Task create_task(TaskCreateDTO const &);
 
-    void
+    static std::vector<Task> &get_tasks();
+
+    static Task edit_task(uint32_t);
+
 };
 
 #endif //CO_WORK_TASK_SERVICE_H

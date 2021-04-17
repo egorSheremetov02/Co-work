@@ -74,7 +74,7 @@ void authentication_handler(std::size_t len, TcpConnection::pointer &connection)
     ResponseFormat<User> auth_response;
 
     std::optional<User> opt_user = auth.validate(auth_request.data);
-    if (!opt_user.has_value()) {
+    if (!opt_user) {
 #ifdef LOGGING
         std::cout << "Invalid auth token: " << auth_request_str << std::endl;
 #endif
@@ -110,7 +110,7 @@ void write_auth_response(ResponseFormat<User> const &auth_response, TcpConnectio
     connection->socket().async_write_some(
             asio::buffer(connection->out_message().data(), connection->out_message().size()),
             [&, connection, auth_response](asio::error_code const &ec,
-                                           std::size_t len) mutable {
+                                           std::size_t /*len*/) mutable {
                 if (ec) {
 #ifdef LOGGING
                     std::cout << "Error while writing to client" << std::endl;

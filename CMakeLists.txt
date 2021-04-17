@@ -69,7 +69,7 @@ add_executable(broadcast-server
         src/server/server.cpp
         src/server/task_handler.cpp
         src/server/handler_registration.cpp
-        DB_test/a.cpp)
+        DB_test/a.cpp src/server/task_service.cpp)
 
 add_executable(log-broadcast-server
         src/server/application_context.cpp
@@ -80,7 +80,7 @@ add_executable(log-broadcast-server
         src/server/server.cpp
         src/server/task_handler.cpp
         src/server/handler_registration.cpp
-        DB_test/a.cpp)
+        DB_test/a.cpp src/server/task_service.cpp)
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
 target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})

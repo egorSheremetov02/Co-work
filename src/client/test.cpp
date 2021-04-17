@@ -35,4 +35,7 @@ int main() {
         std::cout << format("%F %Z", local) << '\n';
         std::cout << format("%F %T %Z", utc2) << '\n';
     }
+    {
+
+    }
 }

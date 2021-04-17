@@ -1,4 +1,4 @@
-#include "../shared/db_connection.h"
+#include "db_connection.h"
 
 int main(){
   //std::cout<<auth("admin","qwerty")->full_name<<std::endl;

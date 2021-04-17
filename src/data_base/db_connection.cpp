@@ -4,7 +4,7 @@
 #include <pqxx/pqxx>
 #include <string>
 #include <vector>
-#include "../shared/db_connection.h"
+#include "db_connection.h"
 
 std::optional<User> load_user(const pqxx::result &R) {
   if (R.size() == 0)

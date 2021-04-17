@@ -1,6 +1,6 @@
 #ifndef CO_WORK_DB_CONNECTION_H
 #define CO_WORK_DB_CONNECTION_H
-#include "../shared/structures.h"
+#include "src/shared/structures.h"
 #include <iostream>
 #include <optional>
 #include <pqxx/pqxx>

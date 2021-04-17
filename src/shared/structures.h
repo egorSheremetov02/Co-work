@@ -17,7 +17,7 @@ struct Task {
     std::string description;
     std::string date;
     unsigned int project_id;
-    unsigned int urgency;
+    uint8_t urgency;
     std::string status;
 };
 
@@ -51,11 +51,7 @@ struct CommentAction : Action {
 struct TaskCreateDTO {
     std::string name;
     std::string description;
-    uint32_t year;
-    uint32_t month;
-    uint32_t day;
-    uint32_t hour;
-    uint32_t second;
-    std::string timezone;
+    uint8_t urgency{};
+    std::string status;
 };
 #endif //CO_WORK_STRUCTURES_H
