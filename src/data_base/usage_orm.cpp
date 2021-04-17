@@ -5,11 +5,12 @@
 #include <string>
 #include <vector>
 #include "orm.h"
+#include "db_connection.h"
 //#include "../shared/db_connection.h"
 
 int main(){
 
-db::Users users("users");
+/*db::Users users("users");
 db::Tasks tasks("tasks");
 db::Projects projs("projects");
 
@@ -37,7 +38,10 @@ Task tt=tasks.select_where(tasks.id==14)[0];
 tasks.update(tt.id,tasks.description == "afa");
 std::cout<<"aaa\n";
 std::vector<Task> b4=tasks.select_where(tasks.project_id==p.id);
-
+*/
 //std::vector<Project> pp=projs.select_all();
+DataBase databasa;
+Task t{0,"Task_task","Description","2021-04-17 06:05:05",3,7,"status"};
+int tt=databasa.create_task(t);
 
 }
