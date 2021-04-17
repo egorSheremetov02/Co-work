@@ -19,6 +19,12 @@ public:
 
 private slots:
     void on_add();
+    void task_completed();
+    void task_in_progress();
+    void task_in_to_do();
+    void removed_from_completed();
+    void removed_from_in_progress();
+    void removed_from_to_do();
     //void onRemove();
 private:
     Ui::kanban *ui;
