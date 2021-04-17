@@ -56,7 +56,6 @@ void do_write() {
                  "in progress"}
         };
         json json_project_request = task_create_request;
-        std::cout << json_project_request.dump(4) << std::endl;
         std::string res = json_project_request.dump();
         socket1.async_write_some(
                 asio::buffer(res.data(), res.size()),

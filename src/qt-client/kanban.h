@@ -25,9 +25,12 @@ private slots:
     void removed_from_completed();
     void removed_from_in_progress();
     void removed_from_to_do();
+    void on_button_pushed();
+    void on_input_text_edited(QString const &input);
     //void onRemove();
 private:
     Ui::kanban *ui;
+    QString input;
 
     QListView* list_to_do = nullptr;
     QListView* list_in_progress = nullptr;

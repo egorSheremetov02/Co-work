@@ -1,9 +1,19 @@
 #include "kanban.h"
 #include "./ui_kanban.h"
 
+#include "asio.hpp"
+#include "../shared/structures.h"
+#include "../shared/serialization.h"
+#include <nlohmann/json.hpp>
 #include <QLabel>
 #include <QToolBar>
 #include <QBoxLayout>
+#include <QLineEdit>
+#include <QPushButton>
+
+using asio::ip::tcp;
+
+tcp::socket &get_socket();
 
 kanban::kanban(QWidget *parent)
     : QMainWindow(parent)
@@ -16,6 +26,20 @@ kanban::kanban(QWidget *parent)
 
     QVBoxLayout *win_layout = new QVBoxLayout();
     window->setLayout(win_layout);
+
+    // For testing purposes mostly
+    QHBoxLayout *input_layout = new QHBoxLayout();
+    win_layout->addLayout(input_layout);
+    QLineEdit *add_task_input = new QLineEdit(this);
+    add_task_input->setMaximumHeight(25);
+    input_layout->addWidget(add_task_input);
+    connect(add_task_input, &QLineEdit::textChanged, this, &kanban::on_input_text_edited);
+    QPushButton *submit_add_task = new QPushButton(this);
+    submit_add_task->setText("Add Task");
+    input_layout->addWidget(submit_add_task);
+    connect(submit_add_task, &QPushButton::clicked, this, &kanban::on_button_pushed);
+//    input_layout->
+
 
     QHBoxLayout *label_layout = new QHBoxLayout();
     win_layout->addLayout(label_layout);
@@ -98,6 +122,10 @@ kanban::kanban(QWidget *parent)
     tool_bar->addAction(action_add);
 }
 
+void kanban::on_input_text_edited(QString const &input_text) {
+    input = input_text;
+}
+
 void kanban::task_completed()
 {
 //    QLabel *l = new QLabel("task completed");
@@ -141,6 +169,24 @@ void kanban::on_add()
                 list_to_do->model()->rowCount() - 1, 0);
 
     list_to_do->edit(oIndex);
+}
+
+void kanban::on_button_pushed() {
+    QLabel *l = new QLabel("task added in todo: " + input);
+    l -> show();
+    TaskCreateDTO taskDTO;
+    taskDTO.description = input.toStdString();
+    taskDTO.name = "From Qt-client";
+    taskDTO.urgency = 10;
+    taskDTO.status = "TODO";
+    RequestFormat<TaskCreateDTO> task_create_request = {
+                    "task create",
+                    taskDTO
+            };
+    nlohmann::json json_task_create = task_create_request;
+    std::string request = json_task_create.dump();
+
+    get_socket().write_some(asio::buffer(request.data(), request.size()));
 }
 
 
