@@ -14,7 +14,10 @@ struct DataBase{
   db::Projects projs;
   DataBase();
 
-  int create_task(Task t);
+  int create_task(Task const &t);
+
+  std::optional<User> auth(std::string login, std::string password);
+
 };
 
 #endif //CO_WORK_DB_CONNECTION_H

@@ -9,6 +9,10 @@
 #include <vector>
 #include "serialization_orm.h"
 
+#define GET_RES_STR(token) #token
+
+#define CONNECTION_STRING(USER) GET_RES_STR(dbname=co-work_db user=USER)
+
 namespace db {
 
   struct Expression {
@@ -46,14 +50,14 @@ namespace db {
         T tmp;
         from_orm(row,tmp);
         data.push_back(tmp);
-        out(tmp);
+      //  out(tmp);
       }
       return data;
     }
 
     std::vector<T> select_all(){
       try{
-      pqxx::connection C("dbname=co-work_db user=co-work");
+      pqxx::connection C(CONNECTION_STRING(DBUSER));
       pqxx::work W{C};
       C.prepare("select","SELECT * FROM "+table);
       pqxx::result R{W.exec_prepared("select")};
@@ -66,7 +70,7 @@ namespace db {
 
     std::vector<T> select_where(Expression request){
       try{
-      pqxx::connection C("dbname=co-work_db user=co-work");
+      pqxx::connection C(CONNECTION_STRING(DBUSER));
       pqxx::work W{C};
       C.prepare("select","SELECT * FROM "+table+" WHERE " + request.expr);
       pqxx::result R{W.exec_prepared("select")};
@@ -79,7 +83,7 @@ namespace db {
 
   std::vector<T> select_join_where(std::string table_to_join,Expression request){
     try{
-    pqxx::connection C("dbname=co-work_db user=co-work");
+    pqxx::connection C(CONNECTION_STRING(DBUSER));
     pqxx::work W{C};
     C.prepare("select","SELECT * FROM "+ relations[table_to_join]+ " INNER JOIN " + table +" ON "+on_tables(relations[table_to_join])+" WHERE " + request.expr);
     pqxx::result R{W.exec_prepared("select")};
@@ -92,7 +96,7 @@ namespace db {
 
    int insert(T object){ //return id in db
      try{
-     pqxx::connection C("dbname=co-work_db user=co-work");
+     pqxx::connection C(CONNECTION_STRING(DBUSER));
      pqxx::work W{C};
      pqxx::result R = W.exec("INSERT INTO "+table+to_orm(object));
      W.commit();
@@ -100,11 +104,12 @@ namespace db {
    } catch (std::exception const &e) {
        std::cerr << e.what() << std::endl;
    }
+   return -1;
    }
 template<typename Z>
    bool insert_join(std::string table_to_join,T object1,Z object2){
      try{
-     pqxx::connection C("dbname=co-work_db user=co-work");
+     pqxx::connection C(CONNECTION_STRING(DBUSER));
      pqxx::work W{C};
      pqxx::result R = W.exec("INSERT INTO "+relations[table_to_join]+to_orm(object1,object2));
      W.commit();
@@ -117,7 +122,7 @@ template<typename Z>
 
    void update(int id,Expression request){
      try{
-     pqxx::connection C("dbname=co-work_db user=co-work");
+     pqxx::connection C(CONNECTION_STRING(DBUSER));
      pqxx::work W{C};
      pqxx::result R = W.exec("UPDATE "+table+" SET "+request.expr +"WHERE id='"+std::to_string(id)+"'");
      W.commit();

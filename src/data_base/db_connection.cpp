@@ -12,6 +12,15 @@ DataBase::DataBase():users("users"),tasks("tasks"),projs("projects"){
   projs.add_relations("users","dependence_project_user");
 }
 
-int DataBase::create_task(Task t){
+int DataBase::create_task(Task const &t){
  return tasks.insert(t);
+}
+
+std::optional<User> DataBase::auth(std::string login, std::string password){
+std::vector<User> tmp=users.select_where(users.account_name==login and users.password==password);
+if(tmp.size()==1){
+  return tmp[0];
+} else {
+  return std::nullopt;
+}
 }

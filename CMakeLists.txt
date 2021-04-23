@@ -37,10 +37,16 @@ if (NOT json_POPULATED)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif ()
 
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq)
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DKRESTINA")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DIRINA")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -L/usr/local/opt/libpq/lib -I/usr/local/opt/libpq/include -L/usr/local/opt/libpqxx/lib -I/usr/local/opt/libpqxx/include -lpq -DIRINA")
+
+if(DEFINED -DEGOR)
+ ADD_DEFINITIONS( -DDBUSER=egor )
+else ()
+ADD_DEFINITIONS( -DDBUSER=co-work )
+endif ()
 
 if (LINUX)
     message(STATUS ">>> Linux")
@@ -52,6 +58,8 @@ endif ()
 
 find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
+
+
 
 #add_executable(server src/server/main_server.cpp)
 
