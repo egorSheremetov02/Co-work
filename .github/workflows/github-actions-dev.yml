@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: pwd
-      - run: ./formatting.sh
+      - run: sh ./formatting.sh
 #  Explore-GitHub-Actions:
 #    runs-on: ubuntu-latest
 #    steps:
