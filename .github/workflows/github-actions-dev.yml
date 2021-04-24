@@ -3,7 +3,7 @@ on: [push]
 
 defaults:
   run:
-    working-directory: ./scripts/
+    working-directory: /home/runner/work/Co-work/Co-work/scripts
 
 jobs:
   Linting:
