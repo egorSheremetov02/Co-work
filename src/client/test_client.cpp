@@ -50,8 +50,8 @@ void do_write() {
     if (resources[i] == "task create") {
         RequestFormat<TaskCreateDTO> task_create_request = {
                 resources[i],
-                {"test task " + std::to_string(rand()),
-                 "task description " + std::to_string(rand()),
+                {"test task " + std::to_string(random()),
+                 "task description " + std::to_string(random()),
                  9,
                  "in progress"}
         };

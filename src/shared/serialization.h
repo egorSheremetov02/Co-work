@@ -127,4 +127,22 @@ inline void from_json(nlohmann::json const &j, ResponseFormat<T> &request) {
     j.at("error").get_to(request.error);
 }
 
+inline Task from_dto(TaskCreateDTO const &dto) {
+    Task task;
+    task.name = dto.name;
+    task.description = dto.description;
+    task.status = dto.status;
+    task.urgency = dto.urgency;
+    return task;
+}
+
+inline Task from_dto(TaskCreateDTO &&dto) {
+    Task task;
+    task.name = std::move(dto.name);
+    task.description = std::move(dto.description);
+    task.status = dto.urgency;
+    task.urgency = dto.urgency;
+    return task;
+}
+
 #endif //CO_WORK_SERIALIZATION_H

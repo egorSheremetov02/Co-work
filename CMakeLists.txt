@@ -41,13 +41,14 @@ endif ()
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DKRESTINA")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DIRINA")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -L/usr/local/opt/libpq/lib -I/usr/local/opt/libpq/include -L/usr/local/opt/libpqxx/lib -I/usr/local/opt/libpqxx/include -lpq -DIRINA")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -L/usr/local/opt/libpq/lib -I/usr/local/opt/libpq/include -L/usr/local/opt/libpqxx/lib -I/usr/local/opt/libpqxx/include -lpq -DIRINA -DDBUSER=co-work")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR -DDBUSER=egor")
 
-if(DEFINED -DEGOR)
-    ADD_DEFINITIONS( -DDBUSER=egor )
-else ()
-    ADD_DEFINITIONS( -DDBUSER=co-work )
-endif ()
+#if(DEFINED EGOR)
+#    ADD_DEFINITIONS( -DDBUSER=egor )
+#else ()
+#    ADD_DEFINITIONS( -DDBUSER=co-work )
+#endif ()
 
 if (LINUX)
     message(STATUS ">>> Linux")
@@ -82,7 +83,9 @@ add_executable(broadcast-server
         src/server/server.cpp
         src/server/task_handler.cpp
         src/server/handler_registration.cpp
-        DB_test/a.cpp src/server/task_service.cpp)
+        src/data_base/db_connection.cpp
+        src/server/task_service.cpp
+        src/server/app_db_connection.cpp)
 
 add_executable(log-broadcast-server
         src/server/application_context.cpp
@@ -93,7 +96,9 @@ add_executable(log-broadcast-server
         src/server/server.cpp
         src/server/task_handler.cpp
         src/server/handler_registration.cpp
-        DB_test/a.cpp src/server/task_service.cpp)
+        src/data_base/db_connection.cpp
+        src/server/task_service.cpp
+        src/server/app_db_connection.cpp)
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
 target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})

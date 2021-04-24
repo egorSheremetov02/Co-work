@@ -12,7 +12,7 @@
 struct TaskService {
     static Task create_task(TaskCreateDTO const &);
 
-    static std::vector<Task> &get_tasks();
+    static std::vector<Task> get_tasks();
 
     static Task edit_task(uint32_t);
 
