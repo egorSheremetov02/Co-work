@@ -1,17 +1,17 @@
 name: GitHub Actions Demo
 on: [push]
 
-#defaults:
-#  run:
-#    working-directory: scripts/
+defaults:
+  run:
+    working-directory: ${{ github.workspace }}/scripts/
 
 jobs:
   Linting:
     runs-on: ubuntu-latest
     steps:
       - run: ls -alh
-#      - run: |
-#          sh ./formatting.sh
+      - run: |
+          sh ./formatting.sh
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
