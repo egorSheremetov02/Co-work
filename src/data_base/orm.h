@@ -148,8 +148,9 @@ namespace db {
                 "password"};
 
         std::string on_tables(std::string const &str) override {
-            if (str == "dedependence_task_user")
+            if (str == "dedependence_task_user") {
                 return "users.id = " + str + ".task_id";
+            }
             return "users.id = " + str + ".project_id";
         }
     };

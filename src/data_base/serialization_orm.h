@@ -29,25 +29,25 @@ inline void from_orm(pqxx::row const &row, Task &task) {
 }
 
 
-inline void out(Task &task) {
+inline void out(Task const &task) {
     std::cout << task.id << " " << task.name << " " << task.description << " " << task.date << " " << task.project_id
               << std::endl;
 }
 
-inline void out(User &user) {
+inline void out(User const &user) {
     std::cout << user.id << " " << user.account_name << std::endl;
 }
 
-inline void out(Project &proj) {
+inline void out(Project const &proj) {
     std::cout << proj.id << " " << proj.name << std::endl;
 }
 
-inline std::string to_orm(Project &proj) {
+inline std::string to_orm(Project const &proj) {
     std::string sql = " (name,due_date) VALUES ('" + proj.name + "','" + proj.date + "') RETURNING id";
     return sql;
 }
 
-inline std::string to_orm(Task &task) {
+inline std::string to_orm(Task const &task) {
     std::string sql =
             " (name,description,due_date,project_id,urgency,status) VALUES ('" + task.name + "','" + task.description +
             "','" + task.date + "','" + std::to_string(task.project_id) + "','" + std::to_string(task.urgency) + "','" +
@@ -55,23 +55,23 @@ inline std::string to_orm(Task &task) {
     return sql;
 }
 
-inline std::string to_orm(Task &task, User &user) {
+inline std::string to_orm(Task const &task, User const &user) {
     std::string sql = " (task_id,user_id) VALUES ('" + std::to_string(task.id) + "','" + std::to_string(user.id) + "')";
     return sql;
 }
 
-inline std::string to_orm(User &user, Task &task) {
+inline std::string to_orm(User const &user, Task const &task) {
     std::string sql = " (task_id,user_id) VALUES ('" + std::to_string(task.id) + "','" + std::to_string(user.id) + "')";
     return sql;
 }
 
-inline std::string to_orm(Project &proj, User &user) {
+inline std::string to_orm(Project const &proj, User const &user) {
     std::string sql =
             " (project_id,user_id) VALUES ('" + std::to_string(proj.id) + "','" + std::to_string(user.id) + "')";
     return sql;
 }
 
-inline std::string to_orm(User &user, Project &proj) {
+inline std::string to_orm(User const &user, Project const &proj) {
     std::string sql =
             " (project_id,user_id) VALUES ('" + std::to_string(proj.id) + "','" + std::to_string(user.id) + "')";
     return sql;
