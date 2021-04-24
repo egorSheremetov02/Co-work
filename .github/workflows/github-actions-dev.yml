@@ -3,8 +3,7 @@ on: [push]
 
 defaults:
   run:
-    shell: bash
-    working-directory: scripts
+    working-directory: scripts/
 
 jobs:
   Linting:
