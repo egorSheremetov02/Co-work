@@ -17,38 +17,39 @@
 namespace db {
 
     struct Expression {
-        std::string expr;
+        std::string expr_;
 
-        Expression operator&&(Expression other) {
-            return Expression{expr + " AND " + other.expr};
+        Expression operator&&(Expression const &other) const {
+            return Expression{expr_ + " AND " + other.expr_};
         }
 
-        Expression operator==(std::string data) {
-            return Expression{expr + "=" + "\'" + data + "\'"};
+        Expression operator==(std::string const &data) const {
+            return Expression{expr_ + "=" + "\'" + data + "\'"};
         }
 
-        Expression operator==(int data) {
-            return Expression{expr + "=" + "\'" + std::to_string(data) + "\'"};
+        Expression operator==(int data) const {
+            return Expression{expr_ + "=" + "\'" + std::to_string(data) + "\'"};
         }
     };
 
     template<typename T>
     struct Table {
 
-        std::string table;
+        std::string table_;
 
-        Table(std::string t) : table(t) {};
-        std::map<std::string, std::string> relations;
+        Table(std::string t) : table_(std::move(t)) {};
+        std::map<std::string, std::string> relations_;
 
-        virtual std::string on_tables(std::string str) {};
+        virtual std::string on_tables(std::string const &str) = 0;
 
-        void add_relations(std::string relate_to, std::string table) {
-            relations[relate_to] = table;
+        void add_relations(std::string const &relate_to, std::string const &table) {
+            relations_[relate_to] = table;
         }
 
         std::vector<T> convert_to_vector(const pqxx::result &R) {
-            if (R.size() == 0)
+            if (R.empty()) {
                 return {};
+            }
             std::vector<T> data;
             for (const auto &row : R) {
                 T tmp;
@@ -63,7 +64,7 @@ namespace db {
             try {
                 pqxx::connection C(CONNECTION_STRING(DBUSER));
                 pqxx::work W{C};
-                C.prepare("select", "SELECT * FROM " + table);
+                C.prepare("select", "SELECT * FROM " + table_);
                 pqxx::result R{W.exec_prepared("select")};
                 return convert_to_vector(R);
             } catch (std::exception const &e) {
@@ -72,11 +73,11 @@ namespace db {
             return {};
         }
 
-        std::vector<T> select_where(Expression request) {
+        std::vector<T> select_where(Expression const &request) {
             try {
                 pqxx::connection C(CONNECTION_STRING(DBUSER));
                 pqxx::work W{C};
-                C.prepare("select", "SELECT * FROM " + table + " WHERE " + request.expr);
+                C.prepare("select", "SELECT * FROM " + table_ + " WHERE " + request.expr_);
                 pqxx::result R{W.exec_prepared("select")};
                 return convert_to_vector(R);
             } catch (std::exception const &e) {
@@ -85,12 +86,12 @@ namespace db {
             return {};
         }
 
-        std::vector<T> select_join_where(std::string table_to_join, Expression request) {
+        std::vector<T> select_join_where(std::string const &table_to_join, Expression const &request) {
             try {
                 pqxx::connection C(CONNECTION_STRING(DBUSER));
                 pqxx::work W{C};
-                C.prepare("select", "SELECT * FROM " + relations[table_to_join] + " INNER JOIN " + table + " ON " +
-                                    on_tables(relations[table_to_join]) + " WHERE " + request.expr);
+                C.prepare("select", "SELECT * FROM " + relations_[table_to_join] + " INNER JOIN " + table_ + " ON " +
+                                    on_tables(relations_[table_to_join]) + " WHERE " + request.expr_);
                 pqxx::result R{W.exec_prepared("select")};
                 return convert_to_vector(R);
             } catch (std::exception const &e) {
@@ -99,11 +100,11 @@ namespace db {
             return {};
         }
 
-        int insert(T object) { //return id in db
+        int insert(T const &object) { //return id in db
             try {
                 pqxx::connection C(CONNECTION_STRING(DBUSER));
                 pqxx::work W{C};
-                pqxx::result R = W.exec("INSERT INTO " + table + to_orm(object));
+                pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(object));
                 W.commit();
                 return R[0][0].as<int>();
             } catch (std::exception const &e) {
@@ -113,11 +114,11 @@ namespace db {
         }
 
         template<typename Z>
-        bool insert_join(std::string table_to_join, T object1, Z object2) {
+        bool insert_join(std::string const &table_to_join, T const &object1, Z const &object2) {
             try {
                 pqxx::connection C(CONNECTION_STRING(DBUSER));
                 pqxx::work W{C};
-                pqxx::result R = W.exec("INSERT INTO " + relations[table_to_join] + to_orm(object1, object2));
+                pqxx::result R = W.exec("INSERT INTO " + relations_[table_to_join] + to_orm(object1, object2));
                 W.commit();
                 return true;
             } catch (std::exception const &e) {
@@ -126,12 +127,12 @@ namespace db {
             return false;
         }
 
-        void update(int id, Expression request) {
+        void update(int id, Expression const &request) {
             try {
                 pqxx::connection C(CONNECTION_STRING(DBUSER));
                 pqxx::work W{C};
                 pqxx::result R = W.exec(
-                        "UPDATE " + table + " SET " + request.expr + "WHERE id='" + std::to_string(id) + "'");
+                        "UPDATE " + table_ + " SET " + request.expr_ + "WHERE id='" + std::to_string(id) + "'");
                 W.commit();
                 //   return R[0][0].as<int>();
             } catch (std::exception const &e) {
@@ -142,11 +143,11 @@ namespace db {
     };
 
     struct Users : Table<User> {
-        Users(std::string t) : Table(t) {};
+        Users(std::string t) : Table(std::move(t)) {};
         Expression id{"id"}, user_id{"user_id"}, account_name{"account_name"}, full_name{"full_name"}, password{
                 "password"};
 
-        std::string on_tables(std::string str) override {
+        std::string on_tables(std::string const &str) override {
             if (str == "dedependence_task_user")
                 return "users.id = " + str + ".task_id";
             return "users.id = " + str + ".project_id";
@@ -154,11 +155,11 @@ namespace db {
     };
 
     struct Tasks : Table<Task> {
-        Tasks(std::string t) : Table(t) {};
+        Tasks(std::string t) : Table(std::move(t)) {};
         Expression id{"id"}, task_id{"task_id"}, name{"name"}, description{"description"}, date{"date"}, project_id{
                 "project_id"}, urgency{"urgency"}, status{"status"};
 
-        std::string on_tables(std::string str) override {
+        std::string on_tables(std::string const &str) override {
             return "tasks.id = " + str + ".task_id";
         }
     };
@@ -167,7 +168,7 @@ namespace db {
         Projects(std::string t) : Table(t) {};
         Expression id{"id"}, name{"name"}, date{"date"}, project_id{"project_id"};
 
-        std::string on_tables(std::string str) override {
+        std::string on_tables(std::string const &str) override {
             return "projects.id = " + str + ".task_id";
         }
     };
