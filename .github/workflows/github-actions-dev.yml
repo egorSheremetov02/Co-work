@@ -6,12 +6,12 @@ on: [push]
 #    working-directory: scripts/
 
 jobs:
-#  Linting:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - run: ls -alh
-##      - run: |
-##          sh ./formatting.sh
+  Linting:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls -alh
+#      - run: |
+#          sh ./formatting.sh
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
