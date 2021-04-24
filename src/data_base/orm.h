@@ -19,7 +19,7 @@ namespace db {
     struct Expression {
         std::string expr;
 
-        Expression operatorand(Expression other) {
+        Expression operator&&(Expression other) {
             return Expression{expr + " AND " + other.expr};
         }
 
