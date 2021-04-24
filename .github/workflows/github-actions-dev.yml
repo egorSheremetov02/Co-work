@@ -1,6 +1,17 @@
 name: GitHub Actions Demo
 on: [push]
+
+defaults:
+  run:
+    shell: bash
+    working-directory: scripts
+
 jobs:
+  Linting:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          sh ./formatting.sh
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
