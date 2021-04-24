@@ -9,9 +9,8 @@ jobs:
   Linting:
     runs-on: ubuntu-latest
     steps:
-      - run: ls ${{ github.workspace }}
-      - run: |
-          sh .${{ github.workspace }}/scripts/formatting.sh
+      - uses: actions/checkout@v2
+      - run: pwd
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
