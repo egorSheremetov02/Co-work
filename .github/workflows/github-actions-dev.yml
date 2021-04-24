@@ -11,7 +11,7 @@ jobs:
     steps:
       - run: ls ${{ github.workspace }}
       - run: |
-          sh ./${{ github.workspace }}/scripts/formatting.sh
+          sh .${{ github.workspace }}/scripts/formatting.sh
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
