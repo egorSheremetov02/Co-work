@@ -1,9 +1,9 @@
 name: GitHub Actions Demo
 on: [push]
 
-defaults:
-  run:
-    working-directory: /home/runner/work/Co-work/Co-work/scripts
+#defaults:
+#  run:
+#    working-directory: /home/runner/work/Co-work/Co-work/scripts
 
 jobs:
   Linting:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - run: ls -alh
       - run: |
-          sh ./formatting.sh
+          sh ./scripts/formatting.sh
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
