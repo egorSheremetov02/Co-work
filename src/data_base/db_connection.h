@@ -16,7 +16,9 @@ struct DataBase{
 
   int create_task(Task const &t);
 
-  std::optional<User> auth(std::string login, std::string password);
+  int create_project(Project const &t);
+
+  std::optional<User> auth(std::string const &login, std::string const &password);
 
 };
 

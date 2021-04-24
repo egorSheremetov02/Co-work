@@ -16,7 +16,11 @@ int DataBase::create_task(Task const &t){
  return tasks.insert(t);
 }
 
-std::optional<User> DataBase::auth(std::string login, std::string password){
+int DataBase::create_project(Project const &t){
+  return projs.insert(t);
+}
+
+std::optional<User> DataBase::auth(std::string const &login, std::string const &password){
 std::vector<User> tmp=users.select_where(users.account_name==login and users.password==password);
 if(tmp.size()==1){
   return tmp[0];
