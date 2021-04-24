@@ -8,7 +8,7 @@
 #include "db_connection.h"
 //#include "../shared/db_connection.h"
 
-int main(){
+int main() {
 /*
 db::Users users("users");
 db::Tasks tasks("tasks");
@@ -42,9 +42,9 @@ std::vector<Task> b4=tasks.select_where(tasks.project_id==p.id);
 //std::vector<Project> pp=projs.select_all();
 */
 
-DataBase databasa;
-Task t{0,"Task_task","Description","2021-04-17 06:05:05",3,7,"status"};
+    DataBase databasa;
+    Task t{0, "Task_task", "Description", "2021-04-17 06:05:05", 3, 7, "status"};
 //int tt=databasa.create_task(t);
-std::optional<User> current_user=databasa.auth("admin","qwerty");
+    std::optional<User> current_user = databasa.auth("admin", "qwerty");
 
 }

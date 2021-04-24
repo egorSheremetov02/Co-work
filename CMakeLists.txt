@@ -43,9 +43,9 @@ endif ()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -L/usr/local/opt/libpq/lib -I/usr/local/opt/libpq/include -L/usr/local/opt/libpqxx/lib -I/usr/local/opt/libpqxx/include -lpq -DIRINA")
 
 if(DEFINED -DEGOR)
- ADD_DEFINITIONS( -DDBUSER=egor )
+    ADD_DEFINITIONS( -DDBUSER=egor )
 else ()
-ADD_DEFINITIONS( -DDBUSER=co-work )
+    ADD_DEFINITIONS( -DDBUSER=co-work )
 endif ()
 
 if (LINUX)

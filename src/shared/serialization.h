@@ -105,7 +105,7 @@ inline void to_json(nlohmann::json &j, TaskCreateDTO const &taskDTO) {
     j = nlohmann::json{{"description", taskDTO.description},
                        {"name",        taskDTO.name},
                        {"urgency",     taskDTO.urgency},
-                       {"status", taskDTO.status}};
+                       {"status",      taskDTO.status}};
 }
 
 inline void from_json(nlohmann::json const &j, TaskCreateDTO &taskDTO) {
