@@ -9,6 +9,7 @@ jobs:
   Linting:
     runs-on: ubuntu-latest
     steps:
+      - run: pwd
       - run: |
           sh ./formatting.sh
   Explore-GitHub-Actions:
