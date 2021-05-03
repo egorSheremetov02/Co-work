@@ -8,9 +8,16 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(.)
 
+include_directories(src)
 include_directories(date/include)
 include_directories(src/shared)
 include_directories(src/data_base)
+include_directories(src/server)
+include_directories(src/server/services)
+include_directories(src/server/endpoint_handlers)
+include_directories(src/server/app_db)
+include_directories(src/server/tcp)
+include_directories(src/server/core)
 
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
@@ -64,34 +71,34 @@ add_executable(tests date/src/tz.cpp src/client/test.cpp)
 add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp)
 
 add_executable(broadcast-server
-        src/server/application_context.cpp
-        src/server/auth_service.cpp
-        src/server/tcp_connection.cpp
-        src/server/controller.cpp
+        src/server/core/application_context.cpp
+        src/server/services/auth_service.cpp
+        src/server/tcp/tcp_connection.cpp
+        src/server/core/controller.cpp
         src/server/broadcast_server.cpp
-        src/server/server.cpp
-        src/server/task_handler.cpp
-        src/server/handler_registration.cpp
+        src/server/tcp/server.cpp
+        src/server/endpoint_handlers/task_handler.cpp
+        src/server/core/handler_registration.cpp
         src/data_base/db_connection.cpp
-        src/server/task_service.cpp
-        src/server/project_handler.cpp
-        src/server/project_service.cpp
-        src/server/app_db_connection.cpp)
+        src/server/services/task_service.cpp
+        src/server/endpoint_handlers/project_handler.cpp
+        src/server/services/project_service.cpp
+        src/server/app_db/app_db_connection.cpp)
 
 add_executable(log-broadcast-server
-        src/server/application_context.cpp
-        src/server/auth_service.cpp
-        src/server/tcp_connection.cpp
-        src/server/controller.cpp
+        src/server/core/application_context.cpp
+        src/server/services/auth_service.cpp
+        src/server/tcp/tcp_connection.cpp
+        src/server/core/controller.cpp
         src/server/broadcast_server.cpp
-        src/server/server.cpp
-        src/server/task_handler.cpp
-        src/server/handler_registration.cpp
+        src/server/tcp/server.cpp
+        src/server/endpoint_handlers/task_handler.cpp
+        src/server/core/handler_registration.cpp
         src/data_base/db_connection.cpp
-        src/server/task_service.cpp
-        src/server/project_handler.cpp
-        src/server/project_service.cpp
-        src/server/app_db_connection.cpp)
+        src/server/services/task_service.cpp
+        src/server/endpoint_handlers/project_handler.cpp
+        src/server/services/project_service.cpp
+        src/server/app_db/app_db_connection.cpp)
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
 target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})

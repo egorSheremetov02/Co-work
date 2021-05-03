@@ -8,7 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
-#include "handler.h"
+#include "src/server/core/handler.h"
 
 using HandlerStorage = std::unordered_map<std::string, Handler>;
 

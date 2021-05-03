@@ -5,11 +5,11 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
-#include "auth_service.h"
-#include "controller.h"
 #include "request.h"
 #include "request_format.h"
 #include "serialization.h"
+#include "src/server/core/controller.h"
+#include "src/server/services/auth_service.h"
 #include "structures.h"
 
 using nlohmann::json;

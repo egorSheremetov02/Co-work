@@ -3,10 +3,10 @@
 //
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "handler_registration.h"
 #include "project_service.h"
 #include "request_format.h"
 #include "serialization.h"
+#include "src/server/core/handler_registration.h"
 #include "structures.h"
 #include "tcp_connection.h"
 
