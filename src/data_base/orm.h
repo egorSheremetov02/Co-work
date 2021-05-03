@@ -12,7 +12,9 @@
 
 #define GET_RES_STR(token) #token
 
-#define CONNECTION_STRING(USER) GET_RES_STR(dbname = co - work_db user = USER)
+// clang-format off
+#define CONNECTION_STRING(USER) GET_RES_STR(dbname=co-work_db user=USER)
+//clang-format on
 
 namespace db {
 
