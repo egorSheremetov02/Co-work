@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: clang-format --version
-      - run: sh ./scripts/formatting.sh
+      - run: bash ./scripts/formatting.sh
