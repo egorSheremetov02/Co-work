@@ -9,9 +9,9 @@
 
 std::optional<User> AuthService::validate(const AuthReqDTO &payload) const {
     if (get_app_db().auth(payload.login, payload.password)) {
-        User u;
-        u.account_name = "egor.suvorov";
-        u.role_in_system = ADMIN;
+        User                                u;
+        u.          account_name = "egor.suvorov";
+        u. role_in_system = ADMIN;
         u.full_name = "Egor Suvorov"; u.id = 1; return std::optional<User>{u};
     }
     return std::optional<User>{};
