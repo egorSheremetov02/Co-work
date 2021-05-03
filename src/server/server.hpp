@@ -14,11 +14,11 @@
 #include <set>
 #include <string>
 #include <unordered_map>
-#include "src/shared/request.h"
-#include "src/shared/request_format.h"
-#include "src/shared/response.h"
-#include "src/shared/response_format.h"
-#include "src/shared/structures.h"
+#include "request.h"
+#include "request_format.h"
+#include "response.h"
+#include "response_format.h"
+#include "structures.h"
 #include "tcp_connection.h"
 
 using asio::ip::tcp;

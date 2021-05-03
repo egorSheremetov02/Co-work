@@ -6,10 +6,8 @@
 #define CO_WORK_TCP_CONNECTION_H
 #include <asio.hpp>
 #include <string>
-#include "src/shared/response_format.h"
-#include "src/shared/structures.h"
-
-using asio::ip::tcp;
+#include "response_format.h"
+#include "structures.h"
 
 struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   public:
@@ -21,7 +19,7 @@ struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 
   void do_read();
 
-  tcp::socket &socket();
+  asio::ip::tcp::socket &socket();
 
   std::string &in_message();
 
@@ -34,7 +32,7 @@ struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 
   void handle_write();
 
-  tcp::socket socket_;
+  asio::ip::tcp::socket socket_;
   std::string in_message_;
   std::string out_message_;
 };

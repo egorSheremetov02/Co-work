@@ -113,6 +113,15 @@ inline void from_json(nlohmann::json const &j, TaskCreateDTO &taskDTO) {
   j.at("status").get_to(taskDTO.status);
 }
 
+inline void to_json(nlohmann::json &j, ProjectCreateDTO const &projectDTO) {
+  j = nlohmann::json{{"name", projectDTO.name}, {"date", projectDTO.date}};
+}
+
+inline void from_json(nlohmann::json const &j, ProjectCreateDTO &projectDTO) {
+  j.at("name").get_to(projectDTO.name);
+  j.at("date").get_to(projectDTO.date);
+}
+
 template <typename T>
 inline void to_json(nlohmann::json &j, const ResponseFormat<T> &request) {
   j = nlohmann::json{{"error", request.error}, {"data", request.data}};
@@ -130,6 +139,7 @@ inline Task from_dto(TaskCreateDTO const &dto) {
   task.description = dto.description;
   task.status = dto.status;
   task.urgency = dto.urgency;
+  task.project_id = dto.project_id;
   return task;
 }
 
@@ -139,7 +149,22 @@ inline Task from_dto(TaskCreateDTO &&dto) {
   task.description = std::move(dto.description);
   task.status = dto.urgency;
   task.urgency = dto.urgency;
+  task.project_id = dto.project_id;
   return task;
+}
+
+inline Project from_dto(ProjectCreateDTO const &dto) {
+  Project project;
+  project.name = dto.name;
+  project.date = dto.date;
+  return project;
+}
+
+inline Project from_dto(ProjectCreateDTO &&dto) {
+  Project project;
+  project.name = std::move(dto.name);
+  project.date = std::move(dto.date);
+  return project;
 }
 
 #endif  // CO_WORK_SERIALIZATION_H

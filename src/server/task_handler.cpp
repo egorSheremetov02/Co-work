@@ -3,24 +3,18 @@
 //
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "../shared/serialization.h"
 #include "handler.h"
 #include "handler_registration.h"
+#include "serialization.h"
 #include "task_service.h"
 
 using nlohmann::json;
 
 void get_all_tasks_handler(json & /*input_json*/,
                            TcpConnection::pointer &connection) {
-#ifdef LOGGING
-  std::cout << "Get all tasks handler" << std::endl;
-#endif
   json out_json;
-  out_json["tasks"] = TaskService::get_tasks();
+  out_json["tasks"] = task_service::get_tasks();
   connection->out_message() = out_json.dump();
-#ifdef LOGGING
-  std::cout << "Current tasks list: " << out_json.dump(4) << std::endl;
-#endif
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),
                    connection->out_message().size()),
@@ -30,16 +24,16 @@ void get_all_tasks_handler(json & /*input_json*/,
                   << connection->out_message().substr(0, len) << std::endl;
 #endif
       });
+#ifdef LOGGING
+  std::cout << "Get all tasks handler" << std::endl;
+#endif
 }
 
 void create_task_handler(json &in_json, TcpConnection::pointer &connection) {
   json out_json;
   auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>();
-  out_json["task"] = TaskService::create_task(taskDTO.data);
+  out_json["task"] = task_service::create_task(taskDTO.data);
   connection->out_message() = out_json.dump();
-#ifdef LOGGING
-  std::cout << "Created task: " << out_json.dump(4) << std::endl;
-#endif
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),
                    connection->out_message().size()),
@@ -56,7 +50,7 @@ void create_task_handler(json &in_json, TcpConnection::pointer &connection) {
 
 void edit_task_handler(json &in_json, TcpConnection::pointer &connection) {
   json out_json;
-  out_json["task"] = TaskService::edit_task(in_json.at("task_id"));
+  out_json["task"] = task_service::edit_task(in_json.at("task_id"));
   connection->out_message() = out_json.dump();
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),

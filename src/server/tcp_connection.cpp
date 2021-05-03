@@ -7,10 +7,10 @@
 #include <string>
 #include "auth_service.h"
 #include "controller.h"
-#include "src/shared/request.h"
-#include "src/shared/request_format.h"
-#include "src/shared/serialization.h"
-#include "src/shared/structures.h"
+#include "request.h"
+#include "request_format.h"
+#include "serialization.h"
+#include "structures.h"
 
 using nlohmann::json;
 

@@ -49,5 +49,11 @@ struct TaskCreateDTO {
   std::string description;
   uint8_t urgency{};
   std::string status;
+  uint32_t project_id;
+};
+
+struct ProjectCreateDTO {
+  std::string name;
+  std::string date;
 };
 #endif  // CO_WORK_STRUCTURES_H

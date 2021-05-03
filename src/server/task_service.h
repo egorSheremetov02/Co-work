@@ -7,14 +7,14 @@
 
 #include <nlohmann/json.hpp>
 #include <vector>
-#include "../shared/structures.h"
+#include "structures.h"
 
-struct TaskService {
-  static Task create_task(TaskCreateDTO const &);
+namespace task_service {
+Task create_task(TaskCreateDTO const &);
 
-  static std::vector<Task> get_tasks();
+std::vector<Task> get_tasks();
 
-  static Task edit_task(uint32_t);
-};
+Task edit_task(uint32_t);
+};  // namespace task_service
 
 #endif  // CO_WORK_TASK_SERVICE_H

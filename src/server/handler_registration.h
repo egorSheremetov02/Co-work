@@ -16,7 +16,7 @@ HandlerStorage &get_handler_storage();
 
 #define REGISTER_HANDLER_INTERNAL(resource, handler, line) \
                                                            \
-  struct InitHandler##line {                               \
+  const struct InitHandler##line {                         \
     InitHandler##line() {                                  \
       get_handler_storage()[resource] = handler;           \
     }                                                      \

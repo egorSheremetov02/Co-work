@@ -6,7 +6,7 @@
 #define CO_WORK_HANDLER_H
 #include <functional>
 #include <nlohmann/json.hpp>
-#include "./tcp_connection.h"
+#include "tcp_connection.h"
 
 using Handler = std::function<void(nlohmann::json &, TcpConnection::pointer &)>;
 

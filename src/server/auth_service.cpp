@@ -4,8 +4,8 @@
 #include "auth_service.h"
 #include <optional>
 #include "app_db_connection.h"
-#include "src/shared/request.h"
-#include "src/shared/structures.h"
+#include "request.h"
+#include "structures.h"
 
 std::optional<User> AuthService::validate(const AuthReqDTO &payload) const {
   if (get_app_db().auth(payload.login, payload.password)) {

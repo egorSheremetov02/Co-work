@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(.)
 
 include_directories(date/include)
+include_directories(src/shared)
+include_directories(src/data_base)
 
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
@@ -44,12 +46,6 @@ endif ()
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -L/usr/local/opt/libpq/lib -I/usr/local/opt/libpq/include -L/usr/local/opt/libpqxx/lib -I/usr/local/opt/libpqxx/include -lpq -DIRINA -DDBUSER=co-work")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread -lpqxx -lpq -DEGOR -DDBUSER=egor")
 
-#if(DEFINED EGOR)
-#    ADD_DEFINITIONS( -DDBUSER=egor )
-#else ()
-#    ADD_DEFINITIONS( -DDBUSER=co-work )
-#endif ()
-
 if (LINUX)
     message(STATUS ">>> Linux")
     set(PQXX /usr/local/include/pqxx)
@@ -61,16 +57,9 @@ endif ()
 find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
 
-
-
-#add_executable(server src/server/main_server.cpp)
-
-# firstly put date (clone from github) in adjacent folder to project's one
 add_executable(client src/client/test_client.cpp)
 
 add_executable(tests date/src/tz.cpp src/client/test.cpp)
-
-#add_executable(db-test DB_test/a.cpp)
 
 add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp)
 
@@ -85,6 +74,8 @@ add_executable(broadcast-server
         src/server/handler_registration.cpp
         src/data_base/db_connection.cpp
         src/server/task_service.cpp
+        src/server/project_handler.cpp
+        src/server/project_service.cpp
         src/server/app_db_connection.cpp)
 
 add_executable(log-broadcast-server
@@ -98,6 +89,8 @@ add_executable(log-broadcast-server
         src/server/handler_registration.cpp
         src/data_base/db_connection.cpp
         src/server/task_service.cpp
+        src/server/project_handler.cpp
+        src/server/project_service.cpp
         src/server/app_db_connection.cpp)
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
