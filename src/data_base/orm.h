@@ -58,6 +58,7 @@ struct Table {
       data.push_back(tmp);
       //  out(tmp);
     }
+
     return data;
   }
 
