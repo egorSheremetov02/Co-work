@@ -4,10 +4,10 @@
 
 #ifndef CO_WORK_RESPONSE_FORMAT_H
 #define CO_WORK_RESPONSE_FORMAT_H
-template<typename T>
+template <typename T>
 struct ResponseFormat {
-    std::string error;
-    T data;
+  std::string error;
+  T data;
 };
 
-#endif // CO_WORK_RESPONSE_FORMAT_H
+#endif  // CO_WORK_RESPONSE_FORMAT_H

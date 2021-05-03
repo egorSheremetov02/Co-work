@@ -1,133 +1,140 @@
 //
 // Created by egor on 27.02.2021.
 //
-#include <iostream>
-#include <string>
-#include <nlohmann/json.hpp>
 #include "tcp_connection.h"
-#include "controller.h"
+#include <iostream>
+#include <nlohmann/json.hpp>
+#include <string>
 #include "auth_service.h"
-#include "src/shared/structures.h"
+#include "controller.h"
 #include "src/shared/request.h"
 #include "src/shared/request_format.h"
 #include "src/shared/serialization.h"
+#include "src/shared/structures.h"
 
 using nlohmann::json;
 
-TcpConnection::TcpConnection(asio::io_context &io_context, std::size_t max_in_message_size,
+TcpConnection::TcpConnection(asio::io_context &io_context,
+                             std::size_t max_in_message_size,
                              std::size_t max_out_message_size)
-        : socket_(io_context) {
-    in_message_.resize(max_in_message_size);
-    out_message_.resize(max_out_message_size);
+    : socket_(io_context) {
+  in_message_.resize(max_in_message_size);
+  out_message_.resize(max_out_message_size);
 }
 
-
 void TcpConnection::do_read() {
-    socket_.async_read_some(
-            asio::buffer(in_message_.data(), in_message_.size()),
-            [&, this, connection = shared_from_this()](asio::error_code const &ec, std::size_t len) mutable {
-                if (ec) {
-                    connection->socket().close();
+  socket_.async_read_some(
+      asio::buffer(in_message_.data(), in_message_.size()),
+      [&, this, connection = shared_from_this()](asio::error_code const &ec,
+                                                 std::size_t len) mutable {
+        if (ec) {
+          connection->socket().close();
 #ifdef LOGGING
-                    std::cout << "Async read error: " << ec.message() << std::endl;
+          std::cout << "Async read error: " << ec.message() << std::endl;
 #endif
-                    return;
-                }
-                const std::string &str_request = in_message().substr(0, len);
-                json json_request = json::parse(str_request);
-                std::string resource = json_request.at("resource");
+          return;
+        }
+        const std::string &str_request = in_message().substr(0, len);
+        json json_request = json::parse(str_request);
+        std::string resource = json_request.at("resource");
 #ifdef LOGGING
-                std::cout << "Resource: " << resource << std::endl;
+        std::cout << "Resource: " << resource << std::endl;
 #endif
-                ApplicationController::get_handler(resource)(json_request, connection);
-                do_read();
-            });
+        ApplicationController::get_handler(resource)(json_request, connection);
+        do_read();
+      });
 }
 
 void TcpConnection::handle_write() {}
 
-TcpConnection::pointer
-TcpConnection::create(asio::io_context &io_context, std::size_t max_in_message_size, std::size_t max_out_message_size) {
-    return TcpConnection::pointer(new TcpConnection(io_context, max_in_message_size, max_out_message_size));
+TcpConnection::pointer TcpConnection::create(asio::io_context &io_context,
+                                             std::size_t max_in_message_size,
+                                             std::size_t max_out_message_size) {
+  return TcpConnection::pointer(
+      new TcpConnection(io_context, max_in_message_size, max_out_message_size));
 }
 
 tcp::socket &TcpConnection::socket() {
-    return socket_;
+  return socket_;
 }
 
 std::string &TcpConnection::in_message() {
-    return in_message_;
+  return in_message_;
 }
 
 std::string &TcpConnection::out_message() {
-    return out_message_;
+  return out_message_;
 }
 
-void authentication_handler(std::size_t len, TcpConnection::pointer &connection) {
+void authentication_handler(std::size_t len,
+                            TcpConnection::pointer &connection) {
+  std::string auth_res;
 
-    std::string auth_res;
+  AuthService auth;
+  std::string auth_request_str = connection->in_message().substr(0, len);
+  auto auth_request =
+      json::parse(auth_request_str).get<RequestFormat<AuthReqDTO>>();
 
-    AuthService auth;
-    std::string auth_request_str = connection->in_message().substr(0, len);
-    auto auth_request = json::parse(auth_request_str).get<RequestFormat<AuthReqDTO>>();
+  ResponseFormat<User> auth_response;
 
-    ResponseFormat<User> auth_response;
-
-    std::optional<User> opt_user = auth.validate(auth_request.data);
-    if (!opt_user) {
+  std::optional<User> opt_user = auth.validate(auth_request.data);
+  if (!opt_user) {
 #ifdef LOGGING
-        std::cout << "Invalid auth token: " << auth_request_str << std::endl;
+    std::cout << "Invalid auth token: " << auth_request_str << std::endl;
 #endif
-        auth_response.error = "No user with such credentials was found";
-    } else {
+    auth_response.error = "No user with such credentials was found";
+  } else {
 #ifdef LOGGING
-        std::cout << "Successfully authenticated" << std::endl;
+    std::cout << "Successfully authenticated" << std::endl;
 #endif
-        auth_response.data = opt_user.value();
-    }
-    write_auth_response(auth_response, connection);
+    auth_response.data = opt_user.value();
+  }
+  write_auth_response(auth_response, connection);
 }
 
 void authenticate(TcpConnection::pointer &connection) {
-    connection->socket().async_read_some(
-            asio::buffer(connection->in_message().data(), connection->in_message().size()),
-            [&, connection](asio::error_code const &ec, std::size_t len) mutable {
-                if (ec) {
+  connection->socket().async_read_some(
+      asio::buffer(connection->in_message().data(),
+                   connection->in_message().size()),
+      [&, connection](asio::error_code const &ec, std::size_t len) mutable {
+        if (ec) {
 #ifdef LOGGING
-                    std::cout << "Error while reading client" << std::endl;
-                    std::cout << ec.message() << std::endl;
+          std::cout << "Error while reading client" << std::endl;
+          std::cout << ec.message() << std::endl;
 #endif
-                    connection->socket().close();
-                    return;
-                }
-                authentication_handler(len, connection);
-            });
+          connection->socket().close();
+          return;
+        }
+        authentication_handler(len, connection);
+      });
 }
 
-void write_auth_response(ResponseFormat<User> const &auth_response, TcpConnection::pointer &connection) {
-    json j = auth_response;
-    connection->out_message() = j.dump();
-    connection->socket().async_write_some(
-            asio::buffer(connection->out_message().data(), connection->out_message().size()),
-            [&, connection, auth_response](asio::error_code const &ec,
-                                           std::size_t /*len*/) mutable {
-                if (ec) {
+void write_auth_response(ResponseFormat<User> const &auth_response,
+                         TcpConnection::pointer &connection) {
+  json j = auth_response;
+  connection->out_message() = j.dump();
+  connection->socket().async_write_some(
+      asio::buffer(connection->out_message().data(),
+                   connection->out_message().size()),
+      [&, connection, auth_response](asio::error_code const &ec,
+                                     std::size_t /*len*/) mutable {
+        if (ec) {
 #ifdef LOGGING
-                    std::cout << "Error while writing to client" << std::endl;
+          std::cout << "Error while writing to client" << std::endl;
 #endif
-                    return;
-                }
+          return;
+        }
 #ifdef LOGGING
-                std::cout << "Wrote data to client: " << auth_response.data.account_name << std::endl;
+        std::cout << "Wrote data to client: " << auth_response.data.account_name
+                  << std::endl;
 #endif
-                if (auth_response.error.empty()) {
+        if (auth_response.error.empty()) {
 #ifdef LOGGING
-                    std::cout << "Attempt to read client" << std::endl;
+          std::cout << "Attempt to read client" << std::endl;
 #endif
-                    connection->do_read();
-                } else {
-                    connection->socket().close();
-                }
-            });
+          connection->do_read();
+        } else {
+          connection->socket().close();
+        }
+      });
 }
-

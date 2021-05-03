@@ -5,17 +5,16 @@
 #ifndef CO_WORK_TASK_SERVICE_H
 #define CO_WORK_TASK_SERVICE_H
 
-#include "../shared/structures.h"
-#include <vector>
 #include <nlohmann/json.hpp>
+#include <vector>
+#include "../shared/structures.h"
 
 struct TaskService {
-    static Task create_task(TaskCreateDTO const &);
+  static Task create_task(TaskCreateDTO const &);
 
-    static std::vector<Task> get_tasks();
+  static std::vector<Task> get_tasks();
 
-    static Task edit_task(uint32_t);
-
+  static Task edit_task(uint32_t);
 };
 
-#endif //CO_WORK_TASK_SERVICE_H
+#endif  // CO_WORK_TASK_SERVICE_H

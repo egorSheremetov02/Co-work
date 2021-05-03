@@ -10,4 +10,4 @@ DataBase &get_app_db();
 
 Project &get_project_tmp();
 
-#endif //CO_WORK_APP_DB_CONNECTION_H
+#endif  // CO_WORK_APP_DB_CONNECTION_H

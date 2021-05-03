@@ -3,8 +3,7 @@
 //
 #include "handler_registration.h"
 
-HandlerStorage & get_handler_storage() {
-    static auto *storage = new HandlerStorage();
-    return *storage;
+HandlerStorage &get_handler_storage() {
+  static auto *storage = new HandlerStorage();
+  return *storage;
 }
-

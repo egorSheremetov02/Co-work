@@ -2,7 +2,6 @@
 // Created by egor on 17.04.2021.
 //
 #include "task_service.h"
-
 #include "../data_base/orm.h"
 #include "../shared/serialization.h"
 #include "app_db_connection.h"

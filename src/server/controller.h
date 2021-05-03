@@ -11,7 +11,7 @@
 #include "handler_registration.h"
 
 struct ApplicationController {
-    static Handler & get_handler(std::string const & resource);
+  static Handler &get_handler(std::string const &resource);
 };
 
-#endif //CO_WORK_CONTROLLER_H
+#endif  // CO_WORK_CONTROLLER_H

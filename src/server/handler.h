@@ -10,4 +10,4 @@
 
 using Handler = std::function<void(nlohmann::json &, TcpConnection::pointer &)>;
 
-#endif //CO_WORK_HANDLER_H
+#endif  // CO_WORK_HANDLER_H

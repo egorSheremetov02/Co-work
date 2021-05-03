@@ -8,9 +8,8 @@
 #include <nlohmann/json.hpp>
 
 struct AuthReqDTO {
-    std::string login;
-    std::string password;
+  std::string login;
+  std::string password;
 };
 
-
-#endif //CO_WORK_REQUEST_H
+#endif  // CO_WORK_REQUEST_H
