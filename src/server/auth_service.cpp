@@ -12,9 +12,7 @@ std::optional<User> AuthService::validate(const AuthReqDTO &payload) const {
         User u;
         u.account_name = "egor.suvorov";
         u.role_in_system = ADMIN;
-        u.full_name = "Egor Suvorov";
-        u.id = 1;
-        return std::optional<User>{u};
+        u.full_name = "Egor Suvorov"; u.id = 1; return std::optional<User>{u};
     }
     return std::optional<User>{};
 }

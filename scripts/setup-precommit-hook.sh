@@ -1,0 +1,1 @@
+cp ./scripts/precommit-format.sh ./.git/hooks/pre-commit
