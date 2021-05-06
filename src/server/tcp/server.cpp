@@ -14,7 +14,7 @@ void ConnectionAcceptor::do_accept() {
   TcpConnection::pointer new_connection = TcpConnection::create(service_);
   acceptor_.async_accept(
       new_connection->socket(),
-      [&, connection = new_connection](asio::error_code const &ec) {
+      [&, connection = new_connection](asio::error_code const & /*ec*/) {
         handle_accept(connection);
       });
 }

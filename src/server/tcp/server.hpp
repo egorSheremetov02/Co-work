@@ -21,9 +21,6 @@
 #include "structures.h"
 #include "tcp_connection.hpp"
 
-using asio::ip::tcp;
-using nlohmann::json;
-
 using AuthRequest = RequestFormat<AuthReqDTO>;
 
 struct ConnectionAcceptor {
@@ -35,7 +32,7 @@ struct ConnectionAcceptor {
 
   void handle_accept(TcpConnection::pointer connection);
 
-  tcp::acceptor acceptor_;
+  asio::ip::tcp::acceptor acceptor_;
   asio::io_service &service_;
 };
 

@@ -3,6 +3,7 @@
 //
 #include <asio.hpp>
 #include <iostream>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include "src/shared/request.h"
 #include "src/shared/request_format.h"
@@ -24,6 +25,7 @@ struct InitMap {
       resources.emplace_back("task get_all");
       resources.emplace_back("task create");
       resources.emplace_back("task edit");
+      resources.emplace_back("project create");
     }
   }
 };
@@ -32,11 +34,12 @@ void do_write();
 
 void do_read() {
   response.resize(1024);
-  socket1.async_read_some(asio::buffer(response.data(), response.size()),
-                          [&](asio::error_code const &ec, std::size_t len) {
-                            std::cout << response.substr(0, len) << std::endl;
-                            do_write();
-                          });
+  socket1.async_read_some(
+      asio::buffer(response.data(), response.size()),
+      [&](asio::error_code const & /*ec*/, std::size_t len) {
+        std::cout << response.substr(0, len) << std::endl;
+        do_write();
+      });
 }
 
 void do_write() {
@@ -50,12 +53,15 @@ void do_write() {
   if (resources[i] == "task create") {
     RequestFormat<TaskCreateDTO> task_create_request = {
         resources[i],
-        {"test task " + std::to_string(random()),
-         "task description " + std::to_string(random()), 9, "in progress"}};
+        {"test task " + std::to_string(random() % INT32_MAX),
+         "task description " + std::to_string(random() % INT32_MAX), 9,
+         "in progress", 1}};
     json json_project_request = task_create_request;
-    std::string res = json_project_request.dump();
+    //    std::string res = json_project_request.dump();
+    std::shared_ptr<std::string> res(
+        new std::string(json_project_request.dump()));
     socket1.async_write_some(
-        asio::buffer(res.data(), res.size()),
+        asio::buffer(res->data(), res->size()),
         [&](asio::error_code const &ec, std::size_t) {
           if (ec) {
             std::cout << ec.message() << std::endl;
@@ -66,11 +72,13 @@ void do_write() {
         });
   } else if (resources[i] == "task get_all") {
     RequestFormat<int> task_get_all_request = {resources[i]};
-    json json_project_request = task_get_all_request;
-    std::cout << json_project_request.dump(4) << std::endl;
-    std::string res = json_project_request.dump();
+    json json_get_all_tasks_req = task_get_all_request;
+    std::cout << json_get_all_tasks_req.dump(4) << std::endl;
+    //    std::string res = json_get_all_tasks_req.dump();
+    std::shared_ptr<std::string> res(
+        new std::string(json_get_all_tasks_req.dump()));
     socket1.async_write_some(
-        asio::buffer(res.data(), res.size()),
+        asio::buffer(res->data(), res->size()),
         [&](asio::error_code const &ec, std::size_t) {
           if (ec) {
             std::cout << ec.message() << std::endl;
@@ -80,13 +88,31 @@ void do_write() {
           }
         });
   } else if (resources[i] == "task edit") {
-    json json_project_request;
-    json_project_request["resource"] = "task edit";
-    json_project_request["task_id"] = 1;
-    std::string res = json_project_request.dump();
+    json json_task_edit_req;
+    json_task_edit_req["resource"] = "task edit";
+    json_task_edit_req["task_id"] = 1;
+    std::shared_ptr<std::string> res(
+        new std::string(json_task_edit_req.dump()));
+    //    std::string res = json_task_edit_req.dump();
     socket1.async_write_some(
-        asio::buffer(res.data(), res.size()),
-        [&](asio::error_code const &ec, std::size_t) {
+        asio::buffer(res->data(), res->size()),
+        [res](asio::error_code const &ec, std::size_t) {
+          if (ec) {
+            std::cout << ec.message() << std::endl;
+          } else {
+            std::cout << "Successfully wrote data to stream" << std::endl;
+            do_read();
+          }
+        });
+  } else if (resources[i] == "project create") {
+    RequestFormat<ProjectCreateDTO> project_create_request = {
+        "project create", {"demo project", "01.09.2021"}};
+    json json_project_create = project_create_request;
+    std::shared_ptr<std::string> res(
+        new std::string(json_project_create.dump()));
+    socket1.async_write_some(
+        asio::buffer(res->data(), res->size()),
+        [res](asio::error_code const &ec, std::size_t) {
           if (ec) {
             std::cout << ec.message() << std::endl;
           } else {
@@ -103,7 +129,7 @@ void authenticate() {
   const asio::ip::basic_endpoint<tcp> &endpoint =
       tcp::endpoint(asio::ip::address::from_string("127.0.0.1"), 3030);
 
-  socket1.async_connect(endpoint, [&](asio::error_code const &ec) {
+  socket1.async_connect(endpoint, [&](asio::error_code const & /*ec*/) {
     std::cout << "Successfully connected" << std::endl;
     std::string passcode;
     std::string login;
@@ -119,12 +145,13 @@ void authenticate() {
     socket1.async_write_some(
         asio::buffer(str_auth_request.data(), str_auth_request.size()),
         [&](asio::error_code const &ec, std::size_t) {
-          if (ec)
+          if (ec) {
             return;
+          }
           response.resize(1024);
           socket1.async_read_some(
               asio::buffer(response.data(), response.size()),
-              [&](asio::error_code const &ec, std::size_t len) {
+              [&](asio::error_code const & /*ec*/, std::size_t len) {
                 std::cout << "Successfully read data from server: " << response
                           << " of size " << len << std::endl;
                 json json_auth_response = json::parse(response.substr(0, len));
