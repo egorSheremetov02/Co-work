@@ -2,6 +2,11 @@
 // Created by egor on 27.02.2021.
 //
 #include "application_context.hpp"
+#include <memory>
+#include <nlohmann/json.hpp>
+#include <string>
+#include "serialization.h"
+#include "structures.h"
 
 namespace application_context {
 
@@ -49,5 +54,23 @@ void remove_connection(std::string const &resource_id,
 }
 
 template <typename T>
-void multicast(std::string const &resource_id, T const &data) {}
+void multicast(std::string const &resource_id, T const &data) {
+  using nlohmann::json;
+  ResponseFormat<T> data_to_share;
+  data_to_share.data = std::move(data);
+  json json_message = data_to_share;
+  std::shared_ptr<std::string> str_message(
+      new std::string(json_message.dump()));
+  for (const auto &connection : get_connections(resource_id)) {
+    connection->socket().template async_write_some(
+        asio::buffer(str_message->data(), str_message->size()),
+        [str_message, connection](asio::error_code const &ec,
+                                  std::size_t /*len*/) {
+          if (ec) {
+            // handle error
+            return;
+          }
+        });
+  }
+}
 }  // namespace application_context
