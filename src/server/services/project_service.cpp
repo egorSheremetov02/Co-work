@@ -1,8 +1,8 @@
 //
 // Created by egor on 03.05.2021.
 //
-#include "project_service.h"
-#include "app_db_connection.h"
+#include "project_service.hpp"
+#include "app_db_connection.hpp"
 #include "serialization.h"
 #include "structures.h"
 

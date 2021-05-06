@@ -1,8 +1,8 @@
 //
 // Created by egor on 17.04.2021.
 //
-#include "task_service.h"
-#include "app_db_connection.h"
+#include "task_service.hpp"
+#include "app_db_connection.hpp"
 #include "orm.h"
 #include "serialization.h"
 

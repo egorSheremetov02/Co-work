@@ -1,18 +1,18 @@
 //
 // Created by egor on 27.02.2021.
 //
-#include "tcp_connection.h"
+#include "tcp_connection.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 #include "request.h"
 #include "request_format.h"
 #include "serialization.h"
-#include "src/server/core/controller.h"
-#include "src/server/services/auth_service.h"
+#include "src/server/core/controller.hpp"
+#include "src/server/services/auth_service.hpp"
 #include "structures.h"
 
-using nlohmann::json;
+using nlohmann::json, asio::ip::tcp;
 
 TcpConnection::TcpConnection(asio::io_context &io_context,
                              std::size_t max_in_message_size,

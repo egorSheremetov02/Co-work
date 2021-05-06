@@ -2,13 +2,13 @@
 // Created by egor on 06.03.2021.
 //
 
-#ifndef CO_WORK_HANDLER_REGISTRATION_H
-#define CO_WORK_HANDLER_REGISTRATION_H
+#ifndef CO_WORK_HANDLER_REGISTRATION_HPP
+#define CO_WORK_HANDLER_REGISTRATION_HPP
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
-#include "src/server/core/handler.h"
+#include "src/server/core/handler.hpp"
 
 using HandlerStorage = std::unordered_map<std::string, Handler>;
 
@@ -29,4 +29,4 @@ HandlerStorage &get_handler_storage();
 #define REGISTER_HANDLER(resource, handler) \
   REGISTER_HANDLER_INTERNAL1(__LINE__, resource, handler)
 
-#endif  // CO_WORK_HANDLER_REGISTRATION_H
+#endif  // CO_WORK_HANDLER_REGISTRATION_HPP

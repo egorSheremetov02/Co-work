@@ -2,12 +2,12 @@
 // Created by egor on 27.02.2021.
 //
 
-#ifndef CO_WORK_APPLICATION_CONTEXT_H
-#define CO_WORK_APPLICATION_CONTEXT_H
+#ifndef CO_WORK_APPLICATION_CONTEXT_HPP
+#define CO_WORK_APPLICATION_CONTEXT_HPP
 
 #include <set>
 #include <unordered_map>
-#include "tcp_connection.h"
+#include "tcp_connection.hpp"
 
 namespace application_context {
 
@@ -32,4 +32,4 @@ void remove_connection(std::string const &resource_id,
 template <typename T>
 void multicast(std::string const &resource_id, T const &data);
 }  // namespace application_context
-#endif  // CO_WORK_APPLICATION_CONTEXT_H
+#endif  // CO_WORK_APPLICATION_CONTEXT_HPP

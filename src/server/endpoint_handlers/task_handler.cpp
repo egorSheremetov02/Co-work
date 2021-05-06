@@ -4,9 +4,9 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "serialization.h"
-#include "src/server/core/handler.h"
-#include "src/server/core/handler_registration.h"
-#include "task_service.h"
+#include "src/server/core/handler.hpp"
+#include "src/server/core/handler_registration.hpp"
+#include "task_service.hpp"
 
 using nlohmann::json;
 

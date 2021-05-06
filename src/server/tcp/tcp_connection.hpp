@@ -2,8 +2,8 @@
 // Created by egor on 27.02.2021.
 //
 
-#ifndef CO_WORK_TCP_CONNECTION_H
-#define CO_WORK_TCP_CONNECTION_H
+#ifndef CO_WORK_TCP_CONNECTION_HPP
+#define CO_WORK_TCP_CONNECTION_HPP
 #include <asio.hpp>
 #include <string>
 #include "response_format.h"
@@ -45,4 +45,4 @@ void authentication_handler(std::size_t len,
 void write_auth_response(ResponseFormat<User> const &auth_response,
                          TcpConnection::pointer &connection);
 
-#endif  // CO_WORK_TCP_CONNECTION_H
+#endif  // CO_WORK_TCP_CONNECTION_HPP

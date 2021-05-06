@@ -2,7 +2,7 @@
 // Created by egor on 24.04.2021.
 //
 
-#include "app_db_connection.h"
+#include "app_db_connection.hpp"
 
 DataBase &get_app_db() {
   static DataBase db;

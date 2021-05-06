@@ -19,7 +19,7 @@
 #include "response.h"
 #include "response_format.h"
 #include "structures.h"
-#include "tcp_connection.h"
+#include "tcp_connection.hpp"
 
 using asio::ip::tcp;
 using nlohmann::json;

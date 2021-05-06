@@ -2,8 +2,8 @@
 // Created by egor on 04.04.2021.
 //
 
-#ifndef CO_WORK_TASK_SERVICE_H
-#define CO_WORK_TASK_SERVICE_H
+#ifndef CO_WORK_TASK_SERVICE_HPP
+#define CO_WORK_TASK_SERVICE_HPP
 
 #include <nlohmann/json.hpp>
 #include <vector>
@@ -17,4 +17,4 @@ std::vector<Task> get_tasks();
 Task edit_task(uint32_t);
 };  // namespace task_service
 
-#endif  // CO_WORK_TASK_SERVICE_H
+#endif  // CO_WORK_TASK_SERVICE_HPP

@@ -3,12 +3,12 @@
 //
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "project_service.h"
+#include "project_service.hpp"
 #include "request_format.h"
 #include "serialization.h"
-#include "src/server/core/handler_registration.h"
+#include "src/server/core/handler_registration.hpp"
 #include "structures.h"
-#include "tcp_connection.h"
+#include "tcp_connection.hpp"
 
 void create_project_handler(nlohmann::json &in_json,
                             TcpConnection::pointer &connection) {
