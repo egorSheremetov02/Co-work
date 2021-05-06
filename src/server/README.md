@@ -46,6 +46,6 @@ For instance, ``project<project_id>`` is a good example of such a resource. Ther
 relevant state (employees who are working on this project) and there are modifications that must be sent to all clients
 as quickly as possible (creations of new tasks, changes of the old ones).
 
-### Currently available subscriptions:
+### Currently Available Subscriptions:
 
 - ``project<project_id>`` -- project information subscription, all information changed will be delivered to clients

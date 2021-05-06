@@ -11,6 +11,8 @@
 #include "response_format.h"
 #include "structures.h"
 
+/* JSON Serialization */
+
 NLOHMANN_JSON_SERIALIZE_ENUM(Roles,
                              {
                                  {ADMIN, "admin"},
@@ -124,6 +126,18 @@ inline void from_json(nlohmann::json const &j, ProjectCreateDTO &projectDTO) {
   j.at("date").get_to(projectDTO.date);
 }
 
+inline void to_json(nlohmann::json &j, TaskGetAllDTO const &tasksDTO) {
+  j = nlohmann::json{{"project_id", tasksDTO.project_id},
+                     {"page_number", tasksDTO.page_number},
+                     {"tasks_per_page", tasksDTO.tasks_per_page}};
+}
+
+inline void from_json(nlohmann::json const &j, TaskGetAllDTO &tasksDTO) {
+  j.at("project_id").get_to(tasksDTO.project_id);
+  j.at("page_number").get_to(tasksDTO.page_number);
+  j.at("tasks_per_page").get_to(tasksDTO.tasks_per_page);
+}
+
 template <typename T>
 inline void to_json(nlohmann::json &j, const ResponseFormat<T> &request) {
   j = nlohmann::json{{"error", request.error}, {"data", request.data}};
@@ -134,6 +148,8 @@ inline void from_json(nlohmann::json const &j, ResponseFormat<T> &request) {
   j.at("data").get_to(request.data);
   j.at("error").get_to(request.error);
 }
+
+/* DTO Serialization */
 
 inline Task from_dto(TaskCreateDTO const &dto) {
   Task task;

@@ -52,6 +52,12 @@ struct TaskCreateDTO {
   uint32_t project_id;
 };
 
+struct TaskGetAllDTO {
+  uint32_t project_id{};
+  uint32_t tasks_per_page{};
+  uint32_t page_number{};
+};
+
 struct ProjectCreateDTO {
   std::string name;
   std::string date;

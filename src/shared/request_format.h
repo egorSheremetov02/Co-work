@@ -20,4 +20,4 @@ struct AuthorizedRequestFormat : RequestFormat<T> {
   std::string token;
 };
 
-#endif  // CO_WORK_MESSAGE_FORMAT_H
+#endif  // CO_WORK_REQUEST_FORMAT_H
