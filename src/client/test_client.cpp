@@ -2,6 +2,7 @@
 // Created by egor on 12.02.2021.
 //
 #include <asio.hpp>
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <nlohmann/json.hpp>
@@ -32,17 +33,22 @@ struct InitMap {
 
 void do_write();
 
+void do_write_nonblocking();
+
 void do_read() {
   response.resize(1024);
   socket1.async_read_some(
       asio::buffer(response.data(), response.size()),
       [&](asio::error_code const & /*ec*/, std::size_t len) {
         std::cout << response.substr(0, len) << std::endl;
-        do_write();
+        //        do_write();
+        do_write_nonblocking();
       });
 }
 
 void do_write() {
+  // Interactive version
+  /*
   std::cout << "Choose resource you want to connect to:" << std::endl;
   for (int i = 0; i < resources.size(); ++i) {
     std::cout << '\t' << i << ' ' << resources[i] << std::endl;
@@ -57,7 +63,6 @@ void do_write() {
          "task description " + std::to_string(random() % INT32_MAX), 9,
          "in progress", 1}};
     json json_project_request = task_create_request;
-    //    std::string res = json_project_request.dump();
     std::shared_ptr<std::string> res(
         new std::string(json_project_request.dump()));
     socket1.async_write_some(
@@ -71,10 +76,9 @@ void do_write() {
           }
         });
   } else if (resources[i] == "task get_all") {
-    RequestFormat<int> task_get_all_request = {resources[i]};
+    RequestFormat<TaskGetAllDTO> task_get_all_request = {resources[i], {1}};
     json json_get_all_tasks_req = task_get_all_request;
     std::cout << json_get_all_tasks_req.dump(4) << std::endl;
-    //    std::string res = json_get_all_tasks_req.dump();
     std::shared_ptr<std::string> res(
         new std::string(json_get_all_tasks_req.dump()));
     socket1.async_write_some(
@@ -93,7 +97,6 @@ void do_write() {
     json_task_edit_req["task_id"] = 1;
     std::shared_ptr<std::string> res(
         new std::string(json_task_edit_req.dump()));
-    //    std::string res = json_task_edit_req.dump();
     socket1.async_write_some(
         asio::buffer(res->data(), res->size()),
         [res](asio::error_code const &ec, std::size_t) {
@@ -123,6 +126,63 @@ void do_write() {
   } else {
     assert(false);
   }
+   */
+}
+
+void do_subscribe() {
+  RequestFormat<TaskGetAllDTO> task_get_all_request = {"task get_all", {1}};
+  json json_get_all_tasks_req = task_get_all_request;
+  std::cout << json_get_all_tasks_req.dump(4) << std::endl;
+  std::shared_ptr<std::string> res(
+      new std::string(json_get_all_tasks_req.dump()));
+  socket1.async_write_some(asio::buffer(res->data(), res->size()),
+                           [&](asio::error_code const &ec, std::size_t) {
+                             if (ec) {
+                               std::cout << ec.message() << std::endl;
+                             } else {
+                               std::cout << "Successfully wrote data to stream"
+                                         << std::endl;
+                               do_read();
+                             }
+                           });
+}
+
+void do_write_nonblocking() {
+  //  asio::steady_timer t(service, asio::chrono::seconds(2));
+  //  t.async_wait([&](asio::error_code const &ec) {
+  //    socket1.async_write_some(asio::buffer(response.data(), response.size()),
+  //                             [&](asio::error_code const &ec, std::size_t
+  //                             len) {
+  //                               if (ec) {
+  //                                 return;
+  //                               }
+  //                             });
+  //  });
+  //  socket1.write_some(asio::buffer(s));
+#ifdef FIRST_TEST
+  RequestFormat<TaskCreateDTO> task_create_request = {
+      "task create",
+      {"test task " + std::to_string(random() % INT32_MAX),
+       "task description " + std::to_string(random() % INT32_MAX), 9,
+       "in progress", 1}};
+  json json_project_request = task_create_request;
+  std::shared_ptr<std::string> res(
+      new std::string(json_project_request.dump()));
+  socket1.async_write_some(
+      asio::buffer(res->data(), res->size()),
+      [&](asio::error_code const &ec, std::size_t) {
+        if (ec) {
+          std::cout << ec.message() << std::endl;
+        } else {
+          std::cout << "Successfully wrote data to stream" << std::endl;
+          asio::steady_timer t(service, asio::chrono::seconds(2));
+          t.wait();
+          do_read();
+        }
+      });
+#else
+  do_read();
+#endif
 }
 
 void authenticate() {
@@ -148,7 +208,7 @@ void authenticate() {
           if (ec) {
             return;
           }
-          response.resize(1024);
+          response.resize(10000);
           socket1.async_read_some(
               asio::buffer(response.data(), response.size()),
               [&](asio::error_code const & /*ec*/, std::size_t len) {
@@ -159,7 +219,8 @@ void authenticate() {
                 if (response.error.empty()) {
                   std::cout << "Successfully authenticated to server"
                             << std::endl;
-                  do_write();
+                  //                  do_write();
+                  do_subscribe();
                 } else {
                   socket1.close();
                   std::cout

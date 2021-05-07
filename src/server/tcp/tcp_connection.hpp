@@ -6,6 +6,7 @@
 #define CO_WORK_TCP_CONNECTION_HPP
 #include <asio.hpp>
 #include <string>
+#include <unordered_set>
 #include "response_format.h"
 #include "structures.h"
 
@@ -19,22 +20,31 @@ struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 
   void do_read();
 
+  void add_subscription(std::string const &);
+
   asio::ip::tcp::socket &socket();
 
   std::string &in_message();
 
   std::string &out_message();
 
+  ~TcpConnection();
+
+  TcpConnection() = delete;
+  TcpConnection(TcpConnection const &) = delete;
+  TcpConnection &operator=(TcpConnection const &) = delete;
+  TcpConnection(TcpConnection &&) = delete;
+  TcpConnection &operator=(TcpConnection &&) = delete;
+
   private:
   explicit TcpConnection(asio::io_context &io_context,
                          std::size_t max_in_message_size,
                          std::size_t max_out_message_size);
 
-  void handle_write();
-
   asio::ip::tcp::socket socket_;
   std::string in_message_;
   std::string out_message_;
+  std::unordered_set<std::string> subscriptions_;
 };
 
 void authenticate(TcpConnection::pointer &connection);

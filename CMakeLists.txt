@@ -65,6 +65,7 @@ find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
 
 add_executable(client src/client/test_client.cpp)
+add_executable(first-client src/client/test_client.cpp)
 
 add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
@@ -112,5 +113,7 @@ target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQ
 target_link_libraries(tests PRIVATE nlohmann_json::nlohmann_json)
 #target_link_libraries(tests PUBLIC date/include)
 
+target_compile_definitions(first-client PUBLIC -DFIRST_TEST)
 target_link_libraries(client PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(first-client PRIVATE nlohmann_json::nlohmann_json)
 #target_link_libraries(client PUBLIC date/include)

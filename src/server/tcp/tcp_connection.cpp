@@ -5,11 +5,12 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
+#include "application_context.hpp"
+#include "auth_service.hpp"
+#include "controller.hpp"
 #include "request.h"
 #include "request_format.h"
 #include "serialization.h"
-#include "src/server/core/controller.hpp"
-#include "src/server/services/auth_service.hpp"
 #include "structures.h"
 
 using nlohmann::json, asio::ip::tcp;
@@ -44,8 +45,6 @@ void TcpConnection::do_read() {
         do_read();
       });
 }
-
-void TcpConnection::handle_write() {}
 
 TcpConnection::pointer TcpConnection::create(asio::io_context &io_context,
                                              std::size_t max_in_message_size,
@@ -137,4 +136,14 @@ void write_auth_response(ResponseFormat<User> const &auth_response,
           connection->socket().close();
         }
       });
+}
+
+void TcpConnection::add_subscription(std::string const &resource_id) {
+  subscriptions_.insert(resource_id);
+}
+
+TcpConnection::~TcpConnection() {
+  for (auto const &resource_id : subscriptions_) {
+    application_context::remove_connection(resource_id, shared_from_this());
+  }
 }
