@@ -3,7 +3,6 @@
 //
 #include "task_service.hpp"
 #include "app_db_connection.hpp"
-#include "orm.h"
 #include "serialization.h"
 
 Task task_service::create_task(TaskCreateDTO const &taskDTO) {
@@ -16,7 +15,8 @@ Task task_service::create_task(TaskCreateDTO const &taskDTO) {
 }
 
 std::vector<Task> task_service::get_tasks() {
-  return get_app_db().tasks.select_all();
+  // TODO put something adequate here instead of empty container
+  return {};
 }
 
 Task task_service::edit_task(uint32_t task_id) {
