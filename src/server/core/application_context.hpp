@@ -42,13 +42,19 @@ void multicast(std::string const &resource_id, T const &data) {
   for (const auto &connection : get_connections(resource_id)) {
     connection->socket().template async_write_some(
         asio::buffer(str_message->data(), str_message->size()),
-        [str_message, connection](asio::error_code const &ec, std::size_t len) {
+        [str_message, connection
+#ifdef LOGGING
+         ,
+         resource = resource_id
+#endif
+    ](asio::error_code const &ec, std::size_t len) {
           if (ec) {
             // handle error
             return;
           }
 #ifdef LOGGING
-          std::cout << "Subscription invocation: " << len << std::endl;
+          std::cout << "Subscription " << resource << " invocation: " << len
+                    << std::endl;
 #endif
         });
   }

@@ -71,7 +71,8 @@ add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
 add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp)
 
-add_executable(broadcast-server
+add_executable(
+        broadcast-server
         src/server/core/application_context.cpp
         src/server/services/auth_service.cpp
         src/server/tcp/tcp_connection.cpp
@@ -84,9 +85,11 @@ add_executable(broadcast-server
         src/server/services/task_service.cpp
         src/server/endpoint_handlers/project_handler.cpp
         src/server/services/project_service.cpp
-        src/server/app_db/app_db_connection.cpp)
+        src/server/app_db/app_db_connection.cpp
+)
 
-add_executable(log-broadcast-server
+add_executable(
+        log-broadcast-server
         src/server/core/application_context.cpp
         src/server/services/auth_service.cpp
         src/server/tcp/tcp_connection.cpp
@@ -99,7 +102,8 @@ add_executable(log-broadcast-server
         src/server/services/task_service.cpp
         src/server/endpoint_handlers/project_handler.cpp
         src/server/services/project_service.cpp
-        src/server/app_db/app_db_connection.cpp)
+        src/server/app_db/app_db_connection.cpp
+)
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
 target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})

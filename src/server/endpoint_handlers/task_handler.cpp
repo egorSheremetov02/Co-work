@@ -43,7 +43,7 @@ void create_task_handler(json &in_json,
   json out_json;
   auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>();
   Task task = task_service::create_task(taskDTO.data);
-  // TODO take multicast logic out of application_context (WTF???)
+  // TODO: take multicast logic out of application_context (WTF???)
   application_context::multicast("project" + std::to_string(task.project_id),
                                  task);
 #ifdef LOGGING

@@ -7,8 +7,42 @@ enum Roles { ADMIN, USER };
 
 enum Actions { ADD_COMMENT, CREATE_TASK };
 
+// Used instead of standard optional for easier serialization
+template <typename T>
+struct OptionalField {
+  public:
+  // NOLINTNEXTLINE
+  bool set = false;
+  // NOLINTNEXTLINE
+  T value{};
+
+  OptionalField() = default;
+
+  explicit OptionalField(T const &v) : value(v) {}
+
+  operator bool() {
+    return has_value();
+  }
+
+  operator T() {
+    return value;
+  }
+
+  T get() {
+    return value;
+  }
+
+  T &val() {
+    return value;
+  }
+
+  bool has_value() {
+    return set;
+  }
+};
+
 struct Task {
-  unsigned int id;
+  uint32_t id;
   std::string name;
   std::string description;
   std::string date;
@@ -18,30 +52,26 @@ struct Task {
 };
 
 struct Project {
-  unsigned int id;
+  uint32_t id;
   std::string name;
   std::string date;
 };
 
+struct AttachedFile {};
+
 struct User {
-  unsigned int id;
+  uint32_t id;
   std::string account_name;
   std::string full_name;
   Roles role_in_system;
 };
 
 struct Action {
-  unsigned int task_id;
-  unsigned int user_id;
+  uint32_t task_id;
+  uint32_t user_id;
+  Actions action_type;
+  std::string date;
   std::string data;
-};
-
-struct CreateAction : Action {
-  std::string text;
-};
-
-struct CommentAction : Action {
-  std::string text_of_comment;
 };
 
 struct TaskCreateDTO {
@@ -54,12 +84,13 @@ struct TaskCreateDTO {
 
 struct TaskGetAllDTO {
   uint32_t project_id{};
-  uint32_t tasks_per_page{};
-  uint32_t page_number{};
+  OptionalField<uint32_t> tasks_per_page{};
+  OptionalField<uint32_t> page_number{};
 };
 
 struct ProjectCreateDTO {
   std::string name;
   std::string date;
 };
+
 #endif  // CO_WORK_STRUCTURES_H

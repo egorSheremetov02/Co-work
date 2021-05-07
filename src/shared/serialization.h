@@ -87,6 +87,17 @@ inline void from_json(nlohmann::json const &j,
   j.at("token").get_to(request.token);
 }
 
+template <typename T>
+inline void from_json(nlohmann::json const &j, OptionalField<T> &opt_field) {
+  j.at("value").get_to(opt_field.value);
+  j.at("set").get_to(opt_field.set);
+}
+
+template <typename T>
+inline void to_json(nlohmann::json &j, OptionalField<T> const &opt_field) {
+  j = nlohmann::json{{"value", opt_field.value}, {"set", opt_field.set}};
+}
+
 inline void to_json(nlohmann::json &j, User const &user) {
   j = nlohmann::json{{"id", user.id},
                      {"account_name", user.account_name},

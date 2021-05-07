@@ -8,6 +8,7 @@
 Task task_service::create_task(TaskCreateDTO const &taskDTO) {
   Task task = from_dto(taskDTO);
 
+  // TODO : generate date right way
   task.date = "01-01-2021";
   task.id = get_app_db().create_task(task);
 
@@ -15,7 +16,7 @@ Task task_service::create_task(TaskCreateDTO const &taskDTO) {
 }
 
 std::vector<Task> task_service::get_tasks() {
-  // TODO put something adequate here instead of empty container
+  // TODO : put something adequate here instead of empty container
   return {};
 }
 
