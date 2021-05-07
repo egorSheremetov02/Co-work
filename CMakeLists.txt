@@ -86,6 +86,7 @@ add_executable(
         src/server/endpoint_handlers/project_handler.cpp
         src/server/services/project_service.cpp
         src/server/app_db/app_db_connection.cpp
+        src/server/core/multicast.cpp
 )
 
 add_executable(
@@ -103,6 +104,7 @@ add_executable(
         src/server/endpoint_handlers/project_handler.cpp
         src/server/services/project_service.cpp
         src/server/app_db/app_db_connection.cpp
+        src/server/core/multicast.cpp
 )
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)

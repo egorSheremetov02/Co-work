@@ -1,4 +1,10 @@
-## Client-Server Protocol Description
+# Client-Server Protocol Description
+
+### Request Format
+
+If you want to make a request to server you use entity ``RequestFormat<T>``. It is constructed by two parameters : ``resource``
+and ``data``, where ``resource`` denotes endpoint name and ``data`` is what client would like to send to this endpoint
+for server to process
 
 ### Currently Available Endpoints
 
@@ -37,7 +43,7 @@ std::vector<Task> get_all_project_tasks(int project_id) {
 - **Project**
     - ``project create``
 
-## Subscriptions
+### Subscriptions
 
 Subscription is just fancy name for abstraction that denotes resource that notifies about its state changes all
 interested clients.

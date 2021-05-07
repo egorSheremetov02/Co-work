@@ -15,7 +15,7 @@ MulticastClients &get_multicast_clients() {
   return *multicast_clients;
 }
 
-void check_resource_existence(std::string const &resource_id) {
+static void check_resource_existence(std::string const &resource_id) {
   if (get_multicast_clients().find(resource_id) ==
       get_multicast_clients().end()) {
     throw std::invalid_argument("Can't delete resource with id: " +
@@ -23,8 +23,8 @@ void check_resource_existence(std::string const &resource_id) {
   }
 }
 
-void check_connection_existence(std::string const &resource_id,
-                                TcpConnection::pointer &connection) {
+static void check_connection_existence(std::string const &resource_id,
+                                       TcpConnection::pointer &connection) {
   check_resource_existence(resource_id);
   if (get_multicast_clients()[resource_id].find(connection) ==
       get_multicast_clients()[resource_id].end()) {

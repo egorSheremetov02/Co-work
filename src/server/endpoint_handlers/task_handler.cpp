@@ -7,6 +7,7 @@
 #include <string>
 #include "application_context.hpp"
 #include "handler_registration.hpp"
+#include "multicast.h"
 #include "serialization.h"
 #include "task_service.hpp"
 
@@ -44,8 +45,7 @@ void create_task_handler(json &in_json,
   auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>();
   Task task = task_service::create_task(taskDTO.data);
   // TODO: take multicast logic out of application_context (WTF???)
-  application_context::multicast("project" + std::to_string(task.project_id),
-                                 task);
+  multicasting::do_multicast("project" + std::to_string(task.project_id), task);
 #ifdef LOGGING
   std::cout << "Create new task" << std::endl;
 #endif
