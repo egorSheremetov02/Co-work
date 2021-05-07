@@ -32,13 +32,71 @@ struct Expression {
   Expression operator==(int data) const {
     return Expression{expr_ + "=" + "\'" + std::to_string(data) + "\'"};
   }
+  Expression operator>(int data) const {
+    return Expression{expr_ + ">" + "\'" + std::to_string(data) + "\'"};
+  }
+};
+template <typename T>
+struct Table;
+
+struct Select {
+  std::string what{};
+  std::string condition{};
+  std::string order{};
+  int lim = 0;
+
+  Select() = default;
+
+  template <typename T>
+  Select operator()(Table<T> const &table_) {
+    this->what = table_.table_;
+    return *this;
+  }
+
+  Select where(Expression const &request) {
+    this->condition = request.expr_;
+    return *this;
+  }
+  Select limit(int limit_) {
+    this->lim = limit_;
+    return *this;
+  }
+
+  template <typename T>
+  Select join(Table<T> &t) {
+    what =
+        t.relations_[what] + " INNER JOIN " + what + " ON " + t.on_tables(what);
+    return *this;
+  }
+
+  Select order_by(std::string colomn) {
+    std::cout << "AA" << std::endl;
+    this->order = colomn;
+    return *this;
+  }
+
+  std::string build() const {
+    std::string result = "SELECT * FROM " + what;
+    if (condition != "") {
+      result += " WHERE " + condition;
+    }
+    if (order != "") {
+      std::cout << "AA" << std::endl;
+      result += " ORDER BY " + order;
+    }
+    if (lim != 0) {
+      result += " LIMIT " + std::to_string(lim);
+    }
+    std::cout << result << std::endl;
+    return result;
+  }
 };
 
 template <typename T>
 struct Table {
   std::string table_;
-
-  Table(std::string t) : table_(std::move(t)){};
+  pqxx::connection *C;
+  Table(std::string t, pqxx::connection *c) : table_(std::move(t)), C(c){};
   std::map<std::string, std::string> relations_;
 
   virtual std::string on_tables(std::string const &str) = 0;
@@ -56,49 +114,16 @@ struct Table {
       T tmp;
       from_orm(row, tmp);
       data.push_back(tmp);
-      //  out(tmp);
+      out(tmp);
     }
-
     return data;
   }
 
-  std::vector<T> select_all() {
+  std::vector<T> operator()(Select const &select) {
     try {
-      pqxx::connection C(CONNECTION_STRING(DBUSER));
-      pqxx::work W{C};
-      C.prepare("select", "SELECT * FROM " + table_);
-      pqxx::result R{W.exec_prepared("select")};
-      return convert_to_vector(R);
-    } catch (std::exception const &e) {
-      std::cerr << e.what() << std::endl;
-    }
-    return {};
-  }
-
-  std::vector<T> select_where(Expression const &request) {
-    try {
-      pqxx::connection C(CONNECTION_STRING(DBUSER));
-      pqxx::work W{C};
-      C.prepare("select",
-                "SELECT * FROM " + table_ + " WHERE " + request.expr_);
-      pqxx::result R{W.exec_prepared("select")};
-      return convert_to_vector(R);
-    } catch (std::exception const &e) {
-      std::cerr << e.what() << std::endl;
-    }
-    return {};
-  }
-
-  std::vector<T> select_join_where(std::string const &table_to_join,
-                                   Expression const &request) {
-    try {
-      pqxx::connection C(CONNECTION_STRING(DBUSER));
-      pqxx::work W{C};
-      C.prepare("select", "SELECT * FROM " + relations_[table_to_join] +
-                              " INNER JOIN " + table_ + " ON " +
-                              on_tables(relations_[table_to_join]) + " WHERE " +
-                              request.expr_);
-      pqxx::result R{W.exec_prepared("select")};
+      pqxx::work W{*C};
+      pqxx::result R{W.exec(select.build())};
+      W.commit();
       return convert_to_vector(R);
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
@@ -143,7 +168,6 @@ struct Table {
       pqxx::result R = W.exec("UPDATE " + table_ + " SET " + request.expr_ +
                               "WHERE id='" + std::to_string(id) + "'");
       W.commit();
-      //   return R[0][0].as<int>();
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
     }
@@ -151,20 +175,20 @@ struct Table {
 };
 
 struct Users : Table<User> {
-  Users(std::string t) : Table(std::move(t)){};
+  Users(std::string t, pqxx::connection *c) : Table(std::move(t), c){};
   Expression id{"id"}, user_id{"user_id"}, account_name{"account_name"},
       full_name{"full_name"}, password{"password"};
 
   std::string on_tables(std::string const &str) override {
-    if (str == "dedependence_task_user") {
-      return "users.id = " + str + ".task_id";
+    if (str == "tasks") {
+      return str + ".id = " + relations_[str] + ".task_id";
     }
-    return "users.id = " + str + ".project_id";
+    return str + ".id = " + relations_[str] + ".project_id";
   }
 };
 
 struct Tasks : Table<Task> {
-  Tasks(std::string t) : Table(std::move(t)){};
+  Tasks(std::string t, pqxx::connection *c) : Table(std::move(t), c){};
   Expression id{"id"}, task_id{"task_id"}, name{"name"},
       description{"description"}, date{"date"}, project_id{"project_id"},
       urgency{"urgency"}, status{"status"};
@@ -175,7 +199,7 @@ struct Tasks : Table<Task> {
 };
 
 struct Projects : Table<Project> {
-  Projects(std::string t) : Table(t){};
+  Projects(std::string t, pqxx::connection *c) : Table(t, c){};
   Expression id{"id"}, name{"name"}, date{"date"}, project_id{"project_id"};
 
   std::string on_tables(std::string const &str) override {

@@ -10,9 +10,11 @@
 #include "src/shared/structures.h"
 
 struct DataBase {
+  pqxx::connection *C;
   db::Users users;
   db::Tasks tasks;
   db::Projects projs;
+  db::Select select;
 
   DataBase();
 
@@ -22,6 +24,10 @@ struct DataBase {
 
   std::optional<User> auth(std::string const &login,
                            std::string const &password);
+
+  std::optional<Task> get_task(int id);
+  std::optional<Project> get_project(int id);
+  std::optional<User> get_user(int id);
 };
 
 #endif  // CO_WORK_DB_CONNECTION_H
