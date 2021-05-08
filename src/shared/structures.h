@@ -18,7 +18,7 @@ struct OptionalField {
 
   OptionalField() = default;
 
-  explicit OptionalField(T const &v) : value(v) {}
+  OptionalField(T const &v) : value(v), set(true) {}
 
   operator bool() {
     return has_value();

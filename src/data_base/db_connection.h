@@ -30,6 +30,8 @@ struct DataBase {
   std::optional<Task> get_task(int id);
   std::optional<Project> get_project(int id);
   std::optional<User> get_user(int id);
+
+  std::vector<Task> get_all_tasks_of_proj(TaskGetAllDTO &dto);
 };
 
 #endif  // CO_WORK_DB_CONNECTION_H

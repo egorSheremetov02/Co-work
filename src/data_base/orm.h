@@ -38,6 +38,7 @@ struct Select {
   std::string condition{};
   std::string order{};
   int lim = 0;
+  int off = 0;
 
   Select() = default;
 
@@ -53,6 +54,10 @@ struct Select {
   }
   Select limit(int limit_) {
     lim = limit_;
+    return *this;
+  }
+  Select offset(int offset_) {
+    off = offset_;
     return *this;
   }
 
@@ -74,11 +79,13 @@ struct Select {
       result += " WHERE " + condition;
     }
     if (order != "") {
-      std::cout << "AA" << std::endl;
       result += " ORDER BY " + order;
     }
     if (lim != 0) {
       result += " LIMIT " + std::to_string(lim);
+    }
+    if (off != 0) {
+      result += " OFFSET " + std::to_string(off);
     }
     std::cout << result << std::endl;
     return result;

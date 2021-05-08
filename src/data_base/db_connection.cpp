@@ -72,3 +72,14 @@ std::optional<User> DataBase::get_user(int id) {
     return std::nullopt;
   }
 }
+
+std::vector<Task> DataBase::get_all_tasks_of_proj(TaskGetAllDTO &dto) {
+  int amount_of_tasks =
+      dto.tasks_per_page.has_value() ? dto.tasks_per_page.get() : 5;
+  int skip = amount_of_tasks *
+             (dto.page_number.has_value() ? dto.page_number.get() : 0);
+  return tasks(select(tasks)
+                   .where(tasks.project_id == dto.project_id)
+                   .offset(skip)
+                   .limit(amount_of_tasks));
+}

@@ -21,6 +21,7 @@ int main() {
     std::vector<Task>
   currentt=tasks(select(tasks).where(tasks.id>13).order_by("name").limit(3));
   std::cout<<"AA"<<std::endl;
+
     User current=users.select_where(users.account_name == "admin" and
     users.password == "qwerty")[0];
 
@@ -47,8 +48,9 @@ int main() {
   Task t{0, "Task_task", "Description", "2021-04-17 06:05:05", 3, 7, "status"};
   // int tt=databasa.create_task(t);
   std::optional<User> current_user = databasa.auth("admin", "qwerty");
-  std::optional<Task> task = databasa.get_task(14);
-  task = databasa.get_task(14);
+  TaskGetAllDTO test{1, {3}, {1}};
+  std::vector<Task> task = databasa.get_all_tasks_of_proj(test);
+
   // User c=databasa.aut
   //  std::vector<Task>
   //  currentt=databasa.tasks(select(tasks).where(tasks.id>13).order_by("name").limit(3));
