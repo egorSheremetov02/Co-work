@@ -12,7 +12,7 @@
 namespace task_service {
 Task create_task(TaskCreateDTO const &);
 
-std::vector<Task> get_tasks();
+std::vector<Task> get_tasks(TaskGetAllDTO &dto);
 
 Task edit_task(uint32_t);
 };  // namespace task_service

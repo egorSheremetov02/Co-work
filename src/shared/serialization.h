@@ -149,6 +149,24 @@ inline void from_json(nlohmann::json const &j, TaskGetAllDTO &tasksDTO) {
   j.at("tasks_per_page").get_to(tasksDTO.tasks_per_page);
 }
 
+inline void to_json(nlohmann::json &j, TaskEditDTO &editDTO) {
+  j = nlohmann::json{{"task_id", editDTO.task_id},
+                     {"name", editDTO.name},
+                     {"description", editDTO.description},
+                     {"status", editDTO.status},
+                     {"date", editDTO.date},
+                     {"urgency", editDTO.urgency}};
+}
+
+inline void from_json(nlohmann::json const &j, TaskEditDTO &editDTO) {
+  j.at("task_id").get_to(editDTO.task_id);
+  j.at("name").get_to(editDTO.name);
+  j.at("description").get_to(editDTO.description);
+  j.at("status").get_to(editDTO.status);
+  j.at("date").get_to(editDTO.date);
+  j.at("urgency").get_to(editDTO.urgency);
+}
+
 template <typename T>
 inline void to_json(nlohmann::json &j, const ResponseFormat<T> &request) {
   j = nlohmann::json{{"error", request.error}, {"data", request.data}};

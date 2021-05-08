@@ -15,18 +15,17 @@ Task task_service::create_task(TaskCreateDTO const &taskDTO) {
   return task;
 }
 
-std::vector<Task> task_service::get_tasks() {
-  // TODO : put something adequate here instead of empty container
-  return {};
+std::vector<Task> task_service::get_tasks(TaskGetAllDTO &dto) {
+  return get_app_db().get_all_tasks_of_proj(dto);
 }
 
 Task task_service::edit_task(uint32_t task_id) {
-  std::vector<Task> tasks = std::move(get_tasks());
-  Task &to_be_edited =
-      *std::find_if(std::begin(tasks), std::end(tasks),
-                    [&](Task const &task) { return task_id == task.id; });
-
+  //  std::vector<Task> tasks = std::move(get_tasks());
+  //  Task &to_be_edited =
+  //      *std::find_if(std::begin(tasks), std::end(tasks),
+  //                    [&](Task const &task) { return task_id == task.id; });
+  // TODO : remove static_cast, anticipating DB interface change
+  Task to_be_edited = get_app_db().get_task(static_cast<int>(task_id)).value();
   to_be_edited.description += " edited ";
-
   return to_be_edited;
 }

@@ -18,7 +18,19 @@ struct OptionalField {
 
   OptionalField() = default;
 
+  // not marked explicit on purpose
+  // (implicit conversion seems pretty convenient in this case)
   OptionalField(T const &v) : value(v), set(true) {}
+
+  OptionalField &operator=(T const &v) {
+    this->value = v;
+    this->set = true;
+  }
+
+  OptionalField &operator=(T &&v) {
+    this->value = std::move(v);
+    this->set = true;
+  }
 
   operator bool() {
     return has_value();
@@ -86,6 +98,15 @@ struct TaskGetAllDTO {
   uint32_t project_id{};
   OptionalField<uint32_t> tasks_per_page{};
   OptionalField<uint32_t> page_number{};
+};
+
+struct TaskEditDTO {
+  uint32_t task_id{};
+  OptionalField<std::string> name{};
+  OptionalField<std::string> description{};
+  OptionalField<std::string> status{};
+  OptionalField<std::string> date{};
+  OptionalField<uint8_t> urgency{};
 };
 
 struct ProjectCreateDTO {

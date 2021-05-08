@@ -13,12 +13,11 @@
 
 using nlohmann::json;
 
-// TODO: add support for new functionality of paging
 void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
-  auto tasksDTO = in_json.get<RequestFormat<TaskGetAllDTO>>();
-  auto project_id = tasksDTO.data.project_id;
+  auto tasksDTO = in_json.get<RequestFormat<TaskGetAllDTO>>().data;
+  auto project_id = tasksDTO.project_id;
   json out_json;
-  out_json["tasks"] = task_service::get_tasks();
+  out_json["tasks"] = task_service::get_tasks(tasksDTO);
   connection->out_message() = out_json.dump();
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),
@@ -44,7 +43,6 @@ void create_task_handler(json &in_json,
   json out_json;
   auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>();
   Task task = task_service::create_task(taskDTO.data);
-  // TODO: take multicast logic out of application_context (WTF???)
   multicasting::do_multicast("project" + std::to_string(task.project_id), task);
 #ifdef LOGGING
   std::cout << "Create new task" << std::endl;
