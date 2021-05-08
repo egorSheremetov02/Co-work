@@ -10,12 +10,6 @@
 #include "../shared/structures.h"
 #include "serialization_orm.h"
 
-#define GET_RES_STR(token) #token
-
-// clang-format off
-#define CONNECTION_STRING(USER) GET_RES_STR(dbname=co-work_db user=USER)
-//clang-format on
-
 namespace db {
 
 struct Expression {
@@ -49,16 +43,16 @@ struct Select {
 
   template <typename T>
   Select operator()(Table<T> const &table_) {
-    this->what = table_.table_;
+    what = table_.table_;
     return *this;
   }
 
   Select where(Expression const &request) {
-    this->condition = request.expr_;
+    condition = request.expr_;
     return *this;
   }
   Select limit(int limit_) {
-    this->lim = limit_;
+    lim = limit_;
     return *this;
   }
 
@@ -70,7 +64,6 @@ struct Select {
   }
 
   Select order_by(std::string colomn) {
-    std::cout << "AA" << std::endl;
     this->order = colomn;
     return *this;
   }
@@ -133,8 +126,7 @@ struct Table {
 
   int insert(T const &object) {  // return id in db
     try {
-      pqxx::connection C(CONNECTION_STRING(DBUSER));
-      pqxx::work W{C};
+      pqxx::work W{*C};
       pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(object));
       W.commit();
       return R[0][0].as<int>();
@@ -144,13 +136,24 @@ struct Table {
     return -1;
   }
 
+  void del(Expression const &request) {  // TODO return VALUES
+    try {
+      pqxx::work W{*C};
+      pqxx::result R =
+          W.exec("DELETE FROM " + table_ + " WHERE " + request.expr_);
+      W.commit();
+
+    } catch (std::exception const &e) {
+      std::cerr << e.what() << std::endl;
+    }
+  }
+
   template <typename Z>
   bool insert_join(std::string const &table_to_join,
                    T const &object1,
                    Z const &object2) {
     try {
-      pqxx::connection C(CONNECTION_STRING(DBUSER));
-      pqxx::work W{C};
+      pqxx::work W{*C};
       pqxx::result R = W.exec("INSERT INTO " + relations_[table_to_join] +
                               to_orm(object1, object2));
       W.commit();
@@ -163,8 +166,7 @@ struct Table {
 
   void update(int id, Expression const &request) {
     try {
-      pqxx::connection C(CONNECTION_STRING(DBUSER));
-      pqxx::work W{C};
+      pqxx::work W{*C};
       pqxx::result R = W.exec("UPDATE " + table_ + " SET " + request.expr_ +
                               "WHERE id='" + std::to_string(id) + "'");
       W.commit();
@@ -194,7 +196,7 @@ struct Tasks : Table<Task> {
       urgency{"urgency"}, status{"status"};
 
   std::string on_tables(std::string const &str) override {
-    return "tasks.id = " + str + ".task_id";
+    return str + ".id = " + relations_[str] + ".task_id";
   }
 };
 
@@ -203,7 +205,7 @@ struct Projects : Table<Project> {
   Expression id{"id"}, name{"name"}, date{"date"}, project_id{"project_id"};
 
   std::string on_tables(std::string const &str) override {
-    return "projects.id = " + str + ".task_id";
+    return str + ".id = " + relations_[str] + ".task_id";
   }
 };
 

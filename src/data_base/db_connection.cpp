@@ -32,6 +32,10 @@ int DataBase::create_project(Project const &t) {
   return projs.insert(t);
 }
 
+int DataBase::create_user(User const &t) {
+  return users.insert(t);
+}
+
 std::optional<User> DataBase::auth(std::string const &login,
                                    std::string const &password) {
   std::cout << std::hash<std::string>{}(password) << '\n';

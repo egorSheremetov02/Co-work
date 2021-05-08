@@ -22,6 +22,8 @@ struct DataBase {
 
   int create_project(Project const &t);
 
+  int create_user(User const &t);
+
   std::optional<User> auth(std::string const &login,
                            std::string const &password);
 

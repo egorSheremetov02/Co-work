@@ -47,6 +47,15 @@ inline std::string to_orm(Project const &proj) {
   return sql;
 }
 
+// TODO
+
+inline std::string to_orm(User const &user) {
+  std::string sql = " (account_name,full_name,role_in_system) VALUES ('" +
+                    user.account_name + "','" + user.account_name +
+                    /*"','" +user.role_in_system+ */ "') RETURNING id";
+  return sql;
+}
+
 inline std::string to_orm(Task const &task) {
   std::string sql =
       " (name,description,due_date,project_id,urgency,status) VALUES ('" +
