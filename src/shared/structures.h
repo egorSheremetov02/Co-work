@@ -76,6 +76,7 @@ struct User {
   std::string account_name;
   std::string full_name;
   Roles role_in_system;
+  // std::string email;
 };
 
 struct Action {

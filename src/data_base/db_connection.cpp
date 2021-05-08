@@ -48,7 +48,7 @@ std::optional<User> DataBase::auth(std::string const &login,
   }
 }
 
-std::optional<Task> DataBase::get_task(int id) {
+std::optional<Task> DataBase::get_task(uint32_t id) {
   std::vector<Task> tmp = tasks(select(tasks).where(tasks.id == id));
   if (tmp.size() == 1) {
     return tmp[0];
@@ -56,7 +56,7 @@ std::optional<Task> DataBase::get_task(int id) {
     return std::nullopt;
   }
 }
-std::optional<Project> DataBase::get_project(int id) {
+std::optional<Project> DataBase::get_project(uint32_t id) {
   std::vector<Project> tmp = projs(select(projs).where(projs.id == id));
   if (tmp.size() == 1) {
     return tmp[0];
@@ -64,7 +64,7 @@ std::optional<Project> DataBase::get_project(int id) {
     return std::nullopt;
   }
 }
-std::optional<User> DataBase::get_user(int id) {
+std::optional<User> DataBase::get_user(uint32_t id) {
   std::vector<User> tmp = users(select(users).where(users.id == id));
   if (tmp.size() == 1) {
     return tmp[0];

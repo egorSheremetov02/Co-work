@@ -186,7 +186,7 @@ struct Table {
 struct Users : Table<User> {
   Users(std::string t, pqxx::connection *c) : Table(std::move(t), c){};
   Expression id{"id"}, user_id{"user_id"}, account_name{"account_name"},
-      full_name{"full_name"}, password{"password"};
+      full_name{"full_name"}, password{"password"}, email{"email"};
 
   std::string on_tables(std::string const &str) override {
     if (str == "tasks") {

@@ -8,6 +8,8 @@ inline void from_orm(pqxx::row const &row, User &user) {
   user.id = row["id"].as<int>();
   user.account_name = row["account_name"].c_str();
   user.full_name = row["full_name"].c_str();
+  // user.email = row["email"].c_str();
+
   // user.role_in_system=row["role_in_system"].c_str();
 }
 
@@ -50,9 +52,10 @@ inline std::string to_orm(Project const &proj) {
 // TODO
 
 inline std::string to_orm(User const &user) {
-  std::string sql = " (account_name,full_name,role_in_system) VALUES ('" +
-                    user.account_name + "','" + user.account_name +
-                    /*"','" +user.role_in_system+ */ "') RETURNING id";
+  std::string sql =
+      " (account_name,full_name,email) VALUES ('" + user.account_name + "','" +
+      user.account_name +
+      /*"','" +user.role_in_system+  "','" +user.email+*/ "') RETURNING id";
   return sql;
 }
 

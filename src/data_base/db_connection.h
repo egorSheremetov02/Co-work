@@ -27,11 +27,13 @@ struct DataBase {
   std::optional<User> auth(std::string const &login,
                            std::string const &password);
 
-  std::optional<Task> get_task(int id);
-  std::optional<Project> get_project(int id);
-  std::optional<User> get_user(int id);
+  std::optional<Task> get_task(uint32_t id);
+  std::optional<Project> get_project(uint32_t id);
+  std::optional<User> get_user(uint32_t id);
 
   std::vector<Task> get_all_tasks_of_proj(TaskGetAllDTO &dto);
+
+  bool registration();
 };
 
 #endif  // CO_WORK_DB_CONNECTION_H
