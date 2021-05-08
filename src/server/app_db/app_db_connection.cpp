@@ -14,7 +14,7 @@ Project &get_project_tmp() {
     Project project;
     Wrapper() {
       project.name = "Co-work";
-      project.date = "01.06.2021";
+      project.due_date = "01.06.2021";
       project.id = get_app_db().create_project(project);
     }
   } proj_wrapper;

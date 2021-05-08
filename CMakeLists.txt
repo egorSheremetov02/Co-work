@@ -69,7 +69,7 @@ add_executable(first-client src/client/test_client.cpp)
 
 add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
-add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp)
+add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp src/data_base/sha/sha256.cpp)
 
 add_executable(
         broadcast-server
@@ -87,6 +87,7 @@ add_executable(
         src/server/services/project_service.cpp
         src/server/app_db/app_db_connection.cpp
         src/server/core/multicast.cpp
+        src/data_base/sha/sha256.cpp
 )
 
 add_executable(
@@ -105,6 +106,7 @@ add_executable(
         src/server/services/project_service.cpp
         src/server/app_db/app_db_connection.cpp
         src/server/core/multicast.cpp
+        src/data_base/sha/sha256.cpp
 )
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)
@@ -112,7 +114,7 @@ target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json 
 #target_link_libraries(log-broadcast-server PUBLIC date/include)
 
 #target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
-target_link_libraries(orm-test ${PQXX_LIB} ${PQ_LIB})
+target_link_libraries(orm-test ${PQXX_LIB} ${PQ_LIB} nlohmann_json::nlohmann_json)
 target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
 #target_link_libraries(broadcast-server PUBLIC date/include)
 

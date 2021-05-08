@@ -29,6 +29,14 @@ struct Expression {
   Expression operator>(int data) const {
     return Expression{expr_ + ">" + "\'" + std::to_string(data) + "\'"};
   }
+
+  Expression operator<(int data) const {
+    return Expression{expr_ + "<" + "\'" + std::to_string(data) + "\'"};
+  }
+
+  Expression operator+=(Expression const &other) const {
+    return Expression{expr_ + ", " + other.expr_};
+  }
 };
 template <typename T>
 struct Table;
@@ -142,18 +150,18 @@ struct Table {
     }
     return -1;
   }
+  /*
+    void delete(Expression const &request) {  // TODO return VALUES
+      try {
+        pqxx::work W{*C};
+        pqxx::result R =
+            W.exec("DELETE FROM " + table_ + " WHERE " + request.expr_);
+        W.commit();
 
-  void del(Expression const &request) {  // TODO return VALUES
-    try {
-      pqxx::work W{*C};
-      pqxx::result R =
-          W.exec("DELETE FROM " + table_ + " WHERE " + request.expr_);
-      W.commit();
-
-    } catch (std::exception const &e) {
-      std::cerr << e.what() << std::endl;
-    }
-  }
+      } catch (std::exception const &e) {
+        std::cerr << e.what() << std::endl;
+      }
+    }*/
 
   template <typename Z>
   bool insert_join(std::string const &table_to_join,
@@ -171,7 +179,7 @@ struct Table {
     return false;
   }
 
-  void update(int id, Expression const &request) {
+  bool update(int id, Expression const &request) {
     try {
       pqxx::work W{*C};
       pqxx::result R = W.exec("UPDATE " + table_ + " SET " + request.expr_ +
@@ -199,8 +207,9 @@ struct Users : Table<User> {
 struct Tasks : Table<Task> {
   Tasks(std::string t, pqxx::connection *c) : Table(std::move(t), c){};
   Expression id{"id"}, task_id{"task_id"}, name{"name"},
-      description{"description"}, date{"date"}, project_id{"project_id"},
-      urgency{"urgency"}, status{"status"};
+      description{"description"}, due_date{"due_date"},
+      project_id{"project_id"}, urgency{"urgency"}, status{"status"},
+      start_date{"start_date"};
 
   std::string on_tables(std::string const &str) override {
     return str + ".id = " + relations_[str] + ".task_id";
@@ -209,7 +218,8 @@ struct Tasks : Table<Task> {
 
 struct Projects : Table<Project> {
   Projects(std::string t, pqxx::connection *c) : Table(t, c){};
-  Expression id{"id"}, name{"name"}, date{"date"}, project_id{"project_id"};
+  Expression id{"id"}, name{"name"}, due_date{"due_date"},
+      project_id{"project_id"}, start_date{"start_date"};
 
   std::string on_tables(std::string const &str) override {
     return str + ".id = " + relations_[str] + ".task_id";

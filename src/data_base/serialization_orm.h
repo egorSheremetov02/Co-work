@@ -8,22 +8,23 @@ inline void from_orm(pqxx::row const &row, User &user) {
   user.id = row["id"].as<int>();
   user.account_name = row["account_name"].c_str();
   user.full_name = row["full_name"].c_str();
-  // user.email = row["email"].c_str();
-
+  user.email = row["email"].c_str();
   // user.role_in_system=row["role_in_system"].c_str();
 }
 
 inline void from_orm(pqxx::row const &row, Project &proj) {
   proj.id = row["id"].as<int>();
-  proj.date = row["due_date"].c_str();
+  proj.due_date = row["due_date"].c_str();
   proj.name = row["name"].c_str();
+  proj.start_date = row["start_date"].c_str();
 }
 
 inline void from_orm(pqxx::row const &row, Task &task) {
   task.id = row["id"].as<int>();
   task.name = row["name"].c_str();
   task.description = row["description"].c_str();
-  task.date = row["due_date"].c_str();
+  task.due_date = row["due_date"].c_str();
+  task.start_date = row["start_date"].c_str();
   task.project_id =
       (row["project_id"].is_null()) ? -1 : row["project_id"].as<int>();
   task.urgency = (row["urgency"].is_null()) ? -1 : row["urgency"].as<int>();
@@ -32,7 +33,7 @@ inline void from_orm(pqxx::row const &row, Task &task) {
 
 inline void out(Task const &task) {
   std::cout << task.id << " " << task.name << " " << task.description << " "
-            << task.date << " " << task.project_id << std::endl;
+            << task.due_date << " " << task.project_id << std::endl;
 }
 
 inline void out(User const &user) {
@@ -45,7 +46,7 @@ inline void out(Project const &proj) {
 
 inline std::string to_orm(Project const &proj) {
   std::string sql = " (name,due_date) VALUES ('" + proj.name + "','" +
-                    proj.date + "') RETURNING id";
+                    proj.due_date + "') RETURNING id";
   return sql;
 }
 
@@ -62,7 +63,7 @@ inline std::string to_orm(User const &user) {
 inline std::string to_orm(Task const &task) {
   std::string sql =
       " (name,description,due_date,project_id,urgency,status) VALUES ('" +
-      task.name + "','" + task.description + "','" + task.date + "','" +
+      task.name + "','" + task.description + "','" + task.due_date + "','" +
       std::to_string(task.project_id) + "','" + std::to_string(task.urgency) +
       "','" + task.status + "') RETURNING id";
   return sql;

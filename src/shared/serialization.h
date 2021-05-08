@@ -22,19 +22,23 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Roles,
 inline void from_json(nlohmann::json const &j, Project &project) {
   j.at("id").get_to(project.id);
   j.at("name").get_to(project.name);
-  j.at("data").get_to(project.date);
+  j.at("due_data").get_to(project.due_date);
+  j.at("start_data").get_to(project.start_date);
 }
 
 inline void to_json(nlohmann::json &j, Project const &project) {
-  j = nlohmann::json{
-      {"id", project.id}, {"name", project.name}, {"date", project.date}};
+  j = nlohmann::json{{"id", project.id},
+                     {"name", project.name},
+                     {"due_date", project.due_date},
+                     {"start_date", project.start_date}};
 }
 
 inline void from_json(nlohmann::json const &j, Task &task) {
   j.at("id").get_to(task.id);
   j.at("name").get_to(task.name);
   j.at("description").get_to(task.description);
-  j.at("date").get_to(task.date);
+  j.at("due_date").get_to(task.due_date);
+  j.at("start_date").get_to(task.start_date);
   j.at("project_id").get_to(task.project_id);
   j.at("urgency").get_to(task.urgency);
   j.at("status").get_to(task.urgency);
@@ -43,7 +47,8 @@ inline void from_json(nlohmann::json const &j, Task &task) {
 inline void to_json(nlohmann::json &j, Task const &task) {
   j = nlohmann::json{{"id", task.id},
                      {"name", task.name},
-                     {"date", task.date},
+                     {"due_date", task.due_date},
+                     {"start_date", task.start_date},
                      {"description", task.description},
                      {"project_id", task.project_id},
                      {"urgency", task.urgency},
@@ -125,16 +130,18 @@ inline void from_json(nlohmann::json const &j, TaskCreateDTO &taskDTO) {
   j.at("description").get_to(taskDTO.description);
   j.at("urgency").get_to(taskDTO.urgency);
   j.at("status").get_to(taskDTO.status);
+  j.at("due_date").get_to(taskDTO.due_date);
   j.at("project_id").get_to(taskDTO.project_id);
 }
 
 inline void to_json(nlohmann::json &j, ProjectCreateDTO const &projectDTO) {
-  j = nlohmann::json{{"name", projectDTO.name}, {"date", projectDTO.date}};
+  j = nlohmann::json{{"name", projectDTO.name},
+                     {"due_date", projectDTO.due_date}};
 }
 
 inline void from_json(nlohmann::json const &j, ProjectCreateDTO &projectDTO) {
   j.at("name").get_to(projectDTO.name);
-  j.at("date").get_to(projectDTO.date);
+  j.at("due_date").get_to(projectDTO.due_date);
 }
 
 inline void to_json(nlohmann::json &j, TaskGetAllDTO const &tasksDTO) {
@@ -150,12 +157,10 @@ inline void from_json(nlohmann::json const &j, TaskGetAllDTO &tasksDTO) {
 }
 
 inline void to_json(nlohmann::json &j, TaskEditDTO &editDTO) {
-  j = nlohmann::json{{"task_id", editDTO.task_id},
-                     {"name", editDTO.name},
-                     {"description", editDTO.description},
-                     {"status", editDTO.status},
-                     {"date", editDTO.date},
-                     {"urgency", editDTO.urgency}};
+  j = nlohmann::json{
+      {"task_id", editDTO.task_id},         {"name", editDTO.name},
+      {"description", editDTO.description}, {"status", editDTO.status},
+      {"due_date", editDTO.due_date},       {"urgency", editDTO.urgency}};
 }
 
 inline void from_json(nlohmann::json const &j, TaskEditDTO &editDTO) {
@@ -163,7 +168,7 @@ inline void from_json(nlohmann::json const &j, TaskEditDTO &editDTO) {
   j.at("name").get_to(editDTO.name);
   j.at("description").get_to(editDTO.description);
   j.at("status").get_to(editDTO.status);
-  j.at("date").get_to(editDTO.date);
+  j.at("due_date").get_to(editDTO.due_date);
   j.at("urgency").get_to(editDTO.urgency);
 }
 
@@ -185,6 +190,7 @@ inline Task from_dto(TaskCreateDTO const &dto) {
   task.name = dto.name;
   task.description = dto.description;
   task.status = dto.status;
+  task.due_date = dto.due_date;
   task.urgency = dto.urgency;
   task.project_id = dto.project_id;
   return task;
@@ -195,6 +201,7 @@ inline Task from_dto(TaskCreateDTO &&dto) {
   task.name = std::move(dto.name);
   task.description = std::move(dto.description);
   task.status = std::move(dto.status);
+  task.due_date = dto.due_date;
   task.urgency = dto.urgency;
   task.project_id = dto.project_id;
   return task;
@@ -203,15 +210,22 @@ inline Task from_dto(TaskCreateDTO &&dto) {
 inline Project from_dto(ProjectCreateDTO const &dto) {
   Project project;
   project.name = dto.name;
-  project.date = dto.date;
+  project.due_date = dto.due_date;
   return project;
 }
 
 inline Project from_dto(ProjectCreateDTO &&dto) {
   Project project;
   project.name = std::move(dto.name);
-  project.date = std::move(dto.date);
+  project.due_date = std::move(dto.due_date);
   return project;
+}
+
+inline User from_dto(UserCreateDTO &&dto) {
+  User user;
+  /*user.name = std::move(dto.name);
+  user.due_date = std::move(dto.due_date);*/
+  return user;
 }
 
 #endif  // CO_WORK_SERIALIZATION_H

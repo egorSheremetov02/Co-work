@@ -48,9 +48,14 @@ int main() {
   Task t{0, "Task_task", "Description", "2021-04-17 06:05:05", 3, 7, "status"};
   // int tt=databasa.create_task(t);
   std::optional<User> current_user = databasa.auth("admin", "qwerty");
-  TaskGetAllDTO test{1, {3}, {1}};
+  TaskGetAllDTO test{1, {3}};
   std::vector<Task> task = databasa.get_all_tasks_of_proj(test);
-
+  /*std::optional<User> curr=databasa.get_user(1);
+  Project pr{0,"Name","2021-04-17 06:05:05"};
+  uint32_t id=databasa.create_project(pr);
+  Task ts{0,"Name","Description","2021-04-17 06:05:05",id,10,"TODO"};
+  databasa.create_task(ts);*/
+  // TaskEditDTO
   // User c=databasa.aut
   //  std::vector<Task>
   //  currentt=databasa.tasks(select(tasks).where(tasks.id>13).order_by("name").limit(3));

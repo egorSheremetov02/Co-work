@@ -57,26 +57,32 @@ struct Task {
   uint32_t id;
   std::string name;
   std::string description;
-  std::string date;
+  std::string due_date;
   unsigned int project_id;
   uint8_t urgency;
   std::string status;
+  std::string start_date;
 };
 
 struct Project {
   uint32_t id;
   std::string name;
-  std::string date;
+  std::string due_date;
+  std::string start_date;
 };
 
-struct AttachedFile {};
+struct AttachedFile {
+  uint32_t task_id;
+  std::string path_to_file;
+  std::string filename;
+};
 
 struct User {
   uint32_t id;
   std::string account_name;
   std::string full_name;
   Roles role_in_system;
-  // std::string email;
+  std::string email;
 };
 
 struct Action {
@@ -86,6 +92,7 @@ struct Action {
   std::string date;
   std::string data;
 };
+/////DTO:
 
 struct TaskCreateDTO {
   std::string name;
@@ -93,7 +100,24 @@ struct TaskCreateDTO {
   uint8_t urgency{};
   std::string status;
   uint32_t project_id;
+  std::string due_date;
 };
+
+struct UserCreateDTO {
+  std::string account_name;
+  std::string full_name;
+  Roles role_in_system;
+  std::string email;
+};
+
+struct ProjectCreateDTO {
+  std::string name;
+  std::string due_date;
+};
+
+// TODO: add DTO for files
+
+// DTO getters
 
 struct TaskGetAllDTO {
   uint32_t project_id{};
@@ -101,18 +125,21 @@ struct TaskGetAllDTO {
   OptionalField<uint32_t> page_number{};
 };
 
+/// DTO for editing
+
 struct TaskEditDTO {
   uint32_t task_id{};
   OptionalField<std::string> name{};
   OptionalField<std::string> description{};
   OptionalField<std::string> status{};
-  OptionalField<std::string> date{};
+  OptionalField<std::string> due_date{};
   OptionalField<uint8_t> urgency{};
 };
 
-struct ProjectCreateDTO {
-  std::string name;
-  std::string date;
+struct ProjectEditDTO {
+  uint32_t project_id{};
+  OptionalField<std::string> name{};
+  OptionalField<std::string> due_date{};
 };
 
 #endif  // CO_WORK_STRUCTURES_H

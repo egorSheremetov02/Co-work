@@ -4,7 +4,9 @@
 #include <pqxx/pqxx>
 #include <string>
 #include <vector>
+#include "../shared/serialization.h"
 #include "../shared/structures.h"
+#include "sha/sha256.h"
 
 #define GET_RES_STR(token) #token
 
@@ -38,12 +40,14 @@ int DataBase::create_user(User const &t) {
 
 std::optional<User> DataBase::auth(std::string const &login,
                                    std::string const &password) {
-  std::cout << std::hash<std::string>{}(password) << '\n';
+  // std::cout << sha256(password) << '\n';
   std::vector<User> tmp = users(select(users).where(
-      users.account_name == login and users.password == password));
+      users.account_name == login and users.password == sha256(password)));
   if (tmp.size() == 1) {
+    std::cout << "Yes" << std::endl;
     return tmp[0];
   } else {
+    std::cout << "NOOO" << std::endl;
     return std::nullopt;
   }
 }
@@ -82,4 +86,50 @@ std::vector<Task> DataBase::get_all_tasks_of_proj(TaskGetAllDTO &dto) {
                    .where(tasks.project_id == dto.project_id)
                    .offset(skip)
                    .limit(amount_of_tasks));
+}
+
+bool DataBase::update_task(TaskEditDTO &dto) {
+  db::Expression tmp;
+  if (dto.name.has_value()) {
+    tmp += tasks.name == dto.name.get();
+  }
+  if (dto.description.has_value()) {
+    tmp += tasks.description == dto.description.get();
+  }
+  if (dto.status.has_value()) {
+    tmp += tasks.status == dto.status.get();
+  }
+  if (dto.due_date.has_value()) {
+    tmp += tasks.due_date == dto.due_date.get();
+  }
+  if (dto.urgency.has_value()) {
+    tmp += tasks.urgency == dto.urgency.get();
+  }
+  // TODO add action update_task
+
+  return tasks.update(dto.task_id, tmp);
+}
+
+bool DataBase::update_project(ProjectEditDTO &dto) {
+  db::Expression tmp;
+  if (dto.name.has_value()) {
+    tmp += tasks.name == dto.name.get();
+  }
+  if (dto.due_date.has_value()) {
+    tmp += tasks.due_date == dto.due_date.get();
+  }
+
+  return projs.update(dto.project_id, tmp);
+}
+
+int DataBase::create_task(TaskCreateDTO &dto) {
+  return tasks.insert(from_dto(dto));
+}
+
+int DataBase::create_project(ProjectCreateDTO &dto) {
+  return projs.insert(from_dto(dto));
+}
+
+int DataBase::create_user(UserCreateDTO &dto) {
+  return users.insert(from_dto(std::move(dto)));
 }
