@@ -14,7 +14,7 @@ Task create_task(TaskCreateDTO const &);
 
 std::vector<Task> get_tasks(TaskGetAllDTO &dto);
 
-Task edit_task(uint32_t);
+Task edit_task(TaskEditDTO const &editDTO);
 };  // namespace task_service
 
 #endif  // CO_WORK_TASK_SERVICE_HPP

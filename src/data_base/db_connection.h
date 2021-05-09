@@ -45,7 +45,7 @@ struct DataBase {
   bool delete_users_from_task(uint32_t id, std::vector<uint32_t> &users_id);
   bool delete_users_from_project(uint32_t id, std::vector<uint32_t> &users_id);
 
-  bool update_task(TaskEditDTO &dto);
+  bool update_task(TaskEditDTO const &dto);
   bool update_project(ProjectEditDTO &dto);
 
   bool delete_task();

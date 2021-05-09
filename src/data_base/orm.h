@@ -6,6 +6,7 @@
 #include <pqxx/pqxx>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 #include "../shared/structures.h"
 #include "serialization_orm.h"
@@ -14,6 +15,8 @@ namespace db {
 
 struct Expression {
   std::string expr_;
+
+  Expression(std::string expr) : expr_(std::move(expr)) {}
 
   Expression operator&&(Expression const &other) const {
     return Expression{expr_ + " AND " + other.expr_};
@@ -45,8 +48,8 @@ struct Select {
   std::string what{};
   std::string condition{};
   std::string order{};
-  int lim = 0;
-  int off = 0;
+  uint32_t lim{};
+  uint32_t off{};
 
   Select() = default;
 
@@ -60,11 +63,11 @@ struct Select {
     condition = request.expr_;
     return *this;
   }
-  Select limit(int limit_) {
+  Select limit(uint32_t limit_) {
     lim = limit_;
     return *this;
   }
-  Select offset(int offset_) {
+  Select offset(uint32_t offset_) {
     off = offset_;
     return *this;
   }
@@ -76,17 +79,17 @@ struct Select {
     return *this;
   }
 
-  Select order_by(std::string colomn) {
-    this->order = colomn;
+  Select order_by(std::string const &column) {
+    this->order = column;
     return *this;
   }
 
-  std::string build() const {
+  [[nodiscard]] std::string build() const {
     std::string result = "SELECT * FROM " + what;
-    if (condition != "") {
+    if (!condition.empty()) {
       result += " WHERE " + condition;
     }
-    if (order != "") {
+    if (!order.empty()) {
       result += " ORDER BY " + order;
     }
     if (lim != 0) {

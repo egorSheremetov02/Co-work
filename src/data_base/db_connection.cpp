@@ -78,36 +78,37 @@ std::optional<User> DataBase::get_user(uint32_t id) {
 }
 
 std::vector<Task> DataBase::get_all_tasks_of_proj(TaskGetAllDTO &dto) {
-  int amount_of_tasks =
+  uint32_t amount_of_tasks =
       dto.tasks_per_page.has_value() ? dto.tasks_per_page.get() : 5;
-  int skip = amount_of_tasks *
-             (dto.page_number.has_value() ? dto.page_number.get() : 0);
+  uint32_t skip = amount_of_tasks *
+                  (dto.page_number.has_value() ? dto.page_number.get() : 0);
   return tasks(select(tasks)
                    .where(tasks.project_id == dto.project_id)
                    .offset(skip)
                    .limit(amount_of_tasks));
 }
 
-bool DataBase::update_task(TaskEditDTO &dto) {
-  db::Expression tmp;
-  if (dto.name.has_value()) {
-    tmp += tasks.name == dto.name.get();
+bool DataBase::update_task(TaskEditDTO const &dto) {
+  db::Expression update_query;
+
+  if (dto.name) {
+    update_query += tasks.name == dto.name.get();
   }
-  if (dto.description.has_value()) {
-    tmp += tasks.description == dto.description.get();
+  if (dto.description) {
+    update_query += tasks.description == dto.description.get();
   }
-  if (dto.status.has_value()) {
-    tmp += tasks.status == dto.status.get();
+  if (dto.status) {
+    update_query += tasks.status == dto.status.get();
   }
-  if (dto.due_date.has_value()) {
-    tmp += tasks.due_date == dto.due_date.get();
+  if (dto.due_date) {
+    update_query += tasks.due_date == dto.due_date.get();
   }
-  if (dto.urgency.has_value()) {
-    tmp += tasks.urgency == dto.urgency.get();
+  if (dto.urgency) {
+    update_query += tasks.urgency == dto.urgency.get();
   }
   // TODO add action update_task
 
-  return tasks.update(dto.task_id, tmp);
+  return tasks.update(dto.task_id, update_query);
 }
 
 bool DataBase::update_project(ProjectEditDTO &dto) {

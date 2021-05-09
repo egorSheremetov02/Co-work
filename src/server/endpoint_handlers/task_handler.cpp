@@ -41,8 +41,8 @@ void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
 void create_task_handler(json &in_json,
                          TcpConnection::pointer & /*connection*/) {
   json out_json;
-  auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>();
-  Task task = task_service::create_task(taskDTO.data);
+  auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>().data;
+  Task task = task_service::create_task(taskDTO);
   multicasting::do_multicast("project" + std::to_string(task.project_id), task);
 #ifdef LOGGING
   std::cout << "Create new task" << std::endl;
@@ -51,7 +51,8 @@ void create_task_handler(json &in_json,
 
 void edit_task_handler(json &in_json, TcpConnection::pointer &connection) {
   json out_json;
-  out_json["task"] = task_service::edit_task(in_json.at("task_id"));
+  auto editDTO = in_json.get<RequestFormat<TaskEditDTO>>().data;
+  out_json["task"] = task_service::edit_task(editDTO);
   connection->out_message() = out_json.dump();
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),

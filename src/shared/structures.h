@@ -32,15 +32,15 @@ struct OptionalField {
     this->set = true;
   }
 
-  operator bool() {
+  operator bool() const {
     return has_value();
   }
 
-  operator T() {
+  operator T() const {
     return value;
   }
 
-  T get() {
+  [[nodiscard]] T get() const {
     return value;
   }
 
@@ -48,7 +48,7 @@ struct OptionalField {
     return value;
   }
 
-  bool has_value() {
+  [[nodiscard]] bool has_value() const {
     return set;
   }
 };
@@ -92,14 +92,13 @@ struct Action {
   std::string date;
   std::string data;
 };
-/////DTO:
 
 struct TaskCreateDTO {
   std::string name;
   std::string description;
   uint8_t urgency{};
   std::string status;
-  uint32_t project_id;
+  uint32_t project_id{};
   std::string due_date;
 };
 
@@ -117,15 +116,11 @@ struct ProjectCreateDTO {
 
 // TODO: add DTO for files
 
-// DTO getters
-
 struct TaskGetAllDTO {
   uint32_t project_id{};
   OptionalField<uint32_t> tasks_per_page{};
   OptionalField<uint32_t> page_number{};
 };
-
-/// DTO for editing
 
 struct TaskEditDTO {
   uint32_t task_id{};

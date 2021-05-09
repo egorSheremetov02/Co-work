@@ -2,6 +2,7 @@
 // Created by egor on 17.04.2021.
 //
 #include "task_service.hpp"
+#include <exception>
 #include "app_db_connection.hpp"
 #include "serialization.h"
 
@@ -19,13 +20,11 @@ std::vector<Task> task_service::get_tasks(TaskGetAllDTO &dto) {
   return get_app_db().get_all_tasks_of_proj(dto);
 }
 
-Task task_service::edit_task(uint32_t task_id) {
-  //  std::vector<Task> tasks = std::move(get_tasks());
-  //  Task &to_be_edited =
-  //      *std::find_if(std::begin(tasks), std::end(tasks),
-  //                    [&](Task const &task) { return task_id == task.id; });
-  // TODO : remove static_cast, anticipating DB interface change
-  Task to_be_edited = get_app_db().get_task(static_cast<int>(task_id)).value();
-  to_be_edited.description += " edited ";
-  return to_be_edited;
+Task task_service::edit_task(TaskEditDTO const &editDTO) {
+  if (get_app_db().update_task(editDTO)) {
+    return get_app_db().get_task(editDTO.task_id).value();
+  } else {
+    // TODO : maybe add custom exception hierarchy
+    throw std::invalid_argument("There is no task with given id");
+  }
 }
