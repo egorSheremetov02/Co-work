@@ -109,6 +109,12 @@ struct UserCreateDTO {
   std::string email;
 };
 
+struct AuthReqDTO {
+  std::string login;
+  std::string password;
+  std::string email;
+};
+
 struct ProjectCreateDTO {
   std::string name;
   std::string due_date;

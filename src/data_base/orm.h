@@ -16,6 +16,8 @@ namespace db {
 struct Expression {
   std::string expr_;
 
+  Expression() = default;
+
   Expression(std::string expr) : expr_(std::move(expr)) {}
 
   Expression operator&&(Expression const &other) const {

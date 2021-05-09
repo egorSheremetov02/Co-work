@@ -58,10 +58,13 @@ inline void to_json(nlohmann::json &j, Task const &task) {
 inline void from_json(nlohmann::json const &j, AuthReqDTO &authDTO) {
   j.at("password").get_to(authDTO.password);
   j.at("login").get_to(authDTO.login);
+  j.at("email").get_to(authDTO.email);
 }
 
 inline void to_json(nlohmann::json &j, AuthReqDTO const &authDTO) {
-  j = nlohmann::json{{"password", authDTO.password}, {"login", authDTO.login}};
+  j = nlohmann::json{{"password", authDTO.password},
+                     {"login", authDTO.login},
+                     {"email", authDTO.email}};
 }
 
 template <typename T>
@@ -107,7 +110,8 @@ inline void to_json(nlohmann::json &j, User const &user) {
   j = nlohmann::json{{"id", user.id},
                      {"account_name", user.account_name},
                      {"full_name", user.full_name},
-                     {"role_in_system", user.role_in_system}};
+                     {"role_in_system", user.role_in_system},
+                     {"email", user.email}};
 }
 
 inline void from_json(nlohmann::json const &j, User &user) {
@@ -115,14 +119,14 @@ inline void from_json(nlohmann::json const &j, User &user) {
   j.at("account_name").get_to(user.account_name);
   j.at("full_name").get_to(user.full_name);
   j.at("role_in_system").get_to(user.role_in_system);
+  j.at("email").get_to(user.email);
 }
 
 inline void to_json(nlohmann::json &j, TaskCreateDTO const &taskDTO) {
-  j = nlohmann::json{{"description", taskDTO.description},
-                     {"name", taskDTO.name},
-                     {"urgency", taskDTO.urgency},
-                     {"status", taskDTO.status},
-                     {"project_id", taskDTO.project_id}};
+  j = nlohmann::json{
+      {"description", taskDTO.description}, {"name", taskDTO.name},
+      {"urgency", taskDTO.urgency},         {"status", taskDTO.status},
+      {"project_id", taskDTO.project_id},   {"due_date", taskDTO.due_date}};
 }
 
 inline void from_json(nlohmann::json const &j, TaskCreateDTO &taskDTO) {
@@ -183,7 +187,8 @@ inline void from_json(nlohmann::json const &j, ResponseFormat<T> &request) {
   j.at("error").get_to(request.error);
 }
 
-/* DTO Serialization */
+/* DTO Conversions */
+// TODO : put it in own file for conversions since it isn't about serialization
 
 inline Task from_dto(TaskCreateDTO const &dto) {
   Task task;
@@ -221,6 +226,7 @@ inline Project from_dto(ProjectCreateDTO &&dto) {
   return project;
 }
 
+// TODO
 inline User from_dto(UserCreateDTO &&dto) {
   User user;
   /*user.name = std::move(dto.name);

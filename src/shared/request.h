@@ -7,9 +7,10 @@
 
 #include <nlohmann/json.hpp>
 
-struct AuthReqDTO {
+// DEPRECATED, relevant implementation is in structures.h
+/*struct AuthReqDTO {
   std::string login;
   std::string password;
-};
+};*/
 
 #endif  // CO_WORK_REQUEST_H

@@ -164,7 +164,7 @@ void do_write_nonblocking() {
       "task create",
       {"test task " + std::to_string(random() % INT32_MAX),
        "task description " + std::to_string(random() % INT32_MAX), 9,
-       "in progress", 1}};
+       "in progress", 1, "01.03.2022"}};
   json json_project_request = task_create_request;
   std::shared_ptr<std::string> res(
       new std::string(json_project_request.dump()));
@@ -193,13 +193,16 @@ void authenticate() {
     std::cout << "Successfully connected" << std::endl;
     std::string passcode;
     std::string login;
+    std::string email;
     std::cout << "Enter login: ";
     std::cin >> login;
+    std::cout << "Enter email: ";
+    std::cin >> email;
     std::cout << "Enter password: ";
     std::cin >> passcode;
     RequestFormat<AuthReqDTO> auth_request;
     auth_request.resource = "authentication";
-    auth_request.data = {login, passcode};
+    auth_request.data = {login, passcode, email};
     json j = auth_request;
     std::string str_auth_request = j.dump();
     socket1.async_write_some(
