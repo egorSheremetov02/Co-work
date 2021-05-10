@@ -155,18 +155,32 @@ struct Table {
     }
     return -1;
   }
-  /*
-    void delete(Expression const &request) {  // TODO return VALUES
-      try {
-        pqxx::work W{*C};
-        pqxx::result R =
-            W.exec("DELETE FROM " + table_ + " WHERE " + request.expr_);
-        W.commit();
 
-      } catch (std::exception const &e) {
-        std::cerr << e.what() << std::endl;
-      }
-    }*/
+  bool del(Expression const &request) {
+    try {
+      pqxx::work W{*C};
+      pqxx::result R =
+          W.exec("DELETE FROM " + table_ + " WHERE " + request.expr_);
+      W.commit();
+      return true;
+    } catch (std::exception const &e) {
+      std::cerr << e.what() << std::endl;
+      return false;
+    }
+  }
+
+  bool del_join(std::string const &table_to_join, Expression const &request) {
+    try {
+      pqxx::work W{*C};
+      pqxx::result R = W.exec("DELETE FROM " + relations_[table_to_join] +
+                              " WHERE " + request.expr_);
+      W.commit();
+      return true;
+    } catch (std::exception const &e) {
+      std::cerr << e.what() << std::endl;
+      return false;
+    }
+  }
 
   template <typename Z>
   bool insert_join(std::string const &table_to_join,
@@ -174,6 +188,9 @@ struct Table {
                    Z const &object2) {
     try {
       pqxx::work W{*C};
+      std::cout << "INSERT INTO " + relations_[table_to_join] +
+                       to_orm(object1, object2)
+                << std::endl;
       pqxx::result R = W.exec("INSERT INTO " + relations_[table_to_join] +
                               to_orm(object1, object2));
       W.commit();
@@ -217,7 +234,7 @@ struct Tasks : Table<Task> {
       start_date{"start_date"};
 
   std::string on_tables(std::string const &str) override {
-    return str + ".id = " + relations_[str] + ".task_id";
+    return "users.id = " + relations_[str] + ".user_id";
   }
 };
 
@@ -228,6 +245,25 @@ struct Projects : Table<Project> {
 
   std::string on_tables(std::string const &str) override {
     return str + ".id = " + relations_[str] + ".task_id";
+  }
+};
+
+struct Actions : Table<Action> {
+  Actions(std::string t, pqxx::connection *c) : Table(t, c){};
+  Expression task_id{"task_id"}, user_id{"user_id"},
+      action_type{"type_of_action"}, date_of_action{"date_of_action"},
+      data{"object_of_action"};
+  std::string on_tables(std::string const &str) override {
+    return str;
+  }
+};
+
+struct Files : Table<AttachedFile> {
+  Files(std::string t, pqxx::connection *c) : Table(t, c){};
+  Expression task_id{"task_id"}, path_to_file{"path_to_file"},
+      filename{"filename"};
+  std::string on_tables(std::string const &str) override {
+    return str;
   }
 };
 

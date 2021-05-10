@@ -176,6 +176,45 @@ inline void from_json(nlohmann::json const &j, TaskEditDTO &editDTO) {
   j.at("urgency").get_to(editDTO.urgency);
 }
 
+//
+inline void from_json(nlohmann::json const &j, Comment &comment) {
+  j.at("comment").get_to(comment.comment);
+}
+
+inline void to_json(nlohmann::json &j, Comment const &comment) {
+  j = nlohmann::json{{"comment", comment.comment}};
+}
+
+inline void from_json(nlohmann::json const &j, Create &create) {
+  j.at("create").get_to(create.create);
+}
+
+inline void to_json(nlohmann::json &j, Create const &create) {
+  j = nlohmann::json{{"create", create.create}};
+}
+
+inline void from_json(nlohmann::json const &j, Edited &editted) {
+  j.at("field").get_to(editted.field);
+  j.at("before").get_to(editted.before);
+  j.at("after").get_to(editted.after);
+}
+
+inline void to_json(nlohmann::json &j, Edited const &editted) {
+  j = nlohmann::json{{"field", editted.field},
+                     {"before", editted.before},
+                     {"after", editted.after}};
+}
+
+inline void from_json(nlohmann::json const &j, Edit &edit) {
+  j.at("edited_fields").get_to(edit.edited_fields);
+}
+
+inline void to_json(nlohmann::json &j, Edit const &edit) {
+  j = nlohmann::json{{"edited_fields", edit.edited_fields}};
+}
+
+//
+
 template <typename T>
 inline void to_json(nlohmann::json &j, const ResponseFormat<T> &request) {
   j = nlohmann::json{{"error", request.error}, {"data", request.data}};

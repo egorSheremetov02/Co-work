@@ -14,6 +14,8 @@ struct DataBase {
   db::Users users;
   db::Tasks tasks;
   db::Projects projs;
+  db::Files files;
+  db::Actions actions;
   db::Select select;
 
   DataBase();
@@ -34,10 +36,16 @@ struct DataBase {
   std::optional<User> get_user(uint32_t id);
 
   std::vector<Task> get_all_tasks_of_proj(TaskGetAllDTO &dto);
+  std::vector<Action> get_all_actions_of_task(ActionGetAllDTO &dto);
+  // TODO add pagination for status
+  std::vector<Task> get_all_tasks_of_user(uint32_t id);
+  std::vector<User> get_all_users_of_task(uint32_t id);
 
   int create_task(TaskCreateDTO &dto);
   int create_project(ProjectCreateDTO &dto);
   int create_user(UserCreateDTO &dto);
+
+  int create_task(Task const &t, uint32_t user_id);
 
   bool add_users_to_task(uint32_t id, std::vector<uint32_t> &users_id);
   bool add_users_to_project(uint32_t id, std::vector<uint32_t> &users_id);
@@ -48,8 +56,15 @@ struct DataBase {
   bool update_task(TaskEditDTO const &dto);
   bool update_project(ProjectEditDTO &dto);
 
-  bool delete_task();
-  bool delete_project();
+  bool delete_task(uint32_t id);
+  bool delete_project(uint32_t id);
+  bool delete_user(uint32_t id);
+
+  // for history:
+  bool add_comment(uint32_t id, std::string comment);
+
+  private:
+  std::vector<Task> get_all_tasks_of_proj(uint32_t id);
 };
 
 #endif  // CO_WORK_DB_CONNECTION_H

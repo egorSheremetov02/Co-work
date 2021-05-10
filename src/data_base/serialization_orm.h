@@ -4,6 +4,24 @@
 #include <pqxx/pqxx>
 #include "../shared/structures.h"
 
+inline std::string from_enum(Actions act) {
+  if (act == Actions::EDIT_TASK)
+    return "edit";
+  if (act == Actions::CREATE_TASK)
+    return "create";
+  if (act == Actions::ADD_COMMENT)
+    return "comment";
+}
+
+inline Actions to_enum(std::string str, Action &act) {
+  if (str == "create")
+    return Actions::CREATE_TASK;
+  /*if(act==Actions::CREATE_TASK)
+  return "create";
+  if(act==Actions::ADD_COMMENT)
+  return "comment";*/
+}
+
 inline void from_orm(pqxx::row const &row, User &user) {
   user.id = row["id"].as<int>();
   user.account_name = row["account_name"].c_str();
@@ -31,9 +49,24 @@ inline void from_orm(pqxx::row const &row, Task &task) {
   task.status = row["status"].c_str();
 }
 
+inline void from_orm(pqxx::row const &row, Action &act) {
+  act.task_id = row["task_id"].as<int>();
+  act.user_id = row["user_id"].as<int>();
+  act.date_of_action = row["date_of_action"].c_str();
+  act.data = row["object_of_action"].c_str();
+  act.action_type = to_enum(row["type_of_action"].c_str(), act);
+}
+
+inline void from_orm(pqxx::row const &row, AttachedFile &file) {
+  file.task_id = row["task_id"].as<int>();
+  file.path_to_file = row["path_to_file"].c_str();
+  file.filename = row["filename"].c_str();
+}
+
 inline void out(Task const &task) {
   std::cout << task.id << " " << task.name << " " << task.description << " "
-            << task.due_date << " " << task.project_id << std::endl;
+            << task.due_date << " " << task.project_id << " " << task.start_date
+            << std::endl;
 }
 
 inline void out(User const &user) {
@@ -44,19 +77,43 @@ inline void out(Project const &proj) {
   std::cout << proj.id << " " << proj.name << std::endl;
 }
 
+inline void out(Action const &act) {
+  std::cout << act.task_id << " " << from_enum(act.action_type) << std::endl;
+}
+
+inline void out(AttachedFile const &file) {
+  std::cout << file.task_id << " " << file.filename << std::endl;
+}
+
 inline std::string to_orm(Project const &proj) {
   std::string sql = " (name,due_date) VALUES ('" + proj.name + "','" +
                     proj.due_date + "') RETURNING id";
   return sql;
 }
 
+inline std::string to_orm(Action const &act) {
+  std::string sql =
+      " (task_id,user_id,type_of_action,object_of_action) VALUES ('" +
+      std::to_string(act.task_id) + "','" + std::to_string(act.user_id) +
+      "','" + from_enum(act.action_type) + "','" + act.data + "') ";
+  std::cout << sql << std::endl;
+  return sql;
+}
+
+inline std::string to_orm(AttachedFile const &file) {
+  std::string sql = " (task_id,path_to_file,filename) VALUES ('" +
+                    std::to_string(file.task_id) + "','" + file.path_to_file +
+                    "','" + file.filename + "') ";
+  return sql;
+}
+
 // TODO
 
 inline std::string to_orm(User const &user) {
-  std::string sql =
-      " (account_name,full_name,email) VALUES ('" + user.account_name + "','" +
-      user.account_name +
-      /*"','" +user.role_in_system+  "','" +user.email+*/ "') RETURNING id";
+  std::string sql = " (account_name,full_name,email) VALUES ('" +
+                    user.account_name + "','" + user.account_name +
+                    /*"','" +user.role_in_system+ */ "','" + user.email +
+                    "') RETURNING id";
   return sql;
 }
 

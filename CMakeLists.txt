@@ -64,12 +64,15 @@ endif ()
 find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
 
+add_library(doctest src/doctest/doctest.cpp)
+
 add_executable(client src/client/test_client.cpp)
 add_executable(first-client src/client/test_client.cpp)
 
 add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
-add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp src/data_base/sha/sha256.cpp)
+add_executable(orm-test src/data_base/db_connection.cpp src/data_base/usage_orm.cpp src/data_base/sha/sha256.cpp src/doctest/doctest.cpp)
+target_link_libraries(orm-test doctest)
 
 add_executable(
         broadcast-server

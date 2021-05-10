@@ -2,10 +2,11 @@
 #define CO_WORK_STRUCTURES_H
 
 #include <string>
+#include <vector>
 
 enum Roles { ADMIN, USER };
 
-enum Actions { ADD_COMMENT, CREATE_TASK };
+enum Actions { ADD_COMMENT, CREATE_TASK, EDIT_TASK };
 
 // Used instead of standard optional for easier serialization
 template <typename T>
@@ -89,8 +90,26 @@ struct Action {
   uint32_t task_id;
   uint32_t user_id;
   Actions action_type;
-  std::string date;
   std::string data;
+  std::string date_of_action;
+};
+
+struct Edited {
+  std::string field;
+  std::string before;
+  std::string after;
+};
+
+struct Edit {
+  std::vector<Edited> edited_fields;
+};
+
+struct Comment {
+  std::string comment;
+};
+
+struct Create {
+  std::string create;
 };
 
 struct TaskCreateDTO {
@@ -125,6 +144,12 @@ struct ProjectCreateDTO {
 struct TaskGetAllDTO {
   uint32_t project_id{};
   OptionalField<uint32_t> tasks_per_page{};
+  OptionalField<uint32_t> page_number{};
+};
+
+struct ActionGetAllDTO {
+  uint32_t task_id{};
+  OptionalField<uint32_t> actions_per_page{};
   OptionalField<uint32_t> page_number{};
 };
 
