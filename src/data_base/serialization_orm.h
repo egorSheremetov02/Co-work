@@ -78,7 +78,8 @@ inline void out(Project const &proj) {
 }
 
 inline void out(Action const &act) {
-  std::cout << act.task_id << " " << from_enum(act.action_type) << std::endl;
+  std::cout << act.task_id << " " << from_enum(act.action_type) << " "
+            << act.data << std::endl;
 }
 
 inline void out(AttachedFile const &file) {

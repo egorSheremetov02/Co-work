@@ -38,7 +38,7 @@ int DataBase::create_task(Task const &t, uint32_t user_id) {
   nlohmann::json j;
   to_json(j, c);
   uint32_t id = 2;  // tasks.insert(t);
-  std::cout << j.dump() << std::endl;
+  // std::cout << j.dump() << std::endl;
   Action act{id, user_id, Actions::CREATE_TASK, j.dump()};
   actions.insert(act);
   return id;
