@@ -48,7 +48,6 @@ void do_read() {
 
 void do_write() {
   // Interactive version
-  /*
   std::cout << "Choose resource you want to connect to:" << std::endl;
   for (int i = 0; i < resources.size(); ++i) {
     std::cout << '\t' << i << ' ' << resources[i] << std::endl;
@@ -126,7 +125,6 @@ void do_write() {
   } else {
     assert(false);
   }
-   */
 }
 
 void do_subscribe() {
@@ -148,17 +146,19 @@ void do_subscribe() {
 }
 
 void do_write_nonblocking() {
-  //  asio::steady_timer t(service, asio::chrono::seconds(2));
-  //  t.async_wait([&](asio::error_code const &ec) {
-  //    socket1.async_write_some(asio::buffer(response.data(), response.size()),
-  //                             [&](asio::error_code const &ec, std::size_t
-  //                             len) {
-  //                               if (ec) {
-  //                                 return;
-  //                               }
-  //                             });
-  //  });
-  //  socket1.write_some(asio::buffer(s));
+  /*
+  asio::steady_timer t(service, asio::chrono::seconds(2));
+  t.async_wait([&](asio::error_code const &ec) {
+    socket1.async_write_some(asio::buffer(response.data(), response.size()),
+                             [&](asio::error_code const &ec, std::size_t
+                             len) {
+                               if (ec) {
+                                 return;
+                               }
+                             });
+  });
+  socket1.write_some(asio::buffer(s));
+  */
 #ifdef FIRST_TEST
   RequestFormat<TaskCreateDTO> task_create_request = {
       "task create",
