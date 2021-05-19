@@ -60,7 +60,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="label_errors">
+      <widget class="QLabel" name="label_error">
        <property name="text">
         <string/>
        </property>

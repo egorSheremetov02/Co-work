@@ -5,6 +5,7 @@
 #include <QListView>
 #include <QStringListModel>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class kanban; }
 QT_END_NAMESPACE

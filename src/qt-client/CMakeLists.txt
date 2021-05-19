@@ -39,6 +39,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DASIO_STANDALONE -pthread")
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+
 set(PROJECT_SOURCES
         main.cpp
         kanban.cpp
@@ -47,6 +48,14 @@ set(PROJECT_SOURCES
         login.cpp
         login.h
         login.ui
+        tasklist.cpp
+        tasklist.h
+        task.h
+        task.cpp
+        taskdelegate.h
+        taskdelegate.cpp
+        taskeditor.h
+        taskeditor.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

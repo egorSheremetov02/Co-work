@@ -1,5 +1,8 @@
 #include "kanban.h"
 #include "./ui_kanban.h"
+#include "tasklist.h"
+#include "taskeditor.h"
+#include "taskdelegate.h"
 
 #include <QLabel>
 #include <QToolBar>
@@ -11,7 +14,7 @@ kanban::kanban(QWidget *parent)
 {
     ui->setupUi(this);
     QWidget *window = new QWidget(this);
-    //window->setStyleSheet("background-color: #E6D1D1");
+    window->setStyleSheet("background-color: #F9F9FA");
     setCentralWidget(window);
 
     QVBoxLayout *win_layout = new QVBoxLayout();
@@ -21,21 +24,28 @@ kanban::kanban(QWidget *parent)
     win_layout->addLayout(label_layout);
 
     QLabel *label_to_do = new QLabel("To do", this);
-    label_to_do->setStyleSheet("font-size: 15pt;");
     label_layout->addWidget(label_to_do);
 
     QLabel *label_in_progress = new QLabel("In Progress", this);
-    label_in_progress->setStyleSheet("font-size: 15pt;");
     label_layout->addWidget(label_in_progress);
 
     QLabel *label_completed = new QLabel("Completed", this);
-    label_completed->setStyleSheet("font-size: 15pt;");
     label_layout->addWidget(label_completed);
 
     QHBoxLayout *list_layout = new QHBoxLayout();
     win_layout->addLayout(list_layout);
 
+    label_to_do -> setAlignment(Qt::AlignHCenter);
+    label_in_progress -> setAlignment(Qt::AlignHCenter);
+    label_completed -> setAlignment(Qt::AlignHCenter);
+
+    label_to_do->setStyleSheet("font-size: 20pt;");
+    label_in_progress->setStyleSheet("font-size: 20pt;");
+    label_completed->setStyleSheet("font-size: 20pt;");
+
     //drag-n-drop
+
+    QMetaType::registerConverter(&Task::toString);
 
     list_to_do = new QListView(this);
     list_to_do->setDragEnabled(true);
@@ -58,14 +68,19 @@ kanban::kanban(QWidget *parent)
     list_completed->setDefaultDropAction(Qt::MoveAction);
     list_layout->addWidget(list_completed);
 
-    list_to_do->setModel(new QStringListModel());
-    list_in_progress->setModel(new QStringListModel());
-    list_completed->setModel(new QStringListModel());
+    list_to_do->setModel(new TaskList(list_to_do));
+    list_in_progress->setModel(new TaskList(list_in_progress));
+    list_completed->setModel(new TaskList(list_completed));
+
+    list_to_do->setItemDelegate(new TaskDelegate(list_to_do));
+    list_in_progress->setItemDelegate(new TaskDelegate(list_in_progress));
+    list_completed->setItemDelegate(new TaskDelegate(list_completed));
 
     list_to_do->setStyleSheet
     ("QListView { font-size: 20pt; background-color: #F3E3FC; border: none;  border-radius: 12px;}"
      "QListView::item { background-color: #d4bee1; padding: 10%; border-radius: 12px;}"
      "QListView::item::hover { background-color: #ddc7ea }");
+
 
     list_in_progress->setStyleSheet
     ("QListView { font-size: 20pt; background-color: #F5EDBA; border:none;  border-radius: 12px;}"
@@ -83,7 +98,7 @@ kanban::kanban(QWidget *parent)
     addToolBar(tool_bar);
 
     action_add = new QAction(this);
-    //ActAdd->setIcon(QIcon(":/resources/add.png"));
+    action_add->setIcon(QIcon("/home/krestino4ka/Co-Work/add_icon.png"));
     connect(action_add, &QAction::triggered, this, &kanban::on_add);
 
     //сигналы для отправки сообщений на сервер о перемещении объектов в канбане
@@ -96,6 +111,15 @@ kanban::kanban(QWidget *parent)
     connect(list_to_do -> model(), SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removed_from_to_do()));
 
     tool_bar->addAction(action_add);
+}
+
+void kanban::on_add()
+{
+    list_to_do->model()->insertRow(list_to_do->model()->rowCount());
+    QModelIndex oIndex = list_to_do->model()->index(
+                list_to_do->model()->rowCount() - 1, 0);
+
+    list_to_do->edit(oIndex);
 }
 
 void kanban::task_completed()
@@ -132,15 +156,6 @@ void kanban::removed_from_to_do()
 {
 //    QLabel *l = new QLabel("task removed from to-do");
 //    l -> show();
-}
-
-void kanban::on_add()
-{
-    list_to_do->model()->insertRow(list_to_do->model()->rowCount());
-    QModelIndex oIndex = list_to_do->model()->index(
-                list_to_do->model()->rowCount() - 1, 0);
-
-    list_to_do->edit(oIndex);
 }
 
 
