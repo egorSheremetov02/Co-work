@@ -26,16 +26,18 @@ TEST_CASE("Task creation/delete") {
 
 TEST_CASE("Task creation/delete with action") {
   DataBase databasa;
-  Task t{0, "Task_task", "Description", "2021-04-17 06:05:05", 1, 7, "status"};
+  Task t{0, "Task_task_test", "Description", "2021-04-17 06:05:05", 1,
+         7, "status"};
   uint32_t tt = databasa.create_task(t, 1);
-  std::cout << tt << std::endl;
   ActionGetAllDTO tmp{tt};
   std::vector<Action> acts = databasa.get_all_actions_of_task(tmp);
-  // databasa.delete_task(tt);
+  // databasa.delete_task(tt);*/
 }
 
 TEST_CASE("Task update") {
   DataBase databasa;
+  databasa.update_task({21, {"miu"}, {"New_discr"}}, 1);
+  std::vector<Action> acts = databasa.get_history(21);
 }
 
 TEST_CASE("Project creation/delete") {
@@ -66,6 +68,10 @@ TEST_CASE("Add/delete users in project") {
 
 TEST_CASE("Actions in tasks") {
   DataBase databasa;
+  // databasa.add_comment(1,1,"Hello world! мяу мяу");
+  // std::vector<Action> acts=databasa.get_history(1);
+  // ActionGetAllDTO tmp{1};
+  // std::vector<Action> acts = databasa.get_all_actions_of_task(tmp);
 }
 
 TEST_CASE("Files") {
