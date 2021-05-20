@@ -100,7 +100,9 @@ struct Select {
     if (off != 0) {
       result += " OFFSET " + std::to_string(off);
     }
+#ifdef LOGGING
     std::cout << result << std::endl;
+#endif
     return result;
   }
 };
@@ -127,7 +129,9 @@ struct Table {
       T tmp;
       from_orm(row, tmp);
       data.push_back(tmp);
+#ifdef LOGGING
       out(tmp);
+#endif
     }
     return data;
   }
@@ -188,9 +192,12 @@ struct Table {
                    Z const &object2) {
     try {
       pqxx::work W{*C};
+#ifdef LOGGING
+
       std::cout << "INSERT INTO " + relations_[table_to_join] +
                        to_orm(object1, object2)
                 << std::endl;
+#endif
       pqxx::result R = W.exec("INSERT INTO " + relations_[table_to_join] +
                               to_orm(object1, object2));
       W.commit();

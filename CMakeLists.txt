@@ -121,6 +121,7 @@ target_link_libraries(log-broadcast-server PRIVATE nlohmann_json::nlohmann_json 
 #target_link_libraries(log-broadcast-server PUBLIC date/include)
 
 #target_link_libraries(db-test ${PQXX_LIB} ${PQ_LIB})
+target_compile_definitions(orm-test PUBLIC -DLOGGING)
 target_link_libraries(orm-test ${PQXX_LIB} ${PQ_LIB} nlohmann_json::nlohmann_json)
 target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQXX_LIB} ${PQ_LIB})
 #target_link_libraries(broadcast-server PUBLIC date/include)
