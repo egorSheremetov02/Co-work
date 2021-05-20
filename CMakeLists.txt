@@ -91,6 +91,7 @@ add_executable(
         src/server/app_db/app_db_connection.cpp
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
+        src/shared/defaults.cpp
 )
 
 add_executable(
@@ -110,6 +111,7 @@ add_executable(
         src/server/app_db/app_db_connection.cpp
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
+        src/shared/defaults.cpp
 )
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)

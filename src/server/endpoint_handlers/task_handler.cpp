@@ -2,7 +2,6 @@
 // Created by egor on 06.03.2021.
 //
 #include <iostream>
-#include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
 #include "application_context.hpp"

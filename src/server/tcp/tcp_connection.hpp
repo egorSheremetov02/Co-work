@@ -7,6 +7,7 @@
 #include <asio.hpp>
 #include <string>
 #include <unordered_set>
+#include "defaults.h"
 #include "response_format.h"
 #include "structures.h"
 
@@ -14,9 +15,10 @@ struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   public:
   using pointer = std::shared_ptr<TcpConnection>;
 
-  static pointer create(asio::io_context &io_context,
-                        std::size_t max_in_message_size = 10000,
-                        std::size_t max_out_message_size = 10000);
+  static pointer create(
+      asio::io_context &io_context,
+      std::size_t max_in_message_size = defaults::server::default_buffer_size,
+      std::size_t max_out_message_size = defaults::server::default_buffer_size);
 
   void do_read();
 
