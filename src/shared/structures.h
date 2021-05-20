@@ -131,7 +131,6 @@ struct UserCreateDTO {
 struct AuthReqDTO {
   std::string login;
   std::string password;
-  std::string email;
 };
 
 struct ProjectCreateDTO {

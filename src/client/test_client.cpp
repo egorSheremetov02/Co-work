@@ -20,6 +20,8 @@ asio::io_service service;
 tcp::socket socket1(service);
 std::string response;
 
+int counter = 0;
+
 struct InitMap {
   InitMap() {
     if (resources.empty()) {
@@ -36,6 +38,7 @@ void do_write();
 void do_write_nonblocking();
 
 void do_read() {
+  ++counter;
   response.resize(1024);
   socket1.async_read_some(
       asio::buffer(response.data(), response.size()),
@@ -130,11 +133,10 @@ void do_write() {
 void do_subscribe() {
   RequestFormat<TaskGetAllDTO> task_get_all_request = {"task get_all", {1}};
   json json_get_all_tasks_req = task_get_all_request;
-  std::cout << json_get_all_tasks_req.dump(4) << std::endl;
   std::shared_ptr<std::string> res(
       new std::string(json_get_all_tasks_req.dump()));
   socket1.async_write_some(asio::buffer(res->data(), res->size()),
-                           [&](asio::error_code const &ec, std::size_t) {
+                           [&, res](asio::error_code const &ec, std::size_t) {
                              if (ec) {
                                std::cout << ec.message() << std::endl;
                              } else {
@@ -175,13 +177,19 @@ void do_write_nonblocking() {
           std::cout << ec.message() << std::endl;
         } else {
           std::cout << "Successfully wrote data to stream" << std::endl;
-          asio::steady_timer t(service, asio::chrono::seconds(2));
+          asio::steady_timer t(service, asio::chrono::milliseconds(200));
           t.wait();
           do_read();
         }
       });
 #else
-  do_read();
+#ifdef STRESS_TEST
+  if (counter < 2) {
+#endif
+    do_read();
+#ifdef STRESS_TEST
+  }
+#endif
 #endif
 }
 
@@ -193,16 +201,21 @@ void authenticate() {
     std::cout << "Successfully connected" << std::endl;
     std::string passcode;
     std::string login;
-    std::string email;
+#ifdef STRESS_TEST
+    login = "admin";
+#else
     std::cout << "Enter login: ";
     std::cin >> login;
-    std::cout << "Enter email: ";
-    std::cin >> email;
+#endif
+#ifdef STRESS_TEST
+    passcode = "qwerty";
+#else
     std::cout << "Enter password: ";
     std::cin >> passcode;
+#endif
     RequestFormat<AuthReqDTO> auth_request;
     auth_request.resource = "authentication";
-    auth_request.data = {login, passcode, email};
+    auth_request.data = {login, passcode};
     json j = auth_request;
     std::string str_auth_request = j.dump();
     socket1.async_write_some(

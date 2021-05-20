@@ -79,7 +79,7 @@ void authentication_handler(std::size_t len,
   std::optional<User> opt_user = auth.validate(auth_request.data);
   if (!opt_user) {
 #ifdef LOGGING
-    std::cout << "Invalid auth token: " << auth_request_str << std::endl;
+    std::cout << "Invalid user credentials: " << auth_request_str << std::endl;
 #endif
     auth_response.error = "No user with such credentials was found";
   } else {

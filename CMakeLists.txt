@@ -68,6 +68,8 @@ add_library(doctest src/doctest/doctest.cpp)
 
 add_executable(client src/client/test_client.cpp)
 add_executable(first-client src/client/test_client.cpp)
+add_executable(first-client-stress src/client/test_client.cpp)
+add_executable(client-stress src/client/test_client.cpp)
 
 add_executable(tests date/src/tz.cpp src/client/test.cpp)
 
@@ -126,7 +128,34 @@ target_link_libraries(broadcast-server PRIVATE nlohmann_json::nlohmann_json ${PQ
 target_link_libraries(tests PRIVATE nlohmann_json::nlohmann_json)
 #target_link_libraries(tests PUBLIC date/include)
 
+target_compile_definitions(first-client-stress PUBLIC -DFIRST_TEST -DSTRESS_TEST)
+target_compile_definitions(client-stress PUBLIC -DSTRESS_TEST)
 target_compile_definitions(first-client PUBLIC -DFIRST_TEST)
 target_link_libraries(client PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(first-client-stress PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(client-stress PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(first-client PRIVATE nlohmann_json::nlohmann_json)
 #target_link_libraries(client PUBLIC date/include)
+
+set_target_properties(
+        first-client
+        PROPERTIES
+        SUFFIX ".out"
+)
+set_target_properties(
+        client
+        PROPERTIES
+        SUFFIX ".out"
+)
+
+set_target_properties(
+        first-client-stress
+        PROPERTIES
+        SUFFIX ".out"
+)
+
+set_target_properties(
+        client-stress
+        PROPERTIES
+        SUFFIX ".out"
+)
