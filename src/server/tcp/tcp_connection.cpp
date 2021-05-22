@@ -13,6 +13,8 @@
 #include "serialization.h"
 #include "structures.h"
 
+int counter = 0;
+
 using nlohmann::json, asio::ip::tcp;
 
 TcpConnection::TcpConnection(asio::io_context &io_context,
@@ -26,13 +28,18 @@ TcpConnection::TcpConnection(asio::io_context &io_context,
 void TcpConnection::do_read() {
   socket_.async_read_some(
       asio::buffer(in_message_.data(), in_message_.size()),
-      [&, this, connection = shared_from_this()](asio::error_code const &ec,
-                                                 std::size_t len) mutable {
+      /*[&, this, connection = shared_from_this()]*/ [&, this,
+                                                      connection = this](
+                                                         asio::error_code const
+                                                             &ec,
+                                                         std::size_t
+                                                             len) mutable {
         if (ec) {
           connection->socket().close();
 #ifdef LOGGING
           std::cout << "Async read error: " << ec.message() << std::endl;
 #endif
+          delete connection;
           return;
         }
         const std::string &str_request = in_message().substr(0, len);
@@ -144,6 +151,8 @@ void TcpConnection::add_subscription(std::string const &resource_id) {
 
 TcpConnection::~TcpConnection() {
   for (auto const &resource_id : subscriptions_) {
-    application_context::remove_connection(resource_id, shared_from_this());
+    //    application_context::remove_connection(resource_id,
+    //    shared_from_this());
+    application_context::remove_connection(resource_id, this);
   }
 }

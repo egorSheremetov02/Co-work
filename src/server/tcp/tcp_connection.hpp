@@ -13,7 +13,8 @@
 
 struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   public:
-  using pointer = std::shared_ptr<TcpConnection>;
+  //  using pointer = std::shared_ptr<TcpConnection>;
+  using pointer = TcpConnection *;
 
   static pointer create(
       asio::io_context &io_context,
