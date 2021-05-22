@@ -133,6 +133,14 @@ struct AuthReqDTO {
   std::string password;
 };
 
+struct RegestrReqDTO {
+  std::string account_name;
+  std::string full_name;
+  Roles role_in_system;
+  std::string email;
+  std::string password;
+};
+
 struct ProjectCreateDTO {
   std::string name;
   std::string due_date;

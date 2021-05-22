@@ -10,6 +10,9 @@
 
 TEST_CASE("Registration and Authentification new user") {
   DataBase databasa;
+  RegestrReqDTO tmp1{"Acc", "Name", Roles::USER, "email", "password"};
+  CHECK(databasa.registration(tmp1) == 1);
+  CHECK(databasa.registration(tmp1) == 0);
 }
 
 TEST_CASE("Task creation/delete") {
@@ -76,4 +79,8 @@ TEST_CASE("Actions in tasks") {
 
 TEST_CASE("Files") {
   DataBase databasa;
+  std::vector<AttachedFile> f;
+  f.push_back({1, "/home/project", "filename"});
+  databasa.add_files_to_task(1, f);
+  databasa.get_all_files(1);
 }

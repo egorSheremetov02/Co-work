@@ -121,7 +121,7 @@ inline std::string to_orm(AttachedFile const &file) {
 
 // TODO
 
-inline std::string to_orm(User const &user) {
+inline std::string to_orm(RegestrReqDTO const &user) {
   std::string sql = " (account_name,full_name,email) VALUES ('" +
                     user.account_name + "','" + user.account_name + "','" +
                     from_enum(user.role_in_system) + "','" + user.email +

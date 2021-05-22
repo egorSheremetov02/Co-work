@@ -48,10 +48,6 @@ int DataBase::create_project(Project const &t) {
   return projs.insert(t);
 }
 
-int DataBase::create_user(User const &t) {
-  return users.insert(t);
-}
-
 std::optional<User> DataBase::auth(std::string const &login,
                                    std::string const &password) {
   std::vector<User> tmp = users(select(users).where(
@@ -200,8 +196,9 @@ int DataBase::create_project(ProjectCreateDTO &dto) {
   return projs.insert(from_dto(dto));
 }
 
-int DataBase::create_user(UserCreateDTO &dto) {
-  return users.insert(from_dto(std::move(dto)));
+int DataBase::create_user(RegestrReqDTO &dto) {
+  dto.password = sha256(dto.password);
+  return users.insert(dto);
 }
 
 // TODO delete ALL data(users,files,etc)
@@ -245,10 +242,6 @@ std::vector<Action> DataBase::get_history(uint32_t id) {
   return actions(select(actions).where(actions.task_id == id));
 }
 
-std::vector<AttachedFile> DataBase::get_all_files(uint32_t id) {
-  return files(select(files).where(files.task_id == id));
-}
-
 bool DataBase::add_comment(uint32_t task_id,
                            uint32_t user_id,
                            std::string comment) {
@@ -258,4 +251,25 @@ bool DataBase::add_comment(uint32_t task_id,
   std::cout << j.dump() << std::endl;
   Action act{task_id, user_id, Actions::ADD_COMMENT, j.dump()};
   return actions.insert(act);
+}
+// files
+std::vector<AttachedFile> DataBase::get_all_files(uint32_t id) {
+  return files(select(files).where(files.task_id == id));
+}
+
+bool DataBase::add_files_to_task(uint32_t id,
+                                 std::vector<AttachedFile> const &f) {
+  for (auto &z : f) {
+    if (!files.insert(z))
+      return false;
+  }
+}
+
+bool DataBase::registration(RegestrReqDTO &dto) {
+  if (users(select(users).where(users.email == dto.email)).size() == 0) {
+    create_user(dto);
+    return true;
+  } else {
+    return false;
+  }
 }
