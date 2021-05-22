@@ -54,6 +54,7 @@ struct DataBase {
   bool delete_users_from_project(uint32_t id, std::vector<uint32_t> &users_id);
 
   bool update_task(TaskEditDTO const &dto);
+  bool update_task(TaskEditDTO const &dto, uint32_t user_id);
   bool update_project(ProjectEditDTO &dto);
 
   bool delete_task(uint32_t id);
@@ -61,7 +62,11 @@ struct DataBase {
   bool delete_user(uint32_t id);
 
   // for history:
-  bool add_comment(uint32_t id, std::string comment);
+  bool add_comment(uint32_t task_id, uint32_t user_id, std::string comment);
+  std::vector<Action> get_history(uint32_t id);
+
+  // for files
+  std::vector<AttachedFile> get_all_files(uint32_t id);
 
   private:
   std::vector<Task> get_all_tasks_of_proj(uint32_t id);

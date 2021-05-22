@@ -12,14 +12,26 @@ inline std::string from_enum(Actions act) {
   if (act == Actions::ADD_COMMENT)
     return "comment";
 }
+inline std::string from_enum(Roles act) {
+  if (act == Roles::ADMIN)
+    return "admin";
+  if (act == Roles::USER)
+    return "user";
+}
 
 inline Actions to_enum(std::string str, Action &act) {
   if (str == "create")
     return Actions::CREATE_TASK;
-  /*if(act==Actions::CREATE_TASK)
-  return "create";
-  if(act==Actions::ADD_COMMENT)
-  return "comment";*/
+  if (str == "comment")
+    return Actions::ADD_COMMENT;
+  if (str == "edit")
+    return Actions::EDIT_TASK;
+}
+inline Roles to_enum(std::string str, User &user) {
+  if (str == "admin")
+    return Roles::ADMIN;
+  if (str == "user")
+    return Roles::USER;
 }
 
 inline void from_orm(pqxx::row const &row, User &user) {
@@ -27,7 +39,7 @@ inline void from_orm(pqxx::row const &row, User &user) {
   user.account_name = row["account_name"].c_str();
   user.full_name = row["full_name"].c_str();
   user.email = row["email"].c_str();
-  // user.role_in_system=row["role_in_system"].c_str();
+  user.role_in_system = to_enum(row["role_in_system"].c_str(), user);
 }
 
 inline void from_orm(pqxx::row const &row, Project &proj) {
@@ -97,7 +109,6 @@ inline std::string to_orm(Action const &act) {
       " (task_id,user_id,type_of_action,object_of_action) VALUES ('" +
       std::to_string(act.task_id) + "','" + std::to_string(act.user_id) +
       "','" + from_enum(act.action_type) + "','" + act.data + "') ";
-  std::cout << sql << std::endl;
   return sql;
 }
 
@@ -112,8 +123,8 @@ inline std::string to_orm(AttachedFile const &file) {
 
 inline std::string to_orm(User const &user) {
   std::string sql = " (account_name,full_name,email) VALUES ('" +
-                    user.account_name + "','" + user.account_name +
-                    /*"','" +user.role_in_system+ */ "','" + user.email +
+                    user.account_name + "','" + user.account_name + "','" +
+                    from_enum(user.role_in_system) + "','" + user.email +
                     "') RETURNING id";
   return sql;
 }

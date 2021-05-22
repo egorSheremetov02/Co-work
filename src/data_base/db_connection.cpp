@@ -37,7 +37,7 @@ int DataBase::create_task(Task const &t, uint32_t user_id) {
   Create c{"A"};
   nlohmann::json j;
   to_json(j, c);
-  uint32_t id = 2;  // tasks.insert(t);
+  uint32_t id = tasks.insert(t);
   // std::cout << j.dump() << std::endl;
   Action act{id, user_id, Actions::CREATE_TASK, j.dump()};
   actions.insert(act);
@@ -106,7 +106,6 @@ std::vector<Action> DataBase::get_all_actions_of_task(ActionGetAllDTO &dto) {
       dto.actions_per_page.has_value() ? dto.actions_per_page.get() : 5;
   uint32_t skip = amount_of_tasks *
                   (dto.page_number.has_value() ? dto.page_number.get() : 0);
-  std::cout << "a" << std::endl;
   return actions(select(actions)
                      .where(actions.task_id == dto.task_id)
                      .offset(skip)
@@ -129,7 +128,7 @@ bool DataBase::update_task(TaskEditDTO const &dto) {
   db::Expression update_query;
 
   if (dto.name) {
-    update_query += tasks.name == dto.name.get();
+    update_query += (tasks.name == dto.name.get());
   }
   if (dto.description) {
     update_query += tasks.description == dto.description.get();
@@ -143,8 +142,41 @@ bool DataBase::update_task(TaskEditDTO const &dto) {
   if (dto.urgency) {
     update_query += tasks.urgency == dto.urgency.get();
   }
-  // TODO add action update_task
 
+  return tasks.update(dto.task_id, update_query);
+}
+
+bool DataBase::update_task(TaskEditDTO const &dto, uint32_t user_id) {
+  db::Expression update_query;
+  Edit e;
+  std::optional<Task> old = get_task(dto.task_id);
+  if (dto.name) {
+    update_query += tasks.name == dto.name.get();
+    e.edited_fields.push_back(Edited{"Name", old->name, dto.name.get()});
+  }
+  if (dto.description) {
+    update_query += tasks.description == dto.description.get();
+    e.edited_fields.push_back(
+        {"Description", old->description, dto.description.get()});
+  }
+  if (dto.status) {
+    update_query += tasks.status == dto.status.get();
+    e.edited_fields.push_back({"Status", old->status, dto.status.get()});
+  }
+  if (dto.due_date) {
+    update_query += tasks.due_date == dto.due_date.get();
+    e.edited_fields.push_back({"Due Date", old->due_date, dto.due_date.get()});
+  }
+  if (dto.urgency) {
+    update_query += tasks.urgency == dto.urgency.get();
+    e.edited_fields.push_back({"Urgency", std::to_string(old->urgency),
+                               std::to_string(dto.urgency.get())});
+  }
+  nlohmann::json j;
+  to_json(j, e);
+  // std::cout << j.dump() << std::endl;
+  Action act{dto.task_id, user_id, Actions::EDIT_TASK, j.dump()};
+  actions.insert(act);
   return tasks.update(dto.task_id, update_query);
 }
 
@@ -196,8 +228,7 @@ bool DataBase::add_users_to_task(uint32_t id, std::vector<uint32_t> &users_id) {
   for (auto &id_of_user : users_id) {
     if (!tasks.insert_join("users", get_task(id).value(),
                            get_user(id_of_user).value()))
-      ;
-    return false;
+      return false;
   }
   return true;
 }
@@ -208,4 +239,23 @@ bool DataBase::delete_users_from_task(uint32_t id,
     tasks.del_join("users", tasks.task_id == id);
   }
   return true;
+}
+
+std::vector<Action> DataBase::get_history(uint32_t id) {
+  return actions(select(actions).where(actions.task_id == id));
+}
+
+std::vector<AttachedFile> DataBase::get_all_files(uint32_t id) {
+  return files(select(files).where(files.task_id == id));
+}
+
+bool DataBase::add_comment(uint32_t task_id,
+                           uint32_t user_id,
+                           std::string comment) {
+  Comment com{comment};
+  nlohmann::json j;
+  to_json(j, com);
+  std::cout << j.dump() << std::endl;
+  Action act{task_id, user_id, Actions::ADD_COMMENT, j.dump()};
+  return actions.insert(act);
 }

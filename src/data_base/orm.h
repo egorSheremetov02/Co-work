@@ -14,7 +14,7 @@
 namespace db {
 
 struct Expression {
-  std::string expr_;
+  std::string expr_{};
 
   Expression() = default;
 
@@ -39,8 +39,9 @@ struct Expression {
     return Expression{expr_ + "<" + "\'" + std::to_string(data) + "\'"};
   }
 
-  Expression operator+=(Expression const &other) const {
-    return Expression{expr_ + ", " + other.expr_};
+  Expression operator+=(Expression other) {
+    expr_ += (expr_ == "" ? "" : ", ") + other.expr_;
+    return Expression{(expr_ == "" ? "" : ", ") + other.expr_};
   }
 };
 template <typename T>
@@ -153,7 +154,7 @@ struct Table {
       pqxx::work W{*C};
       pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(object));
       W.commit();
-      return R[0][0].as<int>();
+      return 1;
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
     }
