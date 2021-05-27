@@ -97,7 +97,8 @@ std::vector<Task> DataBase::get_all_tasks_of_proj(TaskGetAllDTO &dto) {
                    .limit(amount_of_tasks));
 }
 
-std::vector<Action> DataBase::get_all_actions_of_task(ActionGetAllDTO &dto) {
+std::vector<Action> DataBase::get_all_actions_of_task(
+    ActionGetAllDTO const &dto) {
   uint32_t amount_of_tasks =
       dto.actions_per_page.has_value() ? dto.actions_per_page.get() : 5;
   uint32_t skip = amount_of_tasks *

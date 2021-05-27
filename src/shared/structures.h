@@ -163,6 +163,7 @@ struct ActionGetAllDTO {
 
 struct TaskEditDTO {
   uint32_t task_id{};
+  uint32_t user_id{};
   OptionalField<std::string> name{};
   OptionalField<std::string> description{};
   OptionalField<std::string> status{};

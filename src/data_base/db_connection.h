@@ -36,7 +36,7 @@ struct DataBase {
   std::optional<User> get_user(uint32_t id);
 
   std::vector<Task> get_all_tasks_of_proj(TaskGetAllDTO &dto);
-  std::vector<Action> get_all_actions_of_task(ActionGetAllDTO &dto);
+  std::vector<Action> get_all_actions_of_task(ActionGetAllDTO const &dto);
   // TODO add pagination for status
   std::vector<Task> get_all_tasks_of_user(uint32_t id);
   std::vector<User> get_all_users_of_task(uint32_t id);

@@ -17,7 +17,7 @@ std::vector<Task> task_service::get_tasks(TaskGetAllDTO &dto) {
 }
 
 Task task_service::edit_task(TaskEditDTO const &editDTO) {
-  if (get_app_db().update_task(editDTO)) {
+  if (get_app_db().update_task(editDTO, editDTO.user_id)) {
     return get_app_db().get_task(editDTO.task_id).value();
   } else {
     // TODO : maybe add custom exception hierarchy
