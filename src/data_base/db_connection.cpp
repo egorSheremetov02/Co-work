@@ -33,12 +33,12 @@ int DataBase::create_task(Task const &t) {
   return tasks.insert(t);
 }
 
-int DataBase::create_task(Task const &t, uint32_t user_id) {
+int DataBase::create_task(TaskCreateDTO const &t, uint32_t user_id) {
   Create c{"A"};
   nlohmann::json j;
   to_json(j, c);
-  uint32_t id = tasks.insert(t);
-  // std::cout << j.dump() << std::endl;
+  uint32_t id = tasks.insert(from_dto(t));
+  // std:: << j.dump() << std::endl;
   Action act{id, user_id, Actions::CREATE_TASK, j.dump()};
   actions.insert(act);
   return id;
@@ -205,6 +205,7 @@ int DataBase::create_user(RegistrationReqDTO &dto) {
 
 bool DataBase::delete_task(uint32_t id) {
   tasks.del_join("users", tasks.task_id == id);
+  actions.del(actions.task_id == id);
   return tasks.del(tasks.id == id);
 }
 bool DataBase::delete_project(uint32_t id) {
@@ -213,7 +214,6 @@ bool DataBase::delete_project(uint32_t id) {
     delete_task(z.id);
   }
   tasks.del(tasks.project_id == id);
-  // delete_users_from_project();
   return projs.del(projs.id == id);
 }
 
@@ -248,11 +248,11 @@ bool DataBase::add_comment(uint32_t task_id,
   Comment com{comment};
   nlohmann::json j;
   to_json(j, com);
-  std::cout << j.dump() << std::endl;
+  // std::cout << j.dump() << std::endl;
   Action act{task_id, user_id, Actions::ADD_COMMENT, j.dump()};
   return actions.insert(act);
 }
-// files
+
 std::vector<AttachedFile> DataBase::get_all_files(uint32_t id) {
   return files(select(files).where(files.task_id == id));
 }
@@ -265,11 +265,16 @@ bool DataBase::add_files_to_task(uint32_t id,
   }
 }
 
-bool DataBase::registration(RegistrationReqDTO &dto) {
+uint32_t DataBase::registration(RegistrationReqDTO &dto) {
   if (users(select(users).where(users.email == dto.email)).size() == 0) {
-    create_user(dto);
-    return true;
+    return create_user(dto);
   } else {
-    return false;
+    return 0;
   }
+}
+void DataBase::test() {
+  std::vector<User> tmp = users(select(users).where(
+      users.account_name == "login" and
+      users.password == sha256("65e84be33532fb784c48129675f9eff3a682b27168c0ea7"
+                               "44b2cf58ee02337c5")));
 }

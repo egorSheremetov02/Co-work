@@ -12,36 +12,73 @@
 #include "serialization_orm.h"
 
 namespace db {
+struct Prepared {
+  std::string variable{};
+  OptionalField<uint32_t> data_int;
+  OptionalField<std::string> data_str;
+
+  Prepared(std::string var, std::string str) : variable(var), data_str(str){};
+  Prepared(std::string var, uint32_t num) : variable(var), data_int(num){};
+  void out() {
+    std::cout << variable << std::endl;
+  }
+};
 
 struct Expression {
   std::string expr_{};
+  mutable std::vector<Prepared> data_;
 
   Expression() = default;
 
   Expression(std::string expr) : expr_(std::move(expr)) {}
-
-  Expression operator&&(Expression const &other) const {
-    return Expression{expr_ + " AND " + other.expr_};
+  Expression(std::string expr, std::vector<Prepared> d)
+      : expr_(std::move(expr)), data_(d) {}
+  Expression(std::string expr, std::vector<Prepared> d, Prepared p)
+      : expr_(std::move(expr)), data_(d) {
+    data_.push_back(p);
   }
 
-  Expression operator==(std::string const &data) const {
-    return Expression{expr_ + "=" + "\'" + data + "\'"};
+  Expression operator&&(Expression const other) const {
+    data_.insert(data_.end(), other.data_.begin(), other.data_.end());
+    return Expression{expr_ + " AND " + other.expr_, data_};
+  }
+
+  Expression operator==(std::string const data) const {
+    Prepared p(expr_ + "=", data);
+    return Expression{expr_ + "=" + "\'" + data + "\'", data_, p};
   }
 
   Expression operator==(int data) const {
-    return Expression{expr_ + "=" + "\'" + std::to_string(data) + "\'"};
+    Prepared p(expr_ + "=", data);
+    data_.push_back(p);
+    return Expression{expr_ + "=" + "\'" + std::to_string(data) + "\'", data_};
   }
   Expression operator>(int data) const {
-    return Expression{expr_ + ">" + "\'" + std::to_string(data) + "\'"};
+    Prepared p(expr_ + ">", data);
+    data_.push_back(p);
+    return Expression{expr_ + ">" + "\'" + std::to_string(data) + "\'", data_};
   }
 
   Expression operator<(int data) const {
-    return Expression{expr_ + "<" + "\'" + std::to_string(data) + "\'"};
+    Prepared p(expr_ + "<", data);
+    data_.push_back(p);
+    return Expression{expr_ + "<" + "\'" + std::to_string(data) + "\'", data_};
   }
 
   Expression operator+=(Expression other) {
     expr_ += (expr_ == "" ? "" : ", ") + other.expr_;
-    return Expression{(expr_ == "" ? "" : ", ") + other.expr_};
+    data_.insert(data_.end(), other.data_.begin(), other.data_.end());
+    return Expression{(expr_ == "" ? "" : ", ") + other.expr_, data_};
+  }
+  std::string build() const {
+    std::string res{};
+    for (int i = 1; i <= data_.size(); i++) {
+      res += data_[i - 1].variable + "$" + std::to_string(i);
+      if (i != data_.size()) {
+        res += " AND ";
+      }
+    }
+    return res;
   }
 };
 template <typename T>
@@ -53,6 +90,7 @@ struct Select {
   std::string order{};
   uint32_t lim{};
   uint32_t off{};
+  std::vector<std::string> p;
 
   Select() = default;
 
@@ -64,6 +102,12 @@ struct Select {
 
   Select where(Expression const &request) {
     condition = request.expr_;
+    for (Prepared z : request.data_) {
+      // z.out();
+      p.push_back(z.data_int.has_value() ? std::to_string(z.data_int.get())
+                                         : z.data_str.get());
+    }
+    condition = request.build();
     return *this;
   }
   Select limit(uint32_t limit_) {
@@ -87,7 +131,7 @@ struct Select {
     return *this;
   }
 
-  [[nodiscard]] std::string build() const {
+  [[nodiscard]] std::vector<std::string> build(std::string &out) const {
     std::string result = "SELECT * FROM " + what;
     if (!condition.empty()) {
       result += " WHERE " + condition;
@@ -104,7 +148,8 @@ struct Select {
 #ifdef LOGGING
     std::cout << result << std::endl;
 #endif
-    return result;
+    out = result;
+    return p;
   }
 };
 
@@ -140,8 +185,13 @@ struct Table {
   std::vector<T> operator()(Select const &select) {
     try {
       pqxx::work W{*C};
-      pqxx::result R{W.exec(select.build())};
+      std::string request;
+      std::vector<std::string> params = select.build(request);
+      C->prepare("ex", request);
+      pqxx::result R{
+          W.exec_prepared("ex", pqxx::prepare::make_dynamic_params(params))};
       W.commit();
+      C->unprepare("ex");
       return convert_to_vector(R);
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
@@ -152,9 +202,12 @@ struct Table {
   int insert(T const &object) {  // return id in db
     try {
       pqxx::work W{*C};
+#ifdef LOGGING
+      std::cout << "INSERT INTO " + table_ + to_orm(object) << std::endl;
+#endif
       pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(object));
       W.commit();
-      return 1;
+      return R[0][0].as<int>();
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
     }
@@ -164,6 +217,10 @@ struct Table {
   bool del(Expression const &request) {
     try {
       pqxx::work W{*C};
+#ifdef LOGGING
+      std::cout << "DELETE FROM " + table_ + " WHERE " + request.expr_
+                << std::endl;
+#endif
       pqxx::result R =
           W.exec("DELETE FROM " + table_ + " WHERE " + request.expr_);
       W.commit();
@@ -236,13 +293,16 @@ struct Users : Table<User> {
   int insert(RegistrationReqDTO const &dto) {  // return id in db
     try {
       pqxx::work W{*C};
+#ifdef LOGGING
+      std::cout << "INSERT INTO " + table_ + to_orm(dto) << std::endl;
+#endif
       pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(dto));
       W.commit();
-      return 1;
+      return R[0][0].as<int>();
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
     }
-    return -1;
+    return 0;
   }
 };
 
