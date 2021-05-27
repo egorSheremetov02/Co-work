@@ -243,7 +243,9 @@ void authenticate() {
                   //                  to server"
                   //                            << std::endl;
                   //                  do_write();
-                  do_subscribe();
+                  //                  do_subscribe();
+                  //                  std::cout << "Successfully authorized" <<
+                  //                  std::endl;
                 } else {
                   socket1.close();
                   std::cout

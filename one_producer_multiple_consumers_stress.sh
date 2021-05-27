@@ -3,15 +3,15 @@
 clients_count=$1
 
 # shellcheck disable=SC2039
+#
+#cmake .
+#
+#make -j20
 
-cmake .
-
-make -j20
+echo $clients_count
 
 # temporary solution (i hope)
 /home/egor/HSE/projects/Co-work/first-client-stress.out &
-
-echo $clients_count
 
 producer_pid=$!
 

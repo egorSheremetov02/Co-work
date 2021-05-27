@@ -3,4 +3,4 @@
 //
 #include "defaults.h"
 
-const int defaults::server::default_buffer_size = 1 << 14;
+const int defaults::server::default_buffer_size = 1 << 12;
