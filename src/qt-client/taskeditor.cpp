@@ -6,7 +6,7 @@
 TaskEditor::TaskEditor(QWidget *parent)
     : QWidget(parent)
 {
-    win = new QDialog(parent);
+    win = new QDialog(this);
 
     auto layout = new QVBoxLayout(win);
     task_name = new QLineEdit;

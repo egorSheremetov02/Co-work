@@ -6,7 +6,6 @@
 QWidget *TaskDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &,
                                     const QModelIndex &) const
 {
-    std::cout << "createEditor" << std::endl;
     auto editor = new TaskEditor(parent);
     connect(editor->ok, SIGNAL(clicked()),this, SLOT(commit()));
     return editor;
@@ -36,8 +35,7 @@ void TaskDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewI
 
 void TaskDelegate::commit()
  {
-     std::cout << "commit" << std::endl;
-     TaskEditor *editor = qobject_cast<TaskEditor *>(sender());
+     TaskEditor *editor = qobject_cast<TaskEditor *>(sender()->parent()->parent());
      emit commitData(editor);
      emit closeEditor(editor);
  }

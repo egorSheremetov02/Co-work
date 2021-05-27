@@ -20,13 +20,19 @@ public:
 
 private slots:
     void on_add();
+    void on_remove();
     void task_completed();
     void task_in_progress();
     void task_in_to_do();
     void removed_from_completed();
     void removed_from_in_progress();
     void removed_from_to_do();
-    //void onRemove();
+    void show_item_menu_to_do(const QPoint& pos);
+    void show_item_menu_in_progress(const QPoint& pos);
+    void show_item_menu_completed(const QPoint& pos);
+    void show_task();
+    void show_history();
+    void show_comments();
 private:
     Ui::kanban *ui;
 
@@ -35,6 +41,8 @@ private:
     QListView* list_completed = nullptr;
 
     QAction* action_add = nullptr;
-    //QAction* action_remove = nullptr;
+    QAction* action_remove = nullptr;
+
+    void get_projects(QMenu *menu);
 };
 #endif // KANBAN_H

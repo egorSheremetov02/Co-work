@@ -3,10 +3,13 @@
 #include "tasklist.h"
 #include "taskeditor.h"
 #include "taskdelegate.h"
+#include<task.h>
+#include<iostream>
 
 #include <QLabel>
 #include <QToolBar>
 #include <QBoxLayout>
+#include <QDialog>
 
 kanban::kanban(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +22,9 @@ kanban::kanban(QWidget *parent)
 
     QVBoxLayout *win_layout = new QVBoxLayout();
     window->setLayout(win_layout);
+
+    QMenuBar *menu_bar = new QMenuBar(this);
+    win_layout -> addWidget(menu_bar);
 
     QHBoxLayout *label_layout = new QHBoxLayout();
     win_layout->addLayout(label_layout);
@@ -92,14 +98,36 @@ kanban::kanban(QWidget *parent)
       "QListView::item { background-color: #A4C7AF; padding: 10%; border-radius: 12px;}"
       "QListView::item::hover { background-color: #b3dac0 }");
 
-    //создаем события в тулбаре(добавление и удаление)
+    //меню
 
-    QToolBar* tool_bar = new QToolBar(this);
-    addToolBar(tool_bar);
+    QMenu *task_menu =  new QMenu("Task");
 
     action_add = new QAction(this);
-    action_add->setIcon(QIcon("/home/krestino4ka/Co-Work/add_icon.png"));
+    //action_add->setIcon(QIcon("/home/krestino4ka/Co-Work/add_icon.png"));
+    action_add->setText("Add task");
     connect(action_add, &QAction::triggered, this, &kanban::on_add);
+
+    action_remove = new QAction(this);
+    action_remove->setText("Remove task");
+    connect(action_remove, &QAction::triggered, this, &kanban::on_remove);
+
+    task_menu -> addAction(action_add);
+    task_menu -> addAction(action_remove);
+
+    menu_bar -> addMenu(task_menu);
+
+    QMenu *project_menu = new QMenu("Projects");
+    QMenu *my_projects_menu = new QMenu("My projects");
+    QAction *add_project = new QAction(this);
+    add_project -> setText("Add project");
+    //тут нужно коннектить с слотом добавления проекта
+
+    project_menu -> addMenu(my_projects_menu);
+    project_menu -> addAction(add_project);
+
+    menu_bar -> addMenu(project_menu);
+
+    //в меню нужно добавить еще фильтр по проектам(логика кажется примерно такая же как в отображении проектов)
 
     //сигналы для отправки сообщений на сервер о перемещении объектов в канбане
     connect(list_completed -> model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(task_completed()));
@@ -110,21 +138,43 @@ kanban::kanban(QWidget *parent)
     connect(list_in_progress -> model(), SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removed_from_in_progress()));
     connect(list_to_do -> model(), SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(removed_from_to_do()));
 
-    tool_bar->addAction(action_add);
+    //меню для элементов канбана
+
+
+    list_to_do->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(list_to_do, SIGNAL(customContextMenuRequested(const QPoint&)),
+                this, SLOT(show_item_menu_to_do(const QPoint&)));
+
+    list_in_progress->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(list_in_progress, SIGNAL(customContextMenuRequested(const QPoint&)),
+                this, SLOT(show_item_menu_in_progress(const QPoint&)));
+
+    list_completed->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(list_completed, SIGNAL(customContextMenuRequested(const QPoint&)),
+                this, SLOT(show_item_menu_completed(const QPoint&)));
 }
 
 void kanban::on_add()
 {
     list_to_do->model()->insertRow(list_to_do->model()->rowCount());
-    QModelIndex oIndex = list_to_do->model()->index(
+    QModelIndex ind = list_to_do->model()->index(
                 list_to_do->model()->rowCount() - 1, 0);
 
-    list_to_do->edit(oIndex);
+    list_to_do->edit(ind);
+}
+
+void kanban::on_remove()
+{
+    QModelIndex ind = list_completed->currentIndex();
+    list_completed->model()->removeRows(ind.row(), 1, ind);
 }
 
 void kanban::task_completed()
 {
-//    QLabel *l = new QLabel("task completed");
+//    QLabel *l = new QLabeladd("task completed");
 //    l -> show();
 }
 
@@ -158,6 +208,49 @@ void kanban::removed_from_to_do()
 //    l -> show();
 }
 
+void kanban::show_item_menu_to_do(const QPoint& pos) {
+    QMenu *menu=new QMenu(this);
+    menu -> addAction("Show task", this, SLOT(show_task()));
+    menu -> addAction("History", this, SLOT(show_history()));
+    menu -> addAction("Сomments", this, SLOT(show_comments()));
+    menu -> popup(list_to_do -> viewport() -> mapToGlobal(pos));
+}
+
+void kanban::show_item_menu_in_progress(const QPoint& pos) {
+    QMenu *menu=new QMenu(this);
+    menu -> addAction("Show task", this, SLOT(show_task()));
+    menu -> addAction("History", this, SLOT(show_history()));
+    menu -> addAction("Сomments", this, SLOT(show_comments()));
+    menu -> popup(list_in_progress -> viewport() -> mapToGlobal(pos));
+}
+
+void kanban::show_item_menu_completed(const QPoint& pos) {
+    QMenu *menu=new QMenu(this);
+    menu -> addAction("Show task", this, SLOT(show_task()));
+    menu -> addAction("History", this, SLOT(show_history()));
+    menu -> addAction("Сomments", this, SLOT(show_comments()));
+    menu -> popup(list_completed -> viewport() -> mapToGlobal(pos));
+}
+
+void kanban::show_task() {
+    QDialog window;
+    window.setWindowTitle("Task info");
+    Task task = list_to_do -> selectionModel()
+            ->selectedIndexes().at(0).data().value<Task>();
+    //дальше добавить инфу на виджет и показать его
+}
+
+void kanban::show_history(){
+
+}
+
+void kanban::show_comments() {
+
+}
+
+void kanban::get_projects(QMenu *menu) {
+    //взять что-то с сервера
+}
 
 kanban::~kanban()
 {
