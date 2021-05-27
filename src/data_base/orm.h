@@ -232,6 +232,18 @@ struct Users : Table<User> {
     }
     return str + ".id = " + relations_[str] + ".project_id";
   }
+
+  int insert(RegestrReqDTO const &dto) {  // return id in db
+    try {
+      pqxx::work W{*C};
+      pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(dto));
+      W.commit();
+      return 1;
+    } catch (std::exception const &e) {
+      std::cerr << e.what() << std::endl;
+    }
+    return -1;
+  }
 };
 
 struct Tasks : Table<Task> {

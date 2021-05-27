@@ -28,8 +28,8 @@ struct DataBase {
 
   std::optional<User> auth(std::string const &login,
                            std::string const &password);
-  // TODO
-  // bool registration();
+
+  bool registration(RegestrReqDTO &dto);
 
   std::optional<Task> get_task(uint32_t id);
   std::optional<Project> get_project(uint32_t id);
@@ -43,7 +43,7 @@ struct DataBase {
 
   int create_task(TaskCreateDTO &dto);
   int create_project(ProjectCreateDTO &dto);
-  int create_user(UserCreateDTO &dto);
+  int create_user(RegestrReqDTO &dto);
 
   int create_task(Task const &t, uint32_t user_id);
 
@@ -67,6 +67,7 @@ struct DataBase {
 
   // for files
   std::vector<AttachedFile> get_all_files(uint32_t id);
+  bool add_files_to_task(uint32_t id, std::vector<AttachedFile> const &f);
 
   private:
   std::vector<Task> get_all_tasks_of_proj(uint32_t id);
