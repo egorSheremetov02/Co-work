@@ -94,9 +94,10 @@ add_executable(
         src/server/app_db/app_db_connection.cpp
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
-        src/shared/defaults.cpp
+        src/shared/globals.cpp
         src/server/util
         src/server/services/task_history_service.cpp
+        src/server/endpoint_handlers/task_history_handler.cpp
 )
 
 add_executable(
@@ -116,9 +117,10 @@ add_executable(
         src/server/app_db/app_db_connection.cpp
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
-        src/shared/defaults.cpp
+        src/shared/globals.cpp
         src/server/util
         src/server/services/task_history_service.cpp
+        src/server/endpoint_handlers/task_history_handler.cpp
 )
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)

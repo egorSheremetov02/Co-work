@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include "application_context.hpp"
-#include "defaults.h"
+#include "globals.h"
 #include "handler_registration.hpp"
 #include "multicast.h"
 #include "serialization.h"
@@ -82,8 +82,8 @@ void edit_task_handler(json &in_json, TcpConnection::pointer &connection) {
 #endif
 }
 
-REGISTER_HANDLER("task edit", edit_task_handler);
+REGISTER_HANDLER(endpoints::tasks::edit, edit_task_handler);
 
-REGISTER_HANDLER("task get_all", get_all_tasks_handler);
+REGISTER_HANDLER(endpoints::tasks::get_all, get_all_tasks_handler);
 
-REGISTER_HANDLER("task create", create_task_handler);
+REGISTER_HANDLER(endpoints::tasks::create, create_task_handler);

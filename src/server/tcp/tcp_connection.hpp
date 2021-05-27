@@ -7,7 +7,7 @@
 #include <asio.hpp>
 #include <string>
 #include <unordered_set>
-#include "defaults.h"
+#include "globals.h"
 #include "response_format.h"
 #include "structures.h"
 

@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include "globals.h"
 #include "project_service.hpp"
 #include "request_format.h"
 #include "serialization.h"
@@ -31,4 +32,4 @@ void create_project_handler(nlohmann::json &in_json,
 #endif
 }
 
-REGISTER_HANDLER("project create", create_project_handler);
+REGISTER_HANDLER(endpoints::projects::create, create_project_handler);

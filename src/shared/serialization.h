@@ -19,6 +19,13 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Roles,
                                  {USER, "user"},
                              })
 
+NLOHMANN_JSON_SERIALIZE_ENUM(Actions,
+                             {
+                                 {ADD_COMMENT, "add_comment"},
+                                 {EDIT_TASK, "edit_task"},
+                                 {CREATE_TASK, "create_task"},
+                             })
+
 inline void from_json(nlohmann::json const &j, Project &project) {
   j.at("id").get_to(project.id);
   j.at("name").get_to(project.name);
@@ -177,6 +184,14 @@ inline void from_json(nlohmann::json const &j, TaskEditDTO &editDTO) {
   j.at("user_id").get_to(editDTO.user_id);
 }
 
+inline void to_json(nlohmann::json &j, Action const &action) {
+  j = nlohmann::json{{"user_id", action.user_id},
+                     {"task_id", action.task_id},
+                     {"data", action.data},
+                     {"action_type", action.action_type},
+                     {"date_of_action", action.date_of_action}};
+}
+
 //
 inline void from_json(nlohmann::json const &j, Comment &comment) {
   j.at("comment").get_to(comment.comment);
@@ -213,8 +228,6 @@ inline void from_json(nlohmann::json const &j, Edit &edit) {
 inline void to_json(nlohmann::json &j, Edit const &edit) {
   j = nlohmann::json{{"edited_fields", edit.edited_fields}};
 }
-
-//
 
 template <typename T>
 inline void to_json(nlohmann::json &j, const ResponseFormat<T> &response) {
