@@ -100,7 +100,7 @@ kanban::kanban(QWidget *parent)
 
     //меню
 
-    QMenu *task_menu =  new QMenu("Task");
+    QMenu *task_menu =  new QMenu("Tasks");
 
     action_add = new QAction(this);
     //action_add->setIcon(QIcon("/home/krestino4ka/Co-Work/add_icon.png"));

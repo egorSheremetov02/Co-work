@@ -56,6 +56,8 @@ set(PROJECT_SOURCES
         taskdelegate.cpp
         taskeditor.h
         taskeditor.cpp
+        taskaction.cpp
+        taskaction.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

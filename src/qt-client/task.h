@@ -9,7 +9,7 @@ class Task
 {
 public:
     QString name;
-    //QString description;
+    QString description;
     QString deadline;
 
     Task() {}
