@@ -20,7 +20,7 @@ struct Prepared {
   Prepared(std::string var, std::string str) : variable(var), data_str(str){};
   Prepared(std::string var, uint32_t num) : variable(var), data_int(num){};
   void out() {
-    std::cout << variable << std::endl;
+    // std::cout << data_int.get() << std::endl;
   }
 };
 
@@ -37,10 +37,16 @@ struct Expression {
       : expr_(std::move(expr)), data_(d) {
     data_.push_back(p);
   }
+  Expression(std::string expr,
+             std::vector<Prepared> d1,
+             std::vector<Prepared> d2)
+      : expr_(std::move(expr)), data_(d1) {
+    data_.insert(data_.end(), d2.begin(), d2.end());
+  }
 
   Expression operator&&(Expression const other) const {
-    data_.insert(data_.end(), other.data_.begin(), other.data_.end());
-    return Expression{expr_ + " AND " + other.expr_, data_};
+    //  data_.insert(data_.end(), other.data_.begin(), other.data_.end());
+    return Expression{expr_ + " AND " + other.expr_, data_, other.data_};
   }
 
   Expression operator==(std::string const data) const {
@@ -50,19 +56,19 @@ struct Expression {
 
   Expression operator==(int data) const {
     Prepared p(expr_ + "=", data);
-    data_.push_back(p);
-    return Expression{expr_ + "=" + "\'" + std::to_string(data) + "\'", data_};
+    return Expression{expr_ + "=" + "\'" + std::to_string(data) + "\'", data_,
+                      p};
   }
   Expression operator>(int data) const {
     Prepared p(expr_ + ">", data);
-    data_.push_back(p);
-    return Expression{expr_ + ">" + "\'" + std::to_string(data) + "\'", data_};
+    return Expression{expr_ + ">" + "\'" + std::to_string(data) + "\'", data_,
+                      p};
   }
 
   Expression operator<(int data) const {
     Prepared p(expr_ + "<", data);
-    data_.push_back(p);
-    return Expression{expr_ + "<" + "\'" + std::to_string(data) + "\'", data_};
+    return Expression{expr_ + "<" + "\'" + std::to_string(data) + "\'", data_,
+                      p};
   }
 
   Expression operator+=(Expression other) {
@@ -103,7 +109,7 @@ struct Select {
   Select where(Expression const &request) {
     condition = request.expr_;
     for (Prepared z : request.data_) {
-      // z.out();
+      z.out();
       p.push_back(z.data_int.has_value() ? std::to_string(z.data_int.get())
                                          : z.data_str.get());
     }
@@ -234,6 +240,11 @@ struct Table {
   bool del_join(std::string const &table_to_join, Expression const &request) {
     try {
       pqxx::work W{*C};
+#ifdef LOGGING
+      std::cout << "DELETE FROM " + relations_[table_to_join] + " WHERE " +
+                       request.expr_
+                << std::endl;
+#endif
       pqxx::result R = W.exec("DELETE FROM " + relations_[table_to_join] +
                               " WHERE " + request.expr_);
       W.commit();
@@ -308,7 +319,7 @@ struct Users : Table<User> {
 
 struct Tasks : Table<Task> {
   Tasks(std::string t, pqxx::connection *c) : Table(std::move(t), c){};
-  Expression id{"id"}, task_id{"task_id"}, name{"name"},
+  Expression id{"id"}, task_id{"task_id"}, name{"name"}, user_id{"user_id"},
       description{"description"}, due_date{"due_date"},
       project_id{"project_id"}, urgency{"urgency"}, status{"status"},
       start_date{"start_date"};
@@ -320,11 +331,11 @@ struct Tasks : Table<Task> {
 
 struct Projects : Table<Project> {
   Projects(std::string t, pqxx::connection *c) : Table(t, c){};
-  Expression id{"id"}, name{"name"}, due_date{"due_date"},
+  Expression id{"id"}, name{"name"}, due_date{"due_date"}, user_id{"user_id"},
       project_id{"project_id"}, start_date{"start_date"};
 
   std::string on_tables(std::string const &str) override {
-    return str + ".id = " + relations_[str] + ".task_id";
+    return "users.id = " + relations_[str] + ".user_id";
   }
 };
 

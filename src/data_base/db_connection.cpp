@@ -24,7 +24,7 @@ DataBase::DataBase()
       files("attached_files", C),
       actions("actions", C) {
   users.add_relations("tasks", "dependence_task_user");
-  users.add_relations("projs", "dependence_project_user");
+  users.add_relations("projects", "dependence_project_user");
   tasks.add_relations("users", "dependence_task_user");
   projs.add_relations("users", "dependence_project_user");
 }
@@ -38,7 +38,6 @@ int DataBase::create_task(TaskCreateDTO const &t, uint32_t user_id) {
   nlohmann::json j;
   to_json(j, c);
   uint32_t id = tasks.insert(from_dto(t));
-  // std:: << j.dump() << std::endl;
   Action act{id, user_id, Actions::CREATE_TASK, j.dump()};
   actions.insert(act);
   return id;
@@ -117,8 +116,16 @@ std::vector<User> DataBase::get_all_users_of_task(uint32_t id) {
   return users(select(users).join(tasks).where(tasks.task_id == id));
 }
 
+std::vector<User> DataBase::get_all_users_of_project(uint32_t id) {
+  return users(select(users).join(projs).where(projs.project_id == id));
+}
+
 std::vector<Task> DataBase::get_all_tasks_of_user(uint32_t id) {
   return tasks(select(tasks).join(users).where(users.user_id == id));
+}
+
+std::vector<Project> DataBase::get_all_projects_of_user(uint32_t id) {
+  return projs(select(projs).join(users).where(users.user_id == id));
 }
 
 bool DataBase::update_task(TaskEditDTO const &dto) {
@@ -223,9 +230,29 @@ bool DataBase::delete_user(uint32_t id) {
 }
 
 bool DataBase::add_users_to_task(uint32_t id, std::vector<uint32_t> &users_id) {
+  std::optional<Task> t = get_task(id);
+  if (!t.has_value())
+    return false;
   for (auto &id_of_user : users_id) {
-    if (!tasks.insert_join("users", get_task(id).value(),
-                           get_user(id_of_user).value()))
+    std::optional<User> u = get_user(id_of_user);
+    if (!u.has_value())
+      return false;
+    if (!tasks.insert_join("users", t.value(), u.value()))
+      return false;
+  }
+  return true;
+}
+
+bool DataBase::add_users_to_project(uint32_t id,
+                                    std::vector<uint32_t> &users_id) {
+  std::optional<Project> t = get_project(id);
+  if (!t.has_value())
+    return false;
+  for (auto &id_of_user : users_id) {
+    std::optional<User> u = get_user(id_of_user);
+    if (!u.has_value())
+      return false;
+    if (!projs.insert_join("users", t.value(), u.value()))
       return false;
   }
   return true;
@@ -234,7 +261,17 @@ bool DataBase::add_users_to_task(uint32_t id, std::vector<uint32_t> &users_id) {
 bool DataBase::delete_users_from_task(uint32_t id,
                                       std::vector<uint32_t> &users_id) {
   for (auto &id_of_user : users_id) {
-    tasks.del_join("users", tasks.task_id == id);
+    tasks.del_join("users",
+                   tasks.user_id == id_of_user and tasks.task_id == id);
+  }
+  return true;
+}
+
+bool DataBase::delete_users_from_project(uint32_t id,
+                                         std::vector<uint32_t> &users_id) {
+  for (auto &id_of_user : users_id) {
+    projs.del_join("users",
+                   projs.user_id == id_of_user and projs.project_id == id);
   }
   return true;
 }
@@ -249,7 +286,6 @@ bool DataBase::add_comment(uint32_t task_id,
   Comment com{comment};
   nlohmann::json j;
   to_json(j, com);
-  // std::cout << j.dump() << std::endl;
   Action act{task_id, user_id, Actions::ADD_COMMENT, j.dump()};
   return actions.insert(act);
 }
