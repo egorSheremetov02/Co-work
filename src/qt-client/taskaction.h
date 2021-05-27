@@ -1,6 +1,6 @@
 #ifndef TASKACTION_H
 #define TASKACTION_H
-
+#include<QString>
 
 class TaskAction
 {

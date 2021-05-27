@@ -6,6 +6,7 @@
 #include <QDoubleSpinBox>
 #include <QWidget>
 #include <QPushButton>
+#include <QTextEdit>
 #include "taskdelegate.h"
 
 class Task;
@@ -24,6 +25,8 @@ private:
     QDialog *win;
     QLineEdit *task_name;
     QLineEdit *task_deadline;
+    QLineEdit *task_urgency;
+    QTextEdit *task_description;
 };
 
 #endif // TASKEDITOR_H
