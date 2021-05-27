@@ -1,6 +1,3 @@
 #include "taskaction.h"
 
-TaskAction::TaskAction()
-{
-
-}
+TaskAction::TaskAction() {}
