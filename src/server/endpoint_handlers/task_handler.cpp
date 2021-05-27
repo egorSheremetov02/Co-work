@@ -27,7 +27,7 @@ void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
                                   [[maybe_unused]] std::size_t len) {
         if (!ec) {
           application_context::add_connection(
-              "project" + std::to_string(project_id), connection);
+              util::project_subscription_name(project_id), connection);
 #ifdef LOGGING
           std::cout << "Subscribing to project<project_id>" << std::endl;
           std::cout << "Wrote 'task get_all' response: "
