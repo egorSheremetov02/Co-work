@@ -119,6 +119,7 @@ struct TaskCreateDTO {
   std::string status;
   uint32_t project_id{};
   std::string due_date;
+  uint32_t user_id{};
 };
 
 struct UserCreateDTO {

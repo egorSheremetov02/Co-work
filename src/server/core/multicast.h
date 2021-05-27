@@ -10,10 +10,13 @@
 
 namespace multicasting {
 template <typename T>
-void do_multicast(std::string const &resource_id, T const &data) {
+void do_multicast(std::string const &resource_id,
+                  T const &data,
+                  std::string const &action) {
   using nlohmann::json;
   ResponseFormat<T> data_to_share;
   data_to_share.data = std::move(data);
+  data_to_share.metadata = action;
   json json_message = data_to_share;
   std::shared_ptr<std::string> str_message(
       new std::string(json_message.dump()));
@@ -26,7 +29,7 @@ void do_multicast(std::string const &resource_id, T const &data) {
          ,
          resource = resource_id
 #endif
-    ](asio::error_code const &ec, std::size_t len) {
+    ](asio::error_code const &ec, [[maybe_unused]] std::size_t len) {
           if (ec) {
             // handle error
             return;

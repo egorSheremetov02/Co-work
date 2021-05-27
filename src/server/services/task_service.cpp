@@ -7,11 +7,9 @@
 #include "serialization.h"
 
 Task task_service::create_task(TaskCreateDTO const &taskDTO) {
-  Task task = from_dto(taskDTO);
-  task.due_date = "01-01-2021";
-  task.id = /*1*/ get_app_db().create_task(task);
-
-  return task;
+  //  task.due_date = "01-01-2021";
+  uint32_t task_id = get_app_db().create_task(taskDTO, taskDTO.user_id);
+  return get_app_db().get_task(task_id).value();
 }
 
 std::vector<Task> task_service::get_tasks(TaskGetAllDTO &dto) {

@@ -18,6 +18,7 @@ include_directories(src/server/endpoint_handlers)
 include_directories(src/server/app_db)
 include_directories(src/server/tcp)
 include_directories(src/server/core)
+include_directories(src/server/util)
 
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
@@ -94,6 +95,7 @@ add_executable(
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
         src/shared/defaults.cpp
+        src/server/util
 )
 
 add_executable(
@@ -114,6 +116,7 @@ add_executable(
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
         src/shared/defaults.cpp
+        src/server/util
 )
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)

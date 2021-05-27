@@ -123,7 +123,8 @@ inline void to_json(nlohmann::json &j, TaskCreateDTO const &taskDTO) {
   j = nlohmann::json{
       {"description", taskDTO.description}, {"name", taskDTO.name},
       {"urgency", taskDTO.urgency},         {"status", taskDTO.status},
-      {"project_id", taskDTO.project_id},   {"due_date", taskDTO.due_date}};
+      {"project_id", taskDTO.project_id},   {"due_date", taskDTO.due_date},
+      {"user_id", taskDTO.user_id}};
 }
 
 inline void from_json(nlohmann::json const &j, TaskCreateDTO &taskDTO) {
@@ -133,6 +134,7 @@ inline void from_json(nlohmann::json const &j, TaskCreateDTO &taskDTO) {
   j.at("status").get_to(taskDTO.status);
   j.at("due_date").get_to(taskDTO.due_date);
   j.at("project_id").get_to(taskDTO.project_id);
+  j.at("user_id").get_to(taskDTO.user_id);
 }
 
 inline void to_json(nlohmann::json &j, ProjectCreateDTO const &projectDTO) {
