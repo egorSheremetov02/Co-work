@@ -19,3 +19,7 @@ date/CMakeLists.txt
 date/LICENSE.txt
 date/README.md
 date/test/
+asio-prefix/
+json-prefix/
+src/build-qt-client-*
+

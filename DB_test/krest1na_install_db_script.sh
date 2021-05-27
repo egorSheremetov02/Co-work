@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+sudo apt update
+sudo apt-get install postgresql postgresql-contrib libpqxx-dev
+
+#sudo -u postgres createuser krestino4ka -s -w -r
+sudo -u postgres createdb co-db -w
+
+sudo -u krestino4ka psql --dbname=co-db --file=commands.sql
+
+
