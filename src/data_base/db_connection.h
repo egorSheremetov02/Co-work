@@ -41,6 +41,9 @@ struct DataBase {
   std::vector<Task> get_all_tasks_of_user(uint32_t id);
   std::vector<User> get_all_users_of_task(uint32_t id);
 
+  std::vector<Project> get_all_projects_of_user(uint32_t id);
+  std::vector<User> get_all_users_of_project(uint32_t id);
+
   int create_task(TaskCreateDTO &dto);
   int create_project(ProjectCreateDTO &dto);
   int create_user(RegistrationReqDTO &dto);
@@ -53,7 +56,6 @@ struct DataBase {
   bool delete_users_from_task(uint32_t id, std::vector<uint32_t> &users_id);
   bool delete_users_from_project(uint32_t id, std::vector<uint32_t> &users_id);
 
-  bool update_task(TaskEditDTO const &dto);
   bool update_task(TaskEditDTO const &dto, uint32_t user_id);
   bool update_project(ProjectEditDTO &dto);
 
@@ -63,15 +65,17 @@ struct DataBase {
 
   // for history:
   bool add_comment(uint32_t task_id, uint32_t user_id, std::string comment);
-  std::vector<Action> get_history(uint32_t id);
 
   // for files
   std::vector<AttachedFile> get_all_files(uint32_t id);
   bool add_files_to_task(uint32_t id, std::vector<AttachedFile> const &f);
   void test();
+  bool update_task(TaskEditDTO const &dto);
 
   private:
   std::vector<Task> get_all_tasks_of_proj(uint32_t id);
+
+  std::vector<Action> get_history(uint32_t id);
 };
 
 #endif  // CO_WORK_DB_CONNECTION_H

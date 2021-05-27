@@ -121,20 +121,12 @@ inline std::string to_orm(AttachedFile const &file) {
 
 // TODO
 
-<<<<<<< HEAD
 inline std::string to_orm(RegistrationReqDTO const &user) {
-  std::string sql = " (account_name,full_name,email) VALUES ('" +
-                    user.account_name + "','" + user.account_name + "','" +
-                    from_enum(user.role_in_system) + "','" + user.email +
-                    "') RETURNING id";
-=======
-inline std::string to_orm(RegestrReqDTO const &user) {
   std::string sql =
       " (account_name,full_name,role_in_system,email,password) VALUES ('" +
       user.account_name + "','" + user.full_name + "','" +
       from_enum(user.role_in_system) + "','" + user.email + "','" +
-      user.password + "') RETURNING id";
->>>>>>> New script + new tests
+      user.password + +"') RETURNING id";
   return sql;
 }
 
