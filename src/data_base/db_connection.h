@@ -29,7 +29,7 @@ struct DataBase {
   std::optional<User> auth(std::string const &login,
                            std::string const &password);
 
-  bool registration(RegestrReqDTO &dto);
+  bool registration(RegistrationReqDTO &dto);
 
   std::optional<Task> get_task(uint32_t id);
   std::optional<Project> get_project(uint32_t id);
@@ -43,7 +43,7 @@ struct DataBase {
 
   int create_task(TaskCreateDTO &dto);
   int create_project(ProjectCreateDTO &dto);
-  int create_user(RegestrReqDTO &dto);
+  int create_user(RegistrationReqDTO &dto);
 
   int create_task(Task const &t, uint32_t user_id);
 

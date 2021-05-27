@@ -233,7 +233,7 @@ struct Users : Table<User> {
     return str + ".id = " + relations_[str] + ".project_id";
   }
 
-  int insert(RegestrReqDTO const &dto) {  // return id in db
+  int insert(RegistrationReqDTO const &dto) {  // return id in db
     try {
       pqxx::work W{*C};
       pqxx::result R = W.exec("INSERT INTO " + table_ + to_orm(dto));

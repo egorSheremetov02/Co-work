@@ -10,7 +10,7 @@
 
 TEST_CASE("Registration and Authentification new user") {
   DataBase databasa;
-  RegestrReqDTO tmp1{"Acc", "Name", Roles::USER, "email", "password"};
+  RegistrationReqDTO tmp1{"Acc", "Name", Roles::USER, "email", "password"};
   CHECK(databasa.registration(tmp1) == 1);
   CHECK(databasa.registration(tmp1) == 0);
 }

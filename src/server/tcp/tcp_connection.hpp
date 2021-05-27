@@ -11,7 +11,7 @@
 #include "response_format.h"
 #include "structures.h"
 
-struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
+struct TcpConnection /*: public std::enable_shared_from_this<TcpConnection> */ {
   public:
   //  using pointer = std::shared_ptr<TcpConnection>;
   using pointer = TcpConnection *;
@@ -45,9 +45,12 @@ struct TcpConnection : public std::enable_shared_from_this<TcpConnection> {
                          std::size_t max_out_message_size);
 
   asio::ip::tcp::socket socket_;
+  asio::io_service &cxt;
   std::string in_message_;
   std::string out_message_;
   std::unordered_set<std::string> subscriptions_;
+
+  friend void heartbeat(TcpConnection::pointer &connection);
 };
 
 void authenticate(TcpConnection::pointer &connection);
@@ -57,5 +60,7 @@ void authentication_handler(std::size_t len,
 
 void write_auth_response(ResponseFormat<User> const &auth_response,
                          TcpConnection::pointer &connection);
+
+void heartbeat(TcpConnection::pointer &connection);
 
 #endif  // CO_WORK_TCP_CONNECTION_HPP

@@ -213,14 +213,17 @@ inline void to_json(nlohmann::json &j, Edit const &edit) {
 //
 
 template <typename T>
-inline void to_json(nlohmann::json &j, const ResponseFormat<T> &request) {
-  j = nlohmann::json{{"error", request.error}, {"data", request.data}};
+inline void to_json(nlohmann::json &j, const ResponseFormat<T> &response) {
+  j = nlohmann::json{{"error", response.error},
+                     {"data", response.data},
+                     {"metadata", response.metadata}};
 }
 
 template <typename T>
-inline void from_json(nlohmann::json const &j, ResponseFormat<T> &request) {
-  j.at("data").get_to(request.data);
-  j.at("error").get_to(request.error);
+inline void from_json(nlohmann::json const &j, ResponseFormat<T> &response) {
+  j.at("data").get_to(response.data);
+  j.at("error").get_to(response.error);
+  j.at("metadata").get_to(response.metadata);
 }
 
 /* DTO Conversions */

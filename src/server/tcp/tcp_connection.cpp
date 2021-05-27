@@ -13,14 +13,14 @@
 #include "serialization.h"
 #include "structures.h"
 
-int counter = 0;
+// int counter = 0;
 
 using nlohmann::json, asio::ip::tcp;
 
 TcpConnection::TcpConnection(asio::io_context &io_context,
                              std::size_t max_in_message_size,
                              std::size_t max_out_message_size)
-    : socket_(io_context) {
+    : cxt(io_context), socket_(io_context) {
   in_message_.resize(max_in_message_size);
   out_message_.resize(max_out_message_size);
 }
@@ -143,6 +143,25 @@ void write_auth_response(ResponseFormat<User> const &auth_response,
           connection->socket().close();
         }
       });
+}
+
+// every 5 seconds checks if client is alive
+void heartbeat(TcpConnection::pointer &connection) {
+  asio::steady_timer t(connection->cxt, asio::chrono::seconds(5));
+  t.async_wait([&]([[maybe_unused]] asio::error_code const &ec) {
+    auto *response = new ResponseFormat<std::string>();
+    response->metadata = "heartbeat";
+    connection->socket().async_write_some(
+        asio::buffer(response->data.data(), response->data.size()),
+        [&](asio::error_code const &ec, [[maybe_unused]] std::size_t len) {
+          delete response;
+          if (ec) {
+            connection->socket().close();
+            delete connection;
+          }
+          heartbeat(connection);
+        });
+  });
 }
 
 void TcpConnection::add_subscription(std::string const &resource_id) {

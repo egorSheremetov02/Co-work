@@ -133,7 +133,7 @@ struct AuthReqDTO {
   std::string password;
 };
 
-struct RegestrReqDTO {
+struct RegistrationReqDTO {
   std::string account_name;
   std::string full_name;
   Roles role_in_system;

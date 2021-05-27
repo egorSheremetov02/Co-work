@@ -196,7 +196,7 @@ int DataBase::create_project(ProjectCreateDTO &dto) {
   return projs.insert(from_dto(dto));
 }
 
-int DataBase::create_user(RegestrReqDTO &dto) {
+int DataBase::create_user(RegistrationReqDTO &dto) {
   dto.password = sha256(dto.password);
   return users.insert(dto);
 }
@@ -265,7 +265,7 @@ bool DataBase::add_files_to_task(uint32_t id,
   }
 }
 
-bool DataBase::registration(RegestrReqDTO &dto) {
+bool DataBase::registration(RegistrationReqDTO &dto) {
   if (users(select(users).where(users.email == dto.email)).size() == 0) {
     create_user(dto);
     return true;

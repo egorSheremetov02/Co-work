@@ -7,6 +7,7 @@
 template <typename T>
 struct ResponseFormat {
   std::string error;
+  std::string metadata;
   T data;
 };
 

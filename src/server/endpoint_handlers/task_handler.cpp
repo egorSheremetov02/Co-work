@@ -21,7 +21,8 @@ void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),
                    connection->out_message().size()),
-      [&, connection, project_id](asio::error_code const &ec, std::size_t len) {
+      [&, connection, project_id](asio::error_code const &ec,
+                                  [[maybe_unused]] std::size_t len) {
         if (!ec) {
           application_context::add_connection(
               "project" + std::to_string(project_id), connection);
