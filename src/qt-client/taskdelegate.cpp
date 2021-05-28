@@ -3,6 +3,9 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <iostream>
+#include "globals.h"
+#include "serialization.h"
+#include "structures.h"
 #include "taskeditor.h"
 
 QWidget *TaskDelegate::createEditor(QWidget *parent,
@@ -22,17 +25,21 @@ void TaskDelegate::setEditorData(QWidget *editor,
 void TaskDelegate::setModelData(QWidget *editor,
                                 QAbstractItemModel *model,
                                 const QModelIndex &index) const {
-  MyTask task =
-      MyTask(static_cast<TaskEditor *>(editor)->task_name->text(),
-             static_cast<TaskEditor *>(editor)->task_description->toPlainText(),
-             static_cast<TaskEditor *>(editor)->task_deadline->text(),
-             index.data(Qt::DisplayRole).value<MyTask>().status,
-             index.data(Qt::DisplayRole).value<MyTask>().start_date,
-             index.data(Qt::DisplayRole).value<MyTask>().task_id,
-             index.data(Qt::DisplayRole).value<MyTask>().project_id,
-             static_cast<TaskEditor *>(editor)->task_urgency->text().toInt());
+  //  MyTask task =
+  //      MyTask(static_cast<TaskEditor *>(editor)->task_name->text(),
+  //             static_cast<TaskEditor
+  //             *>(editor)->task_description->toPlainText(),
+  //             static_cast<TaskEditor *>(editor)->task_deadline->text(),
+  //             index.data(Qt::DisplayRole).value<MyTask>().status,
+  //             index.data(Qt::DisplayRole).value<MyTask>().start_date,
+  //             index.data(Qt::DisplayRole).value<MyTask>().task_id,
+  //             index.data(Qt::DisplayRole).value<MyTask>().project_id,
+  //             static_cast<TaskEditor
+  //             *>(editor)->task_urgency->text().toInt());
 
-  model->setData(index, QVariant::fromValue(task));
+  //  model->setData(index, QVariant::fromValue(task));
+
+  RequestFormat<TaskCreateDTO> task_dto;
 }
 
 void TaskDelegate::updateEditorGeometry(QWidget *editor,

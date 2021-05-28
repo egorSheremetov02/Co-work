@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QMetaType>
 #include <QString>
+#include "structures.h"
 #include "taskaction.h"
 
 class MyTask {
@@ -34,6 +35,16 @@ class MyTask {
         task_id(task_id_),
         project_id(project_id_),
         urgency(urgency_) {}
+
+  MyTask(Task &task)
+      : name(QString::fromStdString(task.name)),
+        deadline(QString::fromStdString(task.due_date)),
+        description(QString::fromStdString(task.description)),
+        status(QString::fromStdString(task.status)),
+        start_date(QString::fromStdString(task.start_date)),
+        task_id(task.id),
+        project_id(task.project_id),
+        urgency(task.urgency) {}
 
   QString toString() const {
     return name + '\n' + deadline + '\n' + QString::number(urgency);
