@@ -59,6 +59,7 @@ set(PROJECT_SOURCES
         taskeditor.cpp
         taskaction.cpp
         taskaction.h
+        ../shared/globals.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

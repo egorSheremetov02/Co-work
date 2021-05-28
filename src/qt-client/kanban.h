@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QStringListModel>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 // QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,7 +44,10 @@ class kanban : public QMainWindow {
   QAction *action_remove = nullptr;
 
   std::string buffer;
+  std::size_t len;
 
-  void get_projects(QMenu *menu);
+  // void get_projects(QMenu *menu);
+  void read_server();
+  void write_server(nlohmann::json &data);
 };
 #endif  // KANBAN_H

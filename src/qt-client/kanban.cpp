@@ -11,6 +11,7 @@
 #include <nlohmann/json.hpp>
 #include "./ui_kanban.h"
 #include "asio.hpp"
+#include "globals.h"
 #include "serialization.h"
 #include "structures.h"
 #include "taskdelegate.h"
@@ -18,10 +19,13 @@
 #include "tasklist.h"
 
 using asio::ip::tcp;
+using nlohmann::json;
 
 tcp::socket &get_socket();
 
 kanban::kanban(QWidget *parent) : QMainWindow(parent), ui(new Ui::kanban) {
+  buffer.resize(defaults::server::default_buffer_size);
+
   ui->setupUi(this);
   QWidget *window = new QWidget(this);
   window->setStyleSheet("background-color: #F9F9FA");
@@ -223,8 +227,14 @@ void kanban::show_history() {
 }
 
 void kanban::update_kanban() {
-  ResponseFormat<nlohmann::json> server_response;
-  if (server_response.metadata == "task get_all") {
+  std::cout << "update_kanban" << std::endl;
+  auto server_response =
+      json::parse(buffer.substr(0, len)).get<ResponseFormat<json>>();
+
+  if (server_response.metadata == "heartbeat") {
+  }
+
+  if (server_response.metadata == defaults::server::get_all_tasks_metadata) {
     auto todos = server_response.data.get<std::vector<Task>>();
     list_to_do->model()->removeRows(0, list_to_do->model()->rowCount(),
                                     QModelIndex());
@@ -242,7 +252,7 @@ void kanban::update_kanban() {
       if (todo.status == "TODO") {
         static_cast<TaskList *>(list_to_do->model())
             ->addTask(list_to_do->model()->rowCount(), task);
-      } else if (todo.status == "IN PROGRESS") {
+      } else if (todo.status == "IN_PROGRESS") {
         static_cast<TaskList *>(list_in_progress->model())
             ->addTask(list_in_progress->model()->rowCount(), task);
       } else {
@@ -250,14 +260,40 @@ void kanban::update_kanban() {
             ->addTask(list_completed->model()->rowCount(), task);
       }
     }
-  } else if (server_response.metadata == "...") {
-    // ...
+  } else if (server_response.metadata ==
+             defaults::server::create_task_metadata) {
+    auto todo = server_response.data.get<Task>();
+    MyTask task = MyTask(QString::fromStdString(todo.name),
+                         QString::fromStdString(todo.description),
+                         QString::fromStdString(todo.due_date),
+                         QString::fromStdString(todo.status),
+                         QString::fromStdString(todo.start_date), todo.id,
+                         todo.project_id, todo.urgency);
+    if (todo.status == "TODO") {
+      static_cast<TaskList *>(list_to_do->model())
+          ->addTask(list_to_do->model()->rowCount(), task);
+    } else if (todo.status == "IN_PROGRESS") {
+      static_cast<TaskList *>(list_in_progress->model())
+          ->addTask(list_in_progress->model()->rowCount(), task);
+    } else {
+      static_cast<TaskList *>(list_completed->model())
+          ->addTask(list_completed->model()->rowCount(), task);
+    }
   }
 }
 
-void kanban::get_projects(QMenu *menu) {
-  //взять что-то с сервера
+void kanban::read_server() {
+  get_socket().async_read_some(asio::buffer(buffer.data(), buffer.size()),
+                               [&](const asio::error_code &err, std::size_t l) {
+                                 emit update();
+                                 std::cout << "read_server_callback"
+                                           << std::endl;
+                               });
 }
+
+// void kanban::get_projects() {
+//  //взять что-то с сервера
+//}
 
 // void kanban::on_button_pushed() {
 //  QLabel *l = new QLabel("task added in todo: " + input);
