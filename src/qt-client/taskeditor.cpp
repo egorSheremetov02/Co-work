@@ -28,7 +28,3 @@ void TaskEditor::setValue(const MyTask &task) {
   task_urgency->setText(QString::number(task.urgency));
   task_description->setText(task.description);
 }
-
-MyTask TaskEditor::value() const {
-  return MyTask(task_name->text(), task_deadline->text());
-}

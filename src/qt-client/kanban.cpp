@@ -4,14 +4,15 @@
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QToolBar>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "../shared/serialization.h"
-#include "../shared/structures.h"
 #include "./ui_kanban.h"
 #include "asio.hpp"
+#include "serialization.h"
+#include "structures.h"
 #include "taskdelegate.h"
 #include "taskeditor.h"
 #include "tasklist.h"
@@ -140,22 +141,6 @@ kanban::kanban(QWidget *parent) : QMainWindow(parent), ui(new Ui::kanban) {
   //в меню нужно добавить еще фильтр по проектам(логика кажется примерно такая
   //же как в отображении проектов)
 
-  //сигналы для отправки сообщений на сервер о перемещении объектов в канбане
-  connect(list_completed->model(), SIGNAL(rowsInserted(QModelIndex, int, int)),
-          this, SLOT(task_completed()));
-  connect(list_in_progress->model(),
-          SIGNAL(rowsInserted(QModelIndex, int, int)), this,
-          SLOT(task_in_progress()));
-  connect(list_to_do->model(), SIGNAL(rowsInserted(QModelIndex, int, int)),
-          this, SLOT(task_in_to_do()));
-
-  connect(list_completed->model(), SIGNAL(rowsRemoved(QModelIndex, int, int)),
-          this, SLOT(removed_from_completed()));
-  connect(list_in_progress->model(), SIGNAL(rowsRemoved(QModelIndex, int, int)),
-          this, SLOT(removed_from_in_progress()));
-  connect(list_to_do->model(), SIGNAL(rowsRemoved(QModelIndex, int, int)), this,
-          SLOT(removed_from_to_do()));
-
   list_to_do->setContextMenuPolicy(Qt::CustomContextMenu);
 
   connect(list_to_do, SIGNAL(customContextMenuRequested(const QPoint &)), this,
@@ -185,36 +170,6 @@ void kanban::on_remove() {
   list_completed->model()->removeRows(ind.row(), 1, ind);
 }
 
-void kanban::task_completed() {
-  //    QLabel *l = new QLabeladd("task completed");
-  //    l -> show();
-}
-
-void kanban::task_in_progress() {
-  //    QLabel *l = new QLabel("task is in progress");
-  //    l -> show();
-}
-
-void kanban::task_in_to_do() {
-  //    QLabel *l = new QLabel("task is in to-do");
-  //    l -> show();
-}
-
-void kanban::removed_from_completed() {
-  //    QLabel *l = new QLabel("task removed from completed");
-  //    l -> show();
-}
-
-void kanban::removed_from_in_progress() {
-  //    QLabel *l = new QLabel("task removed from in progress");
-  //    l -> show();
-}
-
-void kanban::removed_from_to_do() {
-  //    QLabel *l = new QLabel("task removed from to-do");
-  //    l -> show();
-}
-
 void kanban::show_item_menu_to_do(const QPoint &pos) {
   QMenu *menu = new QMenu(this);
   menu->addAction("Show task", this, SLOT(show_task()));
@@ -241,19 +196,29 @@ void kanban::show_item_menu_completed(const QPoint &pos) {
 }
 
 void kanban::show_task() {
-  QDialog window;
-  window.setWindowTitle("Task info");
+  QDialog *window = new QDialog;
+  window->setWindowTitle("Task info");
   MyTask task = list_to_do->selectionModel()
                     ->selectedIndexes()
                     .at(0)
                     .data()
                     .value<MyTask>();
-  //дальше добавить инфу на виджет и показать его
+
+  auto layout = new QVBoxLayout(window);
+  layout->addWidget(new QLabel("Name: " + task.name));
+  layout->addWidget(new QLabel("Urgency: " + QString::number(task.urgency)));
+  QPlainTextEdit *desc = new QPlainTextEdit("Description: " + task.description);
+  desc->setReadOnly(true);
+  layout->addWidget(desc);
+  layout->addWidget(new QLabel("Created: " + task.start_date));
+  layout->addWidget(new QLabel("Deadline: " + task.deadline));
+  window->show();
 }
 
-void kanban::show_history() {}
-
-void kanban::show_comments() {}
+void kanban::show_history() {
+  QDialog *window = new QDialog(this);
+  window->setWindowTitle("History");
+}
 
 void kanban::get_projects(QMenu *menu) {
   //взять что-то с сервера

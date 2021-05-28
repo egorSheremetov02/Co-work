@@ -16,7 +16,6 @@ class TaskEditor : public QWidget {
   public:
   TaskEditor(QWidget *parent = nullptr);
   void setValue(const MyTask &task);
-  MyTask value() const;
   QPushButton *ok;
 
   private:
@@ -25,6 +24,8 @@ class TaskEditor : public QWidget {
   QLineEdit *task_deadline;
   QLineEdit *task_urgency;
   QTextEdit *task_description;
+
+  friend class TaskDelegate;
 };
 
 #endif  // TASKEDITOR_H

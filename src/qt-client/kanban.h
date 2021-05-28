@@ -21,18 +21,11 @@ class kanban : public QMainWindow {
   private slots:
   void on_add();
   void on_remove();
-  void task_completed();
-  void task_in_progress();
-  void task_in_to_do();
-  void removed_from_completed();
-  void removed_from_in_progress();
-  void removed_from_to_do();
   void show_item_menu_to_do(const QPoint &pos);
   void show_item_menu_in_progress(const QPoint &pos);
   void show_item_menu_completed(const QPoint &pos);
   void show_task();
   void show_history();
-  void show_comments();
 
   private:
   Ui::kanban *ui;

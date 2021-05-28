@@ -15,8 +15,10 @@ class TaskList : public QAbstractListModel {
 
   public:
   TaskList(QObject *par = nullptr) : QAbstractListModel(par) {
-    list << MyTask("прjjjjоект", "28.05.2021")
-         << MyTask("проект", "28.05.2021");
+    list << MyTask("прjjjjоект", "28.05.2021", "dsfsdfsdf", "dfsdfds",
+                   "sdsdfsdf", 6, 6, 6)
+         << MyTask("прjjjjоект", "28.05.2021", "dsfsdfsdf", "dfsdfds",
+                   "sdsdfsdf", 6, 6, 6);
   };
 
   int rowCount(const QModelIndex &parent) const override {
@@ -107,7 +109,6 @@ class TaskList : public QAbstractListModel {
                     int row,
                     int column,
                     const QModelIndex &parent) {
-    // qDebug() << action;
     if (action == Qt::IgnoreAction)
       return true;
 
