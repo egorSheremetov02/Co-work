@@ -7,6 +7,7 @@
 #include "response.h"
 #include "response_format.h"
 #include "serialization.h"
+#include "structures.h"
 #include "ui_login.h"
 
 using asio::ip::tcp;

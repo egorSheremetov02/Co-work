@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QToolBar>
 #include <iostream>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include "./ui_kanban.h"
 #include "asio.hpp"
@@ -161,14 +162,29 @@ kanban::kanban(QWidget *parent) : QMainWindow(parent), ui(new Ui::kanban) {
           this, SLOT(show_item_menu_completed(const QPoint &)));
 
   connect(this, SIGNAL(update()), this, SLOT(update_kanban()));
+
+  read_server();
 }
 
 void kanban::on_add() {
-  list_to_do->model()->insertRow(list_to_do->model()->rowCount());
-  QModelIndex ind =
-      list_to_do->model()->index(list_to_do->model()->rowCount() - 1, 0);
+  //  list_to_do->model()->insertRow(list_to_do->model()->rowCount());
+  //  QModelIndex ind =
+  //      list_to_do->model()->index(list_to_do->model()->rowCount() - 1, 0);
 
-  list_to_do->edit(ind);
+  //  list_to_do->edit(ind);
+
+  RequestFormat<TaskCreateDTO> create_request;
+  create_request.resource = endpoints::tasks::create;
+  TaskCreateDTO task_dto;
+  task_dto.description = "[default description]";
+  task_dto.name = "[default name]";
+  task_dto.due_date = "[default date]";
+  task_dto.status = "TODO";
+  task_dto.project_id = 1;
+  task_dto.user_id = 1;
+  create_request.data = task_dto;
+  json request_json = create_request;
+  write_server(request_json);
 }
 
 void kanban::on_remove() {
@@ -228,14 +244,13 @@ void kanban::show_history() {
 
 void kanban::update_kanban() {
   std::cout << "update_kanban" << std::endl;
-  auto server_response =
-      json::parse(buffer.substr(0, len)).get<ResponseFormat<json>>();
+  auto server_response = json::parse(buffer.substr(0, len));
 
-  if (server_response.metadata == "heartbeat") {
+  if (server_response["metadata"] == "heartbeat") {
   }
 
-  if (server_response.metadata == defaults::server::get_all_tasks_metadata) {
-    auto todos = server_response.data.get<std::vector<Task>>();
+  if (server_response["metadata"] == defaults::server::get_all_tasks_metadata) {
+    auto todos = server_response["data"].get<std::vector<Task>>();
     list_to_do->model()->removeRows(0, list_to_do->model()->rowCount(),
                                     QModelIndex());
     list_in_progress->model()->removeRows(
@@ -243,12 +258,7 @@ void kanban::update_kanban() {
     list_completed->model()->removeRows(0, list_completed->model()->rowCount(),
                                         QModelIndex());
     for (auto &todo : todos) {
-      MyTask task = MyTask(QString::fromStdString(todo.name),
-                           QString::fromStdString(todo.description),
-                           QString::fromStdString(todo.due_date),
-                           QString::fromStdString(todo.status),
-                           QString::fromStdString(todo.start_date), todo.id,
-                           todo.project_id, todo.urgency);
+      MyTask task = MyTask(todo);
       if (todo.status == "TODO") {
         static_cast<TaskList *>(list_to_do->model())
             ->addTask(list_to_do->model()->rowCount(), task);
@@ -260,15 +270,10 @@ void kanban::update_kanban() {
             ->addTask(list_completed->model()->rowCount(), task);
       }
     }
-  } else if (server_response.metadata ==
+  } else if (server_response["metadata"] ==
              defaults::server::create_task_metadata) {
-    auto todo = server_response.data.get<Task>();
-    MyTask task = MyTask(QString::fromStdString(todo.name),
-                         QString::fromStdString(todo.description),
-                         QString::fromStdString(todo.due_date),
-                         QString::fromStdString(todo.status),
-                         QString::fromStdString(todo.start_date), todo.id,
-                         todo.project_id, todo.urgency);
+    auto todo = server_response["data"].get<Task>();
+    MyTask task = MyTask(todo);
     if (todo.status == "TODO") {
       static_cast<TaskList *>(list_to_do->model())
           ->addTask(list_to_do->model()->rowCount(), task);
@@ -283,12 +288,22 @@ void kanban::update_kanban() {
 }
 
 void kanban::read_server() {
-  get_socket().async_read_some(asio::buffer(buffer.data(), buffer.size()),
-                               [&](const asio::error_code &err, std::size_t l) {
-                                 emit update();
-                                 std::cout << "read_server_callback"
-                                           << std::endl;
-                               });
+  get_socket().async_read_some(
+      asio::mutable_buffers_1(const_cast<char *>(buffer.data()), buffer.size()),
+      [&](const asio::error_code &err, std::size_t l) {
+        emit update();
+        std::cout << "read_server_callback" << std::endl;
+        read_server();
+      });
+}
+
+void kanban::write_server(json &data) {
+  std::shared_ptr<std::string> row_data(new std::string(data.dump()));
+  get_socket().async_write_some(
+      asio::buffer(row_data->data(), row_data->size()),
+      [&, row_data](const asio::error_code &err, std::size_t l) {
+        std::cout << "write_server_callback" << std::endl;
+      });
 }
 
 // void kanban::get_projects() {
