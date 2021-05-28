@@ -280,6 +280,9 @@ std::vector<Action> DataBase::get_history(uint32_t id) {
   return actions(select(actions).where(actions.task_id == id));
 }
 
+std::vector<Action> DataBase::get_history(ActionGetAllDTO const &dto) {
+  return actions(select(actions).where(actions.task_id == dto.task_id));
+}
 bool DataBase::add_comment(uint32_t task_id,
                            uint32_t user_id,
                            std::string comment) {

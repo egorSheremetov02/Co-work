@@ -4,6 +4,7 @@
 
 #ifndef CO_WORK_TASK_HISTORY_SERVICE_H
 #define CO_WORK_TASK_HISTORY_SERVICE_H
+#include "serialization.h"
 #include "structures.h"
 
 namespace task_history_service {

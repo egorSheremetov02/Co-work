@@ -166,6 +166,18 @@ inline void from_json(nlohmann::json const &j, TaskGetAllDTO &tasksDTO) {
   j.at("tasks_per_page").get_to(tasksDTO.tasks_per_page);
 }
 
+inline void to_json(nlohmann::json &j, ActionGetAllDTO const &tasksDTO) {
+  j = nlohmann::json{{"task_id", tasksDTO.task_id},
+                     {"page_number", tasksDTO.page_number},
+                     {"actions_per_page", tasksDTO.actions_per_page}};
+}
+
+inline void from_json(nlohmann::json const &j, ActionGetAllDTO &tasksDTO) {
+  j.at("task_id").get_to(tasksDTO.task_id);
+  j.at("page_number").get_to(tasksDTO.page_number);
+  j.at("actions_per_page").get_to(tasksDTO.actions_per_page);
+}
+
 inline void to_json(nlohmann::json &j, TaskEditDTO &editDTO) {
   j = nlohmann::json{
       {"task_id", editDTO.task_id},         {"name", editDTO.name},

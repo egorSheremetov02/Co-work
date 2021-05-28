@@ -71,11 +71,11 @@ struct DataBase {
   bool add_files_to_task(uint32_t id, std::vector<AttachedFile> const &f);
   void test();
   bool update_task(TaskEditDTO const &dto);
+  std::vector<Action> get_history(uint32_t id);
+  std::vector<Action> get_history(ActionGetAllDTO const &dto);
 
   private:
   std::vector<Task> get_all_tasks_of_proj(uint32_t id);
-
-  std::vector<Action> get_history(uint32_t id);
 };
 
 #endif  // CO_WORK_DB_CONNECTION_H

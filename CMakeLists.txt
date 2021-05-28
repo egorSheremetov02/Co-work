@@ -95,7 +95,7 @@ add_executable(
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
         src/shared/globals.cpp
-        src/server/util
+        src/server/util/util.cpp
         src/server/services/task_history_service.cpp
         src/server/endpoint_handlers/task_history_handler.cpp
         src/server/endpoint_handlers/comment_handler.cpp
@@ -120,7 +120,7 @@ add_executable(
         src/server/core/multicast.cpp
         src/data_base/sha/sha256.cpp
         src/shared/globals.cpp
-        src/server/util
+        src/server/util/util.cpp
         src/server/services/task_history_service.cpp
         src/server/endpoint_handlers/task_history_handler.cpp
         src/server/endpoint_handlers/comment_handler.cpp

@@ -4,6 +4,7 @@
 #include "task_history_service.h"
 #include "app_db_connection.hpp"
 
-std::vector<Action> get_task_history(ActionGetAllDTO const &actionDTO) {
+std::vector<Action> task_history_service::get_task_history(
+    ActionGetAllDTO const &actionDTO) {
   return get_app_db().get_all_actions_of_task(actionDTO);
 }

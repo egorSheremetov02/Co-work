@@ -4,6 +4,7 @@
 
 #ifndef CO_WORK_UTIL_H
 #define CO_WORK_UTIL_H
+#include <string>
 
 namespace util {
 

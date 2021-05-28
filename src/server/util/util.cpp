@@ -2,6 +2,7 @@
 // Created by egor on 27.05.2021.
 //
 #include "util.h"
+#include <string>
 #include "globals.h"
 
 std::string util::project_subscription_name(uint32_t project_id) {
