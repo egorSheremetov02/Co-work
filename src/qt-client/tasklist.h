@@ -1,4 +1,4 @@
-#ifndef TASKLIST_H
+x #ifndef TASKLIST_H
 #define TASKLIST_H
 
 #include <task.h>
@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QWidget>
 
-class TaskList : public QAbstractListModel {
+    class TaskList : public QAbstractListModel {
   Q_OBJECT
   private:
   QVector<MyTask> list;

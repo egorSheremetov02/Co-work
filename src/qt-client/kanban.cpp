@@ -155,6 +155,8 @@ kanban::kanban(QWidget *parent) : QMainWindow(parent), ui(new Ui::kanban) {
 
   connect(list_completed, SIGNAL(customContextMenuRequested(const QPoint &)),
           this, SLOT(show_item_menu_completed(const QPoint &)));
+
+  connect(this, SIGNAL(update()), this, SLOT(update_kanban()));
 }
 
 void kanban::on_add() {
@@ -219,6 +221,8 @@ void kanban::show_history() {
   QDialog *window = new QDialog(this);
   window->setWindowTitle("History");
 }
+
+void kanban::update_kanban() {}
 
 void kanban::get_projects(QMenu *menu) {
   //взять что-то с сервера

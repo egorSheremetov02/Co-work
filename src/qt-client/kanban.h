@@ -4,6 +4,7 @@
 #include <QListView>
 #include <QMainWindow>
 #include <QStringListModel>
+#include <iostream>
 
 // QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,6 +19,9 @@ class kanban : public QMainWindow {
   kanban(QWidget *parent = nullptr);
   ~kanban();
 
+  signals:
+  void update();
+
   private slots:
   void on_add();
   void on_remove();
@@ -26,6 +30,7 @@ class kanban : public QMainWindow {
   void show_item_menu_completed(const QPoint &pos);
   void show_task();
   void show_history();
+  void update_kanban();
 
   private:
   Ui::kanban *ui;
@@ -36,6 +41,8 @@ class kanban : public QMainWindow {
 
   QAction *action_add = nullptr;
   QAction *action_remove = nullptr;
+
+  std::string buffer;
 
   void get_projects(QMenu *menu);
 };

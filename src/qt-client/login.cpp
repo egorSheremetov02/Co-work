@@ -39,8 +39,6 @@ void login::on_pushButton_logIn_clicked() {
   const asio::ip::basic_endpoint<tcp> &endpoint =
       tcp::endpoint(asio::ip::address::from_string("127.0.0.1"), 3030);
 
-  //     auto *socket1 = new tcp::socket(get_service());
-
   get_socket().connect(endpoint);
 
   RequestFormat<AuthReqDTO> auth_request;
@@ -66,6 +64,4 @@ void login::on_pushButton_logIn_clicked() {
   } else {
     get_socket().close();
   }
-  //  _kanban = new kanban();
-  //  _kanban->show();
 }
