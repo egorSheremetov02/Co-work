@@ -148,8 +148,10 @@ void write_auth_response(ResponseFormat<User> const &auth_response,
 
 // every 5 seconds checks if client is alive
 void heartbeat(TcpConnection::pointer &connection) {
-  asio::steady_timer t(connection->cxt, asio::chrono::seconds(5));
-  t.async_wait([&]([[maybe_unused]] asio::error_code const &ec) {
+  std::shared_ptr<asio::steady_timer> t(
+      new asio::steady_timer(connection->cxt, asio::chrono::seconds(5)));
+  //  asio::steady_timer t(connection->cxt, asio::chrono::seconds(5));
+  t->async_wait([&]([[maybe_unused]] asio::error_code const &ec) {
     auto *response = new ResponseFormat<std::string>();
     response->metadata = "heartbeat";
     connection->socket().async_write_some(
