@@ -222,7 +222,38 @@ void kanban::show_history() {
   window->setWindowTitle("History");
 }
 
-void kanban::update_kanban() {}
+void kanban::update_kanban() {
+  ResponseFormat<nlohmann::json> server_response;
+  if (server_response.metadata == "task get_all") {
+    auto todos = server_response.data.get<std::vector<Task>>();
+    list_to_do->model()->removeRows(0, list_to_do->model()->rowCount(),
+                                    QModelIndex());
+    list_in_progress->model()->removeRows(
+        0, list_in_progress->model()->rowCount(), QModelIndex());
+    list_completed->model()->removeRows(0, list_completed->model()->rowCount(),
+                                        QModelIndex());
+    for (auto &todo : todos) {
+      MyTask task = MyTask(QString::fromStdString(todo.name),
+                           QString::fromStdString(todo.description),
+                           QString::fromStdString(todo.due_date),
+                           QString::fromStdString(todo.status),
+                           QString::fromStdString(todo.start_date), todo.id,
+                           todo.project_id, todo.urgency);
+      if (todo.status == "TODO") {
+        static_cast<TaskList *>(list_to_do->model())
+            ->addTask(list_to_do->model()->rowCount(), task);
+      } else if (todo.status == "IN PROGRESS") {
+        static_cast<TaskList *>(list_in_progress->model())
+            ->addTask(list_in_progress->model()->rowCount(), task);
+      } else {
+        static_cast<TaskList *>(list_completed->model())
+            ->addTask(list_completed->model()->rowCount(), task);
+      }
+    }
+  } else if (server_response.metadata == "...") {
+    // ...
+  }
+}
 
 void kanban::get_projects(QMenu *menu) {
   //взять что-то с сервера

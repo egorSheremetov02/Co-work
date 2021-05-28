@@ -1,4 +1,4 @@
-x #ifndef TASKLIST_H
+#ifndef TASKLIST_H
 #define TASKLIST_H
 
 #include <task.h>
@@ -8,7 +8,7 @@ x #ifndef TASKLIST_H
 #include <QObject>
 #include <QWidget>
 
-    class TaskList : public QAbstractListModel {
+class TaskList : public QAbstractListModel {
   Q_OBJECT
   private:
   QVector<MyTask> list;
@@ -60,6 +60,15 @@ x #ifndef TASKLIST_H
     for (int row = 0; row < rows; row++) {
       list.insert(position, MyTask());
     }
+
+    endInsertRows();
+    return true;
+  }
+
+  bool addTask(int position, MyTask &task) {
+    beginInsertRows(QModelIndex(), position, position);
+
+    list.insert(position, task);
 
     endInsertRows();
     return true;
