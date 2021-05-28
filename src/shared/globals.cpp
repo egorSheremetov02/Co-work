@@ -20,3 +20,7 @@ const std::string endpoints::tasks::edit = "task edit";
 const std::string endpoints::projects::create = "project create";
 
 const std::string endpoints::task_history::get_all = "task get_history";
+
+const std::string defaults::server::create_project_metadata = "project created";
+
+const std::string defaults::server::get_all_tasks_metadata = "task all";

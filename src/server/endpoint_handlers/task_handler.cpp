@@ -20,7 +20,7 @@ void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
   json out_json;
   ResponseFormat<std::vector<Task>> tasksResponse;
   tasksResponse.data = task_service::get_tasks(tasksDTO);
-  tasksResponse.metadata = "task get_all";
+  tasksResponse.metadata = defaults::server::get_all_tasks_metadata;
   // out_json = task_service::get_tasks(tasksDTO);
   out_json = tasksResponse;
   connection->out_message() = out_json.dump();
