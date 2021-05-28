@@ -155,11 +155,13 @@ void heartbeat(TcpConnection::pointer &connection) {
     connection->socket().async_write_some(
         asio::buffer(response->data.data(), response->data.size()),
         [&](asio::error_code const &ec, [[maybe_unused]] std::size_t len) {
+          std::cout << "Heartbeat start" << std::endl;
           delete response;
           if (ec) {
             connection->socket().close();
             delete connection;
           }
+          std::cout << "Heartbeat finished" << std::endl;
           heartbeat(connection);
         });
   });
