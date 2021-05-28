@@ -142,6 +142,12 @@ struct RegistrationReqDTO {
   std::string password;
 };
 
+struct CommentDTO {
+  uint32_t user_id;
+  uint32_t task_id;
+  std::string comment;
+};
+
 struct ProjectCreateDTO {
   std::string name;
   std::string due_date;

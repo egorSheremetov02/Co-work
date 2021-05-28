@@ -98,6 +98,8 @@ add_executable(
         src/server/util
         src/server/services/task_history_service.cpp
         src/server/endpoint_handlers/task_history_handler.cpp
+        src/server/endpoint_handlers/comment_handler.cpp
+        src/server/services/comment_service.cpp
 )
 
 add_executable(
@@ -121,6 +123,8 @@ add_executable(
         src/server/util
         src/server/services/task_history_service.cpp
         src/server/endpoint_handlers/task_history_handler.cpp
+        src/server/endpoint_handlers/comment_handler.cpp
+        src/server/services/comment_service.cpp
 )
 
 target_compile_definitions(log-broadcast-server PUBLIC -DLOGGING)

@@ -229,6 +229,18 @@ inline void to_json(nlohmann::json &j, Edit const &edit) {
   j = nlohmann::json{{"edited_fields", edit.edited_fields}};
 }
 
+inline void from_json(nlohmann::json const &j, CommentDTO &commentDTO) {
+  j.at("user_id").get_to(commentDTO.user_id);
+  j.at("task_id").get_to(commentDTO.task_id);
+  j.at("comment").get_to(commentDTO.comment);
+}
+
+inline void to_json(nlohmann::json &j, CommentDTO const &commentDTO) {
+  j = nlohmann::json{{"user_id", commentDTO.user_id},
+                     {"task_id", commentDTO.task_id},
+                     {"comment", commentDTO.comment}};
+}
+
 template <typename T>
 inline void to_json(nlohmann::json &j, const ResponseFormat<T> &response) {
   j = nlohmann::json{{"error", response.error},
