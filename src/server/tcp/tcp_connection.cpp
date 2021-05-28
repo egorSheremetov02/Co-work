@@ -96,6 +96,7 @@ void authentication_handler(std::size_t len,
     auth_response.data = opt_user.value();
   }
   write_auth_response(auth_response, connection);
+  heartbeat(connection);
 }
 
 void authenticate(TcpConnection::pointer &connection) {

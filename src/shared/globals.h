@@ -12,6 +12,7 @@ extern const std::string edit_task_metadata;
 extern const std::string create_task_metadata;
 extern const std::string create_project_metadata;
 extern const std::string get_all_tasks_metadata;
+extern const std::string heartbeat_metadata;
 extern const std::string project_subscription_prefix;
 }  // namespace defaults::server
 
