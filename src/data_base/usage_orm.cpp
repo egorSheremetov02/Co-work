@@ -43,7 +43,7 @@ TEST_CASE("Task edit") {
   TaskCreateDTO t{"Task_task", "Description",        7, "status",
                   1,           "2021-04-17 06:05:05"};
   uint32_t id = databasa.create_task(t, 1);
-  TaskEditDTO edit{id, {"Edited_task"}, {}, {"new_status"}, {}, 3};
+  TaskEditDTO edit{id, 1, {"Edited_task"}, {}, {"new_status"}, {}, 3};
   CHECK(databasa.update_task(edit, 1) == 1);
   ActionGetAllDTO tmp{id};
   databasa.add_comment(id, 1, "Hello world! мяу мяу2");
@@ -52,6 +52,11 @@ TEST_CASE("Task edit") {
   CHECK(actss[0].action_type == Actions::CREATE_TASK);
   CHECK(actss[1].action_type == Actions::EDIT_TASK);
   CHECK(actss[2].action_type == Actions::ADD_COMMENT);
+}
+
+TEST_CASE("Project creation/delete") {
+  DataBase databasa;
+  Project proj{};
 }
 
 TEST_CASE("Project creation/delete") {
