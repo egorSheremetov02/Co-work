@@ -18,7 +18,11 @@ void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
   auto tasksDTO = in_json.get<RequestFormat<TaskGetAllDTO>>().data;
   auto project_id = tasksDTO.project_id;
   json out_json;
-  out_json = task_service::get_tasks(tasksDTO);
+  ResponseFormat<std::vector<Task>> tasksResponse;
+  tasksResponse.data = task_service::get_tasks(tasksDTO);
+  tasksResponse.metadata = "task get_all";
+  // out_json = task_service::get_tasks(tasksDTO);
+  out_json = tasksResponse;
   connection->out_message() = out_json.dump();
   connection->socket().async_write_some(
       asio::buffer(connection->out_message().data(),
