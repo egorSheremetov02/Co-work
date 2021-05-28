@@ -3,7 +3,7 @@
 //
 #include "globals.h"
 
-const int defaults::server::default_buffer_size = 1 << 12;
+const int defaults::server::default_buffer_size = 1 << 16;
 
 const std::string defaults::server::edit_task_metadata = "task edited";
 
@@ -14,6 +14,8 @@ const std::string defaults::server::project_subscription_prefix = "project";
 const std::string defaults::server::create_project_metadata = "project created";
 
 const std::string defaults::server::get_all_tasks_metadata = "task all";
+
+const std::string defaults::server::heartbeat_metadata = "heartbeat";
 
 const std::string endpoints::tasks::create = "task create";
 
