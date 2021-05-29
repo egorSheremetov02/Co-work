@@ -108,7 +108,8 @@ inline std::string to_orm(Action const &act) {
   std::string sql =
       " (task_id,user_id,type_of_action,object_of_action) VALUES ('" +
       std::to_string(act.task_id) + "','" + std::to_string(act.user_id) +
-      "','" + from_enum(act.action_type) + "','" + act.data + "') ";
+      "','" + from_enum(act.action_type) + "','" + act.data +
+      "') RETURNING task_id";
   return sql;
 }
 

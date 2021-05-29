@@ -181,6 +181,7 @@ bool DataBase::update_task(TaskEditDTO const &dto, uint32_t user_id) {
   // std::cout << j.dump() << std::endl;
   Action act{dto.task_id, user_id, Actions::EDIT_TASK, j.dump()};
   actions.insert(act);
+
   return tasks.update(dto.task_id, update_query);
 }
 

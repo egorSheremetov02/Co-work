@@ -280,11 +280,16 @@ struct Table {
   bool update(int id, Expression const &request) {
     try {
       pqxx::work W{*C};
+      std::cout << "UPDATE " + table_ + " SET " + request.expr_ + "WHERE id='" +
+                       std::to_string(id) + "'"
+                << std::endl;
       pqxx::result R = W.exec("UPDATE " + table_ + " SET " + request.expr_ +
                               "WHERE id='" + std::to_string(id) + "'");
       W.commit();
+      return true;
     } catch (std::exception const &e) {
       std::cerr << e.what() << std::endl;
+      return false;
     }
   }
 };
