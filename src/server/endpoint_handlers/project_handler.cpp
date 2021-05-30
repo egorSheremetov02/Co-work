@@ -36,4 +36,4 @@ void create_project_handler(nlohmann::json &in_json,
 #endif
 }
 
-REGISTER_HANDLER(endpoints::projects::create, create_project_handler);
+REGISTER_HANDLER("project create", create_project_handler);

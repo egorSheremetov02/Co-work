@@ -178,7 +178,7 @@ void kanban::on_add() {
   TaskCreateDTO task_dto;
   task_dto.description = "[default description]";
   task_dto.name = "[default name]";
-  task_dto.due_date = "[default date]";
+  task_dto.due_date = "2021-09-09";
   task_dto.status = "TODO";
   task_dto.project_id = 1;
   task_dto.user_id = 1;
@@ -288,6 +288,7 @@ void kanban::update_kanban() {
 }
 
 void kanban::read_server() {
+  std::cout << "in read_server" << std::endl;
   get_socket().async_read_some(
       asio::mutable_buffers_1(const_cast<char *>(buffer.data()), buffer.size()),
       [&](const asio::error_code &err, std::size_t l) {

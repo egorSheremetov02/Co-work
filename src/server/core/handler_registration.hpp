@@ -5,6 +5,7 @@
 #ifndef CO_WORK_HANDLER_REGISTRATION_HPP
 #define CO_WORK_HANDLER_REGISTRATION_HPP
 #include <functional>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
@@ -14,12 +15,14 @@ using HandlerStorage = std::unordered_map<std::string, Handler>;
 
 HandlerStorage &get_handler_storage();
 
-#define REGISTER_HANDLER_INTERNAL(resource, handler, line) \
-                                                           \
-  const struct InitHandler##line {                         \
-    InitHandler##line() {                                  \
-      get_handler_storage()[resource] = handler;           \
-    }                                                      \
+#define REGISTER_HANDLER_INTERNAL(resource, handler, line)         \
+                                                                   \
+  const struct InitHandler##line {                                 \
+    InitHandler##line() {                                          \
+      std::cout << "Registered handler for resource: " << resource \
+                << std::endl;                                      \
+      get_handler_storage()[resource] = handler;                   \
+    }                                                              \
   } init_handler_##line
 
 // NOLINTNEXTLINE: cppcoreguidelines-macro-usage

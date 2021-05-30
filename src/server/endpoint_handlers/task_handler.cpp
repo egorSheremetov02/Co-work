@@ -44,11 +44,12 @@ void get_all_tasks_handler(json &in_json, TcpConnection::pointer &connection) {
 #endif
 }
 
-void create_task_handler(json &in_json,
-                         TcpConnection::pointer & /*connection*/) {
+void create_task_handler(json &in_json, TcpConnection::pointer &connection) {
   json out_json;
   auto taskDTO = in_json.get<RequestFormat<TaskCreateDTO>>().data;
   Task task = task_service::create_task(taskDTO);
+  application_context::add_connection(
+      util::project_subscription_name(taskDTO.project_id), connection);
   multicasting::do_multicast(util::project_subscription_name(task.project_id),
                              task, defaults::server::create_task_metadata);
 #ifdef LOGGING
@@ -61,6 +62,8 @@ void edit_task_handler(json &in_json, TcpConnection::pointer &connection) {
   auto editDTO = in_json.get<RequestFormat<TaskEditDTO>>().data;
   try {
     Task edited_task = task_service::edit_task(editDTO);
+    application_context::add_connection(
+        util::project_subscription_name(edited_task.project_id), connection);
     multicasting::do_multicast(
         util::project_subscription_name(edited_task.project_id), edited_task,
         defaults::server::edit_task_metadata);
@@ -86,8 +89,8 @@ void edit_task_handler(json &in_json, TcpConnection::pointer &connection) {
 #endif
 }
 
-REGISTER_HANDLER(endpoints::tasks::edit, edit_task_handler);
+REGISTER_HANDLER("task edit", edit_task_handler);
 
-REGISTER_HANDLER(endpoints::tasks::get_all, get_all_tasks_handler);
+REGISTER_HANDLER("task get_all", get_all_tasks_handler);
 
-REGISTER_HANDLER(endpoints::tasks::create, create_task_handler);
+REGISTER_HANDLER("task create", create_task_handler);
